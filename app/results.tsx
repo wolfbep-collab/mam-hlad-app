@@ -1,13 +1,19 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, FoodCard, Screen } from '../src/components';
 import { demoPlaces } from '../src/data/demoPlaces';
 import { appendHistory } from '../src/lib/history';
 import { moodLabels, situationLabels } from '../src/lib/labels';
 import { recommend } from '../src/lib/recommendationEngine';
-import { colors, spacing, typography } from '../src/theme';
+import { colors, radius, spacing, typography } from '../src/theme';
 import type { Mood, Situation } from '../src/types';
+
+const microcopyVariants = [
+  'Dobře, zkusíme něco jiného.',
+  'Jasně, ukážu ti další možnosti.',
+  'OK, mrkneme na jiné tipy.',
+];
 
 const isMood = (v: string | undefined): v is Mood =>
   !!v &&
@@ -26,14 +32,24 @@ export default function ResultsScreen() {
     ? params.situation
     : 'now';
 
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
+  const [microcopy, setMicrocopy] = useState<string | null>(null);
+  const microcopyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyLogged = useRef(false);
+
   const result = useMemo(
-    () => recommend({ mood, situation }, demoPlaces),
-    [mood, situation]
+    () =>
+      recommend({ mood, situation }, demoPlaces, {
+        excludePlaceIds: dismissedIds,
+      }),
+    [mood, situation, dismissedIds]
   );
 
   useEffect(() => {
+    if (historyLogged.current) return;
     const top = result.recommendations[0];
     if (!top) return;
+    historyLogged.current = true;
     void appendHistory({
       id: `${Date.now()}-${top.place.id}`,
       timestamp: Date.now(),
@@ -44,6 +60,35 @@ export default function ResultsScreen() {
       kind: top.kind,
     });
   }, [result, mood, situation]);
+
+  useEffect(() => {
+    return () => {
+      if (microcopyTimer.current) clearTimeout(microcopyTimer.current);
+    };
+  }, []);
+
+  const handleDifferentTip = () => {
+    const currentIds = result.recommendations.map((r) => r.place.id);
+    if (currentIds.length === 0) return;
+    setDismissedIds((prev) => {
+      const merged = new Set([...prev, ...currentIds]);
+      return Array.from(merged);
+    });
+    const variant =
+      microcopyVariants[Math.floor(Math.random() * microcopyVariants.length)];
+    setMicrocopy(variant);
+    if (microcopyTimer.current) clearTimeout(microcopyTimer.current);
+    microcopyTimer.current = setTimeout(() => setMicrocopy(null), 2500);
+  };
+
+  const handleReset = () => {
+    setDismissedIds([]);
+    setMicrocopy(null);
+    if (microcopyTimer.current) clearTimeout(microcopyTimer.current);
+  };
+
+  const hasMore = result.recommendations.length > 0;
+  const everDismissed = dismissedIds.length > 0;
 
   const openPlace = (placeId: string) => {
     router.push({
@@ -63,13 +108,25 @@ export default function ResultsScreen() {
         </Text>
       </View>
 
-      {result.recommendations.length === 0 ? (
+      {microcopy ? (
+        <View style={styles.microcopy}>
+          <Text style={[typography.caption, styles.microcopyText]}>
+            {microcopy}
+          </Text>
+        </View>
+      ) : null}
+
+      {!hasMore ? (
         <View style={styles.empty}>
           <Text style={[typography.h3, styles.emptyTitle]}>
-            Nic na tebe nesedí 😕
+            {everDismissed
+              ? 'Pro tuto chvíli jsme tipy vyčerpali'
+              : 'Nic na tebe nesedí 😕'}
           </Text>
           <Text style={[typography.body, styles.emptyText]}>
-            Zkus jinou kombinaci — třeba uvolni situaci na „Mám 30 minut".
+            {everDismissed
+              ? 'Zkus se vrátit a zvolit jinou náladu nebo situaci.'
+              : 'Zkus jinou kombinaci — třeba uvolni situaci na „Mám 30 minut".'}
           </Text>
         </View>
       ) : (
@@ -84,9 +141,26 @@ export default function ResultsScreen() {
       )}
 
       <View style={styles.actions}>
+        {hasMore ? (
+          <Button
+            label="Dát mi jiný tip"
+            variant="secondary"
+            size="md"
+            onPress={handleDifferentTip}
+          />
+        ) : null}
+        {everDismissed ? (
+          <Button
+            label="Zpět na původní tipy"
+            variant="ghost"
+            size="md"
+            onPress={handleReset}
+          />
+        ) : null}
         <Button
           label="Vybrat znovu"
-          variant="secondary"
+          variant="ghost"
+          size="md"
           onPress={() => router.back()}
         />
         <Button
@@ -133,5 +207,15 @@ const styles = StyleSheet.create({
   actions: {
     gap: spacing.sm,
     marginTop: spacing.md,
+  },
+  microcopy: {
+    backgroundColor: colors.surfaceMuted,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
+    alignSelf: 'flex-start',
+  },
+  microcopyText: {
+    color: colors.textSecondary,
   },
 });

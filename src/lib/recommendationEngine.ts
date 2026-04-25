@@ -344,11 +344,18 @@ export interface RecommendationResult {
   considered: number;
 }
 
+export interface RecommendOptions {
+  excludePlaceIds?: string[];
+}
+
 export function recommend(
   pref: UserPreference,
-  places: Place[]
+  places: Place[],
+  options: RecommendOptions = {}
 ): RecommendationResult {
-  const scored = places
+  const excluded = new Set(options.excludePlaceIds ?? []);
+  const filteredPlaces = places.filter((p) => !excluded.has(p.id));
+  const scored = filteredPlaces
     .map((place) => ({
       place,
       breakdown: scorePlace(place, pref),
