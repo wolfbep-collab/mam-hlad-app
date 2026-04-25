@@ -1,4 +1,39 @@
-import type { Place } from '../types';
+import type { MenuItem, Place } from '../types';
+
+const item = (
+  id: string,
+  name: string,
+  description: string,
+  priceLevel: 1 | 2 | 3,
+  preparationMinutes: number,
+  tags: MenuItem['tags'],
+  flags: Partial<
+    Pick<
+      MenuItem,
+      | 'isVegetarian'
+      | 'isVegan'
+      | 'isWarm'
+      | 'isSweet'
+      | 'isLight'
+      | 'isQuick'
+      | 'isHealthy'
+    >
+  >
+): MenuItem => ({
+  id,
+  name,
+  description,
+  priceLevel,
+  preparationMinutes,
+  tags,
+  isVegetarian: flags.isVegetarian ?? false,
+  isVegan: flags.isVegan,
+  isWarm: flags.isWarm ?? false,
+  isSweet: flags.isSweet ?? false,
+  isLight: flags.isLight ?? false,
+  isQuick: flags.isQuick ?? preparationMinutes <= 10,
+  isHealthy: flags.isHealthy ?? false,
+});
 
 export const demoPlaces: Place[] = [
   {
@@ -14,6 +49,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 22:00',
     description: 'Tradiční česká restaurace, vyhlášené svíčkové a guláše.',
     rating: 4.6,
+    menuItems: [
+      item('p01-i1', 'Svíčková na smetaně', 'S domácím karlovarským knedlíkem a brusinkami.', 2, 25, ['warm', 'czech', 'meat'], { isWarm: true }),
+      item('p01-i2', 'Hovězí guláš', 'Pomalu dušený s cibulí, houskovým knedlíkem.', 2, 18, ['warm', 'czech', 'meat'], { isWarm: true }),
+      item('p01-i3', 'Smažený sýr s hranolky', 'Klasika s tatarkou. Bezmasá volba.', 2, 16, ['warm', 'czech', 'vegetarian'], { isWarm: true, isVegetarian: true }),
+      item('p01-i4', 'Bramboračka s houbami', 'Hustá, vydatná, na zahřátí.', 1, 10, ['warm', 'czech', 'soup', 'vegetarian'], { isWarm: true, isVegetarian: true, isLight: true, isQuick: true }),
+      item('p01-i5', 'Štrúdl se zmrzlinou', 'Domácí jablečný štrúdl, šlehačka, vanilková zmrzlina.', 2, 6, ['sweet', 'bakery', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
+    ],
   },
   {
     id: 'p02',
@@ -28,6 +70,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 23:00',
     description: 'Burgery, hot dogy a wrapy do 10 minut.',
     rating: 4.2,
+    menuItems: [
+      item('p02-i1', 'Cheeseburger', 'Hovězí placka, čedar, salát, domácí pečivo.', 1, 8, ['warm', 'fast', 'burger', 'meat'], { isWarm: true, isQuick: true }),
+      item('p02-i2', 'Kuřecí wrap', 'Grilované kuře, zelenina, jogurtová omáčka.', 1, 7, ['warm', 'fast', 'meat'], { isWarm: true, isQuick: true }),
+      item('p02-i3', 'Hot dog klasik', 'Párek, hořčice, pražená cibulka.', 1, 5, ['warm', 'fast', 'meat'], { isWarm: true, isQuick: true }),
+      item('p02-i4', 'Hranolky velké', 'Křupavé, posypané solí.', 1, 5, ['fast', 'vegetarian'], { isWarm: true, isVegetarian: true, isQuick: true }),
+      item('p02-i5', 'Veggie burger', 'Cizrnová placka, avokádo, rajče.', 1, 8, ['warm', 'fast', 'burger', 'vegetarian'], { isWarm: true, isVegetarian: true, isQuick: true }),
+    ],
   },
   {
     id: 'p03',
@@ -42,6 +91,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 21:00',
     description: 'Čerstvé saláty, bowls a vegan polévky.',
     rating: 4.7,
+    menuItems: [
+      item('p03-i1', 'Buddha bowl', 'Quinoa, pečené batáty, avokádo, hummus, dýňová semínka.', 2, 12, ['light', 'healthy', 'vegan', 'salad'], { isVegetarian: true, isVegan: true, isLight: true, isHealthy: true }),
+      item('p03-i2', 'Quinoa salát s tahini', 'Studený salát, čerstvá zelenina, tahini dresink.', 2, 8, ['light', 'healthy', 'vegan', 'salad'], { isVegetarian: true, isVegan: true, isLight: true, isHealthy: true, isQuick: true }),
+      item('p03-i3', 'Hummus talíř', 'Domácí hummus, pita, olivy, čerstvá zelenina.', 1, 6, ['light', 'vegan', 'cheap'], { isVegetarian: true, isVegan: true, isLight: true, isQuick: true }),
+      item('p03-i4', 'Krémová batátová polévka', 'S kokosem a zázvorem.', 2, 10, ['warm', 'light', 'vegan', 'soup', 'healthy'], { isWarm: true, isVegetarian: true, isVegan: true, isLight: true, isHealthy: true, isQuick: true }),
+      item('p03-i5', 'Vegan smoothie bowl', 'Lesní ovoce, banán, granola, kokos.', 2, 5, ['light', 'sweet', 'vegan', 'healthy'], { isVegetarian: true, isVegan: true, isLight: true, isSweet: true, isHealthy: true, isQuick: true }),
+    ],
   },
   {
     id: 'p04',
@@ -56,6 +112,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 23:30',
     description: 'Pravá neapolská pizza z dřevěné pece.',
     rating: 4.5,
+    menuItems: [
+      item('p04-i1', 'Pizza Margherita', 'Rajčata San Marzano, mozzarella, bazalka.', 2, 16, ['warm', 'italian', 'pizza', 'vegetarian'], { isWarm: true, isVegetarian: true }),
+      item('p04-i2', 'Pizza Diavola', 'Salám, chilli, mozzarella.', 2, 18, ['warm', 'italian', 'pizza', 'meat'], { isWarm: true }),
+      item('p04-i3', 'Caprese salát', 'Buvolí mozzarella, rajčata, bazalka, olivový olej.', 2, 6, ['light', 'italian', 'salad', 'vegetarian'], { isVegetarian: true, isLight: true, isQuick: true }),
+      item('p04-i4', 'Bruschetta al pomodoro', 'Opečené pečivo s rajčaty a česnekem.', 1, 5, ['light', 'italian', 'vegetarian'], { isVegetarian: true, isLight: true, isQuick: true }),
+      item('p04-i5', 'Tiramisu', 'Klasický italský dezert s mascarpone.', 2, 4, ['sweet', 'italian', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
+    ],
   },
   {
     id: 'p05',
@@ -70,6 +133,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 22:00',
     description: 'Autentické pho, bun bo a jarní závitky.',
     rating: 4.8,
+    menuItems: [
+      item('p05-i1', 'Pho Bo', 'Hovězí vývar 12 hodin vařený, rýžové nudle, bylinky.', 1, 10, ['warm', 'asian', 'soup', 'cheap'], { isWarm: true, isQuick: true }),
+      item('p05-i2', 'Bun Bo Nam Bo', 'Studené nudle s grilovaným hovězím a salátem.', 2, 12, ['light', 'asian'], { isLight: true }),
+      item('p05-i3', 'Jarní závitky čerstvé', 'Rýžový papír, kreveta, mátový list, arašídový dip.', 1, 6, ['light', 'asian', 'cheap'], { isLight: true, isQuick: true }),
+      item('p05-i4', 'Smažené rýžové nudle s kuřetem', 'S restovanou zeleninou.', 2, 14, ['warm', 'asian', 'meat'], { isWarm: true }),
+      item('p05-i5', 'Pho Chay', 'Vegetariánská verze pho s tofu a houbami.', 1, 10, ['warm', 'asian', 'soup', 'vegetarian', 'vegan'], { isWarm: true, isVegetarian: true, isVegan: true, isQuick: true }),
+    ],
   },
   {
     id: 'p06',
@@ -84,6 +154,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 20:00',
     description: 'Domácí dorty, croissanty a specialitová káva.',
     rating: 4.4,
+    menuItems: [
+      item('p06-i1', 'Máslový croissant', 'Křupavý, ručně tvarovaný, francouzské máslo.', 1, 3, ['sweet', 'bakery', 'cafe', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
+      item('p06-i2', 'New York cheesecake', 'Klasický s lesním ovocem.', 2, 4, ['sweet', 'bakery', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
+      item('p06-i3', 'Brownies s ořechy', 'Vlhké, intenzivní, s vanilkovým krémem.', 1, 4, ['sweet', 'bakery', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
+      item('p06-i4', 'Flat white & dort den', 'Specialitová káva + výběr dezertu dne.', 2, 5, ['sweet', 'cafe', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
+      item('p06-i5', 'Veganský malinový dort', 'Bez vajec a mléka, s maliny a kokosem.', 2, 4, ['sweet', 'bakery', 'vegan'], { isSweet: true, isVegetarian: true, isVegan: true, isQuick: true }),
+    ],
   },
   {
     id: 'p07',
@@ -98,6 +175,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 18:00',
     description: 'Denně 6 čerstvých polévek a celozrnné pečivo.',
     rating: 4.5,
+    menuItems: [
+      item('p07-i1', 'Hovězí vývar s nudlemi', 'Domácí, čistý, s petrželkou.', 1, 5, ['warm', 'light', 'soup', 'cheap'], { isWarm: true, isLight: true, isQuick: true, isHealthy: true }),
+      item('p07-i2', 'Krémová žampionová', 'S celozrnným chlebem.', 1, 6, ['warm', 'soup', 'vegetarian', 'cheap'], { isWarm: true, isVegetarian: true, isQuick: true }),
+      item('p07-i3', 'Boršč', 'Klasický s červenou řepou a smetanou.', 1, 6, ['warm', 'soup', 'vegetarian', 'cheap'], { isWarm: true, isVegetarian: true, isQuick: true, isHealthy: true }),
+      item('p07-i4', 'Čočková s uzeným', 'Vydatná, hutná.', 1, 7, ['warm', 'soup', 'meat', 'cheap'], { isWarm: true, isQuick: true }),
+      item('p07-i5', 'Celozrnný chléb s humusem', 'Studená lehká alternativa.', 1, 3, ['light', 'vegan', 'cheap', 'healthy'], { isVegetarian: true, isVegan: true, isLight: true, isQuick: true, isHealthy: true }),
+    ],
   },
   {
     id: 'p08',
@@ -112,6 +196,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 22:30',
     description: 'Čerstvé sushi sety a teplá japonská jídla.',
     rating: 4.6,
+    menuItems: [
+      item('p08-i1', 'Lososové sashimi 8 ks', 'Čerstvý losos, wasabi, gari.', 3, 14, ['light', 'asian', 'healthy'], { isLight: true, isHealthy: true }),
+      item('p08-i2', 'Veggie maki set', 'Avokádo, okurka, marinované tofu.', 2, 16, ['light', 'asian', 'vegetarian', 'vegan'], { isVegetarian: true, isVegan: true, isLight: true, isHealthy: true }),
+      item('p08-i3', 'Miso polévka', 'S tofu a wakame řasou.', 1, 4, ['warm', 'light', 'soup', 'asian', 'vegetarian'], { isWarm: true, isVegetarian: true, isLight: true, isQuick: true, isHealthy: true }),
+      item('p08-i4', 'Kuřecí teriyaki s rýží', 'Marinované kuře, jasmínová rýže, gril.', 3, 22, ['warm', 'asian', 'meat'], { isWarm: true }),
+      item('p08-i5', 'Edamame', 'Sójové lusky se solí.', 1, 4, ['light', 'asian', 'vegan'], { isVegetarian: true, isVegan: true, isLight: true, isQuick: true, isHealthy: true }),
+    ],
   },
   {
     id: 'p09',
@@ -126,6 +217,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno 24/7',
     description: 'Kebab v chlebu i na talíři, falafel.',
     rating: 4.1,
+    menuItems: [
+      item('p09-i1', 'Kuřecí kebab v chlebu', 'Marinované kuře, salát, jogurtová omáčka.', 1, 5, ['warm', 'fast', 'meat', 'cheap'], { isWarm: true, isQuick: true }),
+      item('p09-i2', 'Falafel wrap', 'Cizrnové kuličky, hummus, tahini, zelenina.', 1, 6, ['warm', 'fast', 'vegetarian', 'cheap'], { isWarm: true, isVegetarian: true, isQuick: true }),
+      item('p09-i3', 'Hovězí kebab talíř', 'S rýží, salátem a omáčkami.', 2, 8, ['warm', 'meat'], { isWarm: true, isQuick: true }),
+      item('p09-i4', 'Hranolky s česnekem', 'S česnekovým dipem.', 1, 4, ['fast', 'vegetarian', 'cheap'], { isWarm: true, isVegetarian: true, isQuick: true }),
+      item('p09-i5', 'Veggie talíř', 'Hummus, falafel, tabbouleh, pita.', 1, 6, ['light', 'vegetarian', 'cheap'], { isVegetarian: true, isLight: true, isQuick: true }),
+    ],
   },
   {
     id: 'p10',
@@ -140,6 +238,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 19:00',
     description: 'All-day snídaně, granola, avokádový toast.',
     rating: 4.6,
+    menuItems: [
+      item('p10-i1', 'Avokádový toast', 'Kváskový chléb, avokádo, sezamová semínka, chilli.', 2, 8, ['light', 'cafe', 'vegetarian', 'healthy'], { isVegetarian: true, isLight: true, isQuick: true, isHealthy: true }),
+      item('p10-i2', 'Granola s jogurtem', 'Domácí granola, řecký jogurt, lesní ovoce.', 2, 4, ['light', 'sweet', 'cafe', 'vegetarian', 'healthy'], { isVegetarian: true, isSweet: true, isLight: true, isQuick: true, isHealthy: true }),
+      item('p10-i3', 'Vejce na měkko s toastem', 'Dvě vejce, máslový toast, čerstvá pažitka.', 2, 7, ['warm', 'light', 'cafe', 'vegetarian'], { isWarm: true, isVegetarian: true, isLight: true, isQuick: true }),
+      item('p10-i4', 'Croissant a flat white', 'Klasická francouzská snídaně se specialitou.', 2, 5, ['sweet', 'cafe', 'bakery', 'vegetarian'], { isVegetarian: true, isSweet: true, isQuick: true }),
+      item('p10-i5', 'Lososový bagel', 'S uzeným lososem, smetanovým sýrem, kapary.', 3, 8, ['light', 'cafe'], { isLight: true, isQuick: true, isHealthy: true }),
+    ],
   },
   {
     id: 'p11',
@@ -154,6 +259,13 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevírá v 17:00',
     description: 'Argentinské hovězí, suché zrání, výběr vín.',
     rating: 4.7,
+    menuItems: [
+      item('p11-i1', 'Hovězí svíčková 200 g', 'Suché zrání, máslo bylinky, batátové pyré.', 3, 28, ['warm', 'meat'], { isWarm: true }),
+      item('p11-i2', 'Ribeye 300 g', 'Argentinské hovězí, gril, rozmarýn.', 3, 30, ['warm', 'meat'], { isWarm: true }),
+      item('p11-i3', 'Caesar salát s grilovaným kuřetem', 'Římský salát, parmezán, krutony.', 2, 12, ['light', 'salad', 'meat'], { isLight: true }),
+      item('p11-i4', 'Hovězí tatarák', 'Klasický s topinkami a česnekem.', 3, 8, ['light', 'meat'], { isLight: true, isQuick: true }),
+      item('p11-i5', 'Pečené brambory s rozmarýnem', 'Příloha nebo samostatně.', 2, 14, ['warm', 'vegetarian'], { isWarm: true, isVegetarian: true }),
+    ],
   },
   {
     id: 'p12',
@@ -168,5 +280,12 @@ export const demoPlaces: Place[] = [
     hoursLabel: 'Otevřeno do 17:00',
     description: 'Kváskový chléb, koláče, sendviče s sebou.',
     rating: 4.5,
+    menuItems: [
+      item('p12-i1', 'Kváskový chléb se sýrem', 'Vlastní kvásek, eidam, máslo, pažitka.', 1, 3, ['fast', 'bakery', 'vegetarian', 'cheap'], { isVegetarian: true, isQuick: true }),
+      item('p12-i2', 'Sladký tvarohový koláč', 'Domácí, ráno upečený.', 1, 2, ['sweet', 'bakery', 'vegetarian', 'cheap'], { isSweet: true, isVegetarian: true, isQuick: true }),
+      item('p12-i3', 'Plněný croissant s pistací', 'Máslový croissant, pistáciový krém.', 1, 3, ['sweet', 'bakery', 'vegetarian', 'cheap'], { isSweet: true, isVegetarian: true, isQuick: true }),
+      item('p12-i4', 'Šunkový sendvič', 'Kváskový chléb, šunka, čedar, rajče.', 1, 4, ['fast', 'meat', 'cheap'], { isQuick: true }),
+      item('p12-i5', 'Avokádový bagel', 'Bagel, avokádo, vejce, klíčky.', 2, 5, ['light', 'bakery', 'vegetarian', 'healthy'], { isVegetarian: true, isLight: true, isQuick: true, isHealthy: true }),
+    ],
   },
 ];

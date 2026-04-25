@@ -40,9 +40,17 @@ export default function ResultsScreen() {
       preference: { mood, situation },
       placeId: top.place.id,
       placeName: top.place.name,
+      menuItemName: top.menuItem?.name,
       kind: top.kind,
     });
   }, [result, mood, situation]);
+
+  const openPlace = (placeId: string) => {
+    router.push({
+      pathname: '/place/[id]',
+      params: { id: placeId, mood, situation },
+    });
+  };
 
   return (
     <Screen contentStyle={styles.content}>
@@ -69,8 +77,8 @@ export default function ResultsScreen() {
           <FoodCard
             key={rec.place.id}
             recommendation={rec}
-            onPress={() => router.push(`/place/${rec.place.id}`)}
-            onDetail={() => router.push(`/place/${rec.place.id}`)}
+            onPress={() => openPlace(rec.place.id)}
+            onDetail={() => openPlace(rec.place.id)}
           />
         ))
       )}

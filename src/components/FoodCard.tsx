@@ -3,7 +3,10 @@ import { colors, radius, shadow, spacing, typography } from '../theme';
 import type { Recommendation } from '../types';
 import { priceLabel } from '../lib/labels';
 
-const kindBadge: Record<Recommendation['kind'], { label: string; bg: string; fg: string }> = {
+const kindBadge: Record<
+  Recommendation['kind'],
+  { label: string; bg: string; fg: string }
+> = {
   best: { label: 'Nejlepší volba teď', bg: '#F97316', fg: '#FFFFFF' },
   fastest: { label: 'Nejrychlejší volba', bg: '#65A30D', fg: '#FFFFFF' },
   alternative: { label: 'Alternativa', bg: '#FFEDD5', fg: '#9A3412' },
@@ -16,8 +19,11 @@ interface FoodCardProps {
 }
 
 export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
-  const { place, reason, kind } = recommendation;
+  const { place, menuItem, reason, kind } = recommendation;
   const badge = kindBadge[kind];
+
+  const prepMinutes = menuItem?.preparationMinutes ?? place.prepMinutes;
+  const itemPriceLevel = menuItem?.priceLevel ?? place.priceLevel;
 
   return (
     <Pressable
@@ -29,25 +35,28 @@ export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
       ]}
     >
       <View style={[styles.badge, { backgroundColor: badge.bg }]}>
-        <Text style={[styles.badgeText, { color: badge.fg }]}>{badge.label}</Text>
+        <Text style={[styles.badgeText, { color: badge.fg }]}>
+          {badge.label}
+        </Text>
       </View>
 
-      <Text style={[typography.h2, styles.name]}>{place.name}</Text>
-      <Text style={[typography.caption, styles.cuisine]}>
-        {place.cuisine}
+      <Text style={[typography.caption, styles.placeLine]}>{place.name}</Text>
+      <Text style={[typography.h2, styles.itemName]} numberOfLines={2}>
+        {menuItem ? menuItem.name : place.cuisine}
       </Text>
+      <Text style={[typography.caption, styles.cuisine]}>{place.cuisine}</Text>
 
       <View style={styles.metaRow}>
         <View style={styles.metaItem}>
           <Text style={styles.metaIcon}>⏱</Text>
           <Text style={[typography.caption, styles.metaText]}>
-            ~{place.prepMinutes} min
+            ~{prepMinutes} min
           </Text>
         </View>
         <View style={styles.metaItem}>
           <Text style={styles.metaIcon}>💸</Text>
           <Text style={[typography.caption, styles.metaText]}>
-            {priceLabel(place.priceLevel)}
+            {priceLabel(itemPriceLevel)}
           </Text>
         </View>
         <View style={styles.metaItem}>
@@ -65,10 +74,7 @@ export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
       <Pressable
         onPress={onDetail}
         accessibilityRole="button"
-        style={({ pressed }) => [
-          styles.detailBtn,
-          pressed && styles.pressed,
-        ]}
+        style={({ pressed }) => [styles.detailBtn, pressed && styles.pressed]}
       >
         <Text style={[typography.bodyStrong, styles.detailLabel]}>
           Detail →
@@ -102,11 +108,17 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.3,
   },
-  name: {
+  placeLine: {
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginBottom: spacing.xs,
+  },
+  itemName: {
     color: colors.textPrimary,
   },
   cuisine: {
-    color: colors.textSecondary,
+    color: colors.textMuted,
     marginTop: spacing.xs,
   },
   metaRow: {
@@ -143,4 +155,4 @@ const styles = StyleSheet.create({
   detailLabel: {
     color: colors.primaryDark,
   },
-});
+})

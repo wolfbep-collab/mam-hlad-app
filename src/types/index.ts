@@ -39,6 +39,22 @@ export type FoodTag =
   | 'bakery'
   | 'cafe';
 
+export interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  priceLevel: PriceLevel;
+  preparationMinutes: number;
+  tags: FoodTag[];
+  isVegetarian: boolean;
+  isVegan?: boolean;
+  isWarm: boolean;
+  isSweet: boolean;
+  isLight: boolean;
+  isQuick: boolean;
+  isHealthy: boolean;
+}
+
 export interface Place {
   id: string;
   name: string;
@@ -52,6 +68,7 @@ export interface Place {
   hoursLabel: string;
   description: string;
   rating: number;
+  menuItems: MenuItem[];
 }
 
 export interface UserPreference {
@@ -64,6 +81,7 @@ export type RecommendationKind = 'best' | 'fastest' | 'alternative';
 export interface Recommendation {
   kind: RecommendationKind;
   place: Place;
+  menuItem?: MenuItem;
   score: number;
   reason: string;
 }
@@ -74,5 +92,6 @@ export interface HistoryEntry {
   preference: UserPreference;
   placeId: string;
   placeName: string;
+  menuItemName?: string;
   kind: RecommendationKind;
 }

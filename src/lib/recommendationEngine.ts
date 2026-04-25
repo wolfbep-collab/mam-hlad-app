@@ -1,8 +1,10 @@
 import type {
   FoodTag,
+  MenuItem,
   Mood,
   Place,
   Recommendation,
+  RecommendationKind,
   ServiceMode,
   Situation,
   UserPreference,
@@ -36,22 +38,40 @@ const situationMaxPrepMinutes: Record<Situation, number> = {
   pickup: 20,
 };
 
-const moodLabel: Record<Mood, string> = {
-  warm: 'něco teplého',
-  fast: 'něco rychlého',
-  light: 'něco lehkého',
-  cheap: 'něco levného',
-  healthy: 'zdravější volbu',
-  sweet: 'něco sladkého',
-  any: 'cokoliv chutného',
+const moodAdjective: Record<Mood, string | null> = {
+  warm: 'teplého',
+  fast: 'rychlého',
+  light: 'lehkého',
+  cheap: 'levného',
+  healthy: 'zdravějšího',
+  sweet: 'sladkého',
+  any: null,
 };
 
-interface ScoreBreakdown {
+const situationConnector: Record<Situation, string> = {
+  now: 'a rychlého',
+  '15min': 'a rychlého',
+  '30min': 'do půl hodiny',
+  sitdown: 'v klidu na místě',
+  delivery: 's rozvozem',
+  pickup: 's sebou',
+};
+
+const situationStandalone: Record<Situation, string> = {
+  now: 'Hotovo skoro hned.',
+  '15min': 'Hotovo do 15 minut.',
+  '30min': 'Hotovo zhruba do půl hodiny.',
+  sitdown: 'Sedneš si na klidném místě.',
+  delivery: 'Dovezou ti to až domů.',
+  pickup: 'Vyzvedneš si to a jdeš.',
+};
+
+interface PlaceScoreBreakdown {
   total: number;
   reasons: string[];
 }
 
-function scorePlace(place: Place, pref: UserPreference): ScoreBreakdown {
+function scorePlace(place: Place, pref: UserPreference): PlaceScoreBreakdown {
   const reasons: string[] = [];
   let score = 0;
 
@@ -68,7 +88,6 @@ function scorePlace(place: Place, pref: UserPreference): ScoreBreakdown {
     score += 18;
   } else {
     score -= 25;
-    reasons.push('Nevyhovuje typu obsluhy');
   }
 
   const moodTags = moodTagBoost[pref.mood];
@@ -76,53 +95,106 @@ function scorePlace(place: Place, pref: UserPreference): ScoreBreakdown {
     score += 6;
   } else {
     const hits = moodTags.filter((t) => place.tags.includes(t)).length;
-    if (hits > 0) {
-      score += hits * 14;
-      reasons.push(`Sedí na ${moodLabel[pref.mood]}`);
-    } else {
-      score -= 6;
-    }
+    if (hits > 0) score += hits * 14;
+    else score -= 6;
   }
 
   const maxPrep = situationMaxPrepMinutes[pref.situation];
   if (place.prepMinutes <= maxPrep) {
     const margin = Math.max(0, maxPrep - place.prepMinutes);
     score += 10 + Math.min(margin, 20) * 0.5;
-    if (place.prepMinutes <= 10) {
-      reasons.push(`Hotovo do ${place.prepMinutes} min`);
-    }
   } else {
     score -= (place.prepMinutes - maxPrep) * 1.5;
   }
 
   if (pref.mood === 'cheap' || pref.situation === 'now') {
     score += (4 - place.priceLevel) * 4;
-    if (place.priceLevel === 1) reasons.push('Přátelské ceny');
   }
 
   score += (place.rating - 4) * 8;
-  if (place.rating >= 4.6) reasons.push(`Hodnocení ${place.rating.toFixed(1)}`);
 
   return { total: score, reasons };
 }
 
-function buildReason(
-  pref: UserPreference,
-  breakdown: ScoreBreakdown,
+function scoreMenuItem(item: MenuItem, pref: UserPreference): number {
+  let score = 0;
+
+  switch (pref.mood) {
+    case 'warm':
+      if (item.isWarm) score += 16;
+      break;
+    case 'fast':
+      if (item.isQuick) score += 16;
+      break;
+    case 'light':
+      if (item.isLight) score += 16;
+      break;
+    case 'cheap':
+      score += (4 - item.priceLevel) * 5;
+      break;
+    case 'healthy':
+      if (item.isHealthy) score += 16;
+      break;
+    case 'sweet':
+      if (item.isSweet) score += 16;
+      break;
+    case 'any':
+      score += 4;
+      break;
+  }
+
+  const maxPrep = situationMaxPrepMinutes[pref.situation];
+  if (item.preparationMinutes <= maxPrep) {
+    score += 8;
+  } else {
+    score -= (item.preparationMinutes - maxPrep) * 1.0;
+  }
+  if (item.isQuick) score += 2;
+
+  return score;
+}
+
+function pickMenuItemForKind(
   place: Place,
-  kind: 'best' | 'fastest' | 'alternative'
-): string {
+  pref: UserPreference,
+  kind: RecommendationKind
+): MenuItem | undefined {
+  if (place.menuItems.length === 0) return undefined;
   if (kind === 'fastest') {
-    return `Hotovo přibližně za ${place.prepMinutes} min — když potřebuješ rychle.`;
+    return [...place.menuItems].sort(
+      (a, b) => a.preparationMinutes - b.preparationMinutes
+    )[0];
   }
-  if (kind === 'alternative') {
-    return `Jiná chuť, stále dobrá volba: ${place.cuisine.toLowerCase()}.`;
+  return [...place.menuItems]
+    .map((it) => ({ it, s: scoreMenuItem(it, pref) }))
+    .sort((a, b) => b.s - a.s)[0]?.it;
+}
+
+export function pickMenuItems(
+  place: Place,
+  pref: UserPreference,
+  count = 3
+): MenuItem[] {
+  if (place.menuItems.length === 0) return [];
+  return [...place.menuItems]
+    .map((it) => ({ it, s: scoreMenuItem(it, pref) }))
+    .sort((a, b) => b.s - a.s)
+    .slice(0, count)
+    .map(({ it }) => it);
+}
+
+export function buildHumanReason(pref: UserPreference): string {
+  const adj = moodAdjective[pref.mood];
+  if (!adj) {
+    return situationStandalone[pref.situation];
   }
-  const top = breakdown.reasons.slice(0, 2);
-  if (top.length === 0) {
-    return `Solidní volba na ${moodLabel[pref.mood]}.`;
+  const fastMoodOnFastSit =
+    pref.mood === 'fast' &&
+    (pref.situation === 'now' || pref.situation === '15min');
+  if (fastMoodOnFastSit) {
+    return `Doporučeno, protože chceš něco ${adj}.`;
   }
-  return `${top.join(' • ')}.`;
+  return `Doporučeno, protože chceš něco ${adj} ${situationConnector[pref.situation]}.`;
 }
 
 export interface RecommendationResult {
@@ -152,39 +224,43 @@ export function recommend(
     (s) => s.place.id !== best?.place.id && s.place.id !== fastest?.place.id
   );
 
+  const baseReason = buildHumanReason(pref);
   const recommendations: Recommendation[] = [];
 
   if (best) {
     recommendations.push({
       kind: 'best',
       place: best.place,
+      menuItem: pickMenuItemForKind(best.place, pref, 'best'),
       score: best.breakdown.total,
-      reason: buildReason(pref, best.breakdown, best.place, 'best'),
+      reason: baseReason,
     });
   }
   if (fastest && fastest.place.id !== best?.place.id) {
     recommendations.push({
       kind: 'fastest',
       place: fastest.place,
+      menuItem: pickMenuItemForKind(fastest.place, pref, 'fastest'),
       score: fastest.breakdown.total,
-      reason: buildReason(pref, fastest.breakdown, fastest.place, 'fastest'),
+      reason: baseReason,
     });
   }
   if (alternative) {
     recommendations.push({
       kind: 'alternative',
       place: alternative.place,
+      menuItem: pickMenuItemForKind(alternative.place, pref, 'alternative'),
       score: alternative.breakdown.total,
-      reason: buildReason(
-        pref,
-        alternative.breakdown,
-        alternative.place,
-        'alternative'
-      ),
+      reason: baseReason,
     });
   }
 
   return { recommendations, considered: places.length };
 }
 
-export const __test = { scorePlace, situationMaxPrepMinutes, moodTagBoost };
+export const __test = {
+  scorePlace,
+  scoreMenuItem,
+  situationMaxPrepMinutes,
+  moodTagBoost,
+};

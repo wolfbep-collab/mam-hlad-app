@@ -40,6 +40,17 @@ export default function HistoryScreen() {
     setEntries([]);
   };
 
+  const openPlace = (entry: HistoryEntry) => {
+    router.push({
+      pathname: '/place/[id]',
+      params: {
+        id: entry.placeId,
+        mood: entry.preference.mood,
+        situation: entry.preference.situation,
+      },
+    });
+  };
+
   if (loading) {
     return (
       <Screen>
@@ -74,16 +85,20 @@ export default function HistoryScreen() {
       {entries.map((entry) => (
         <Pressable
           key={entry.id}
-          onPress={() => router.push(`/place/${entry.placeId}`)}
-          style={({ pressed }) => [
-            styles.row,
-            pressed && { opacity: 0.85 },
-          ]}
+          onPress={() => openPlace(entry)}
+          style={({ pressed }) => [styles.row, pressed && { opacity: 0.85 }]}
         >
           <View style={styles.rowHead}>
-            <Text style={[typography.bodyStrong, styles.placeName]}>
-              {entry.placeName}
-            </Text>
+            <View style={styles.rowTitleBlock}>
+              <Text style={[typography.bodyStrong, styles.placeName]}>
+                {entry.placeName}
+              </Text>
+              {entry.menuItemName ? (
+                <Text style={[typography.caption, styles.itemLine]}>
+                  {entry.menuItemName}
+                </Text>
+              ) : null}
+            </View>
             <Text style={[typography.caption, styles.time]}>
               {dateFmt.format(new Date(entry.timestamp))}
             </Text>
@@ -124,11 +139,18 @@ const styles = StyleSheet.create({
   rowHead: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+  },
+  rowTitleBlock: {
+    flex: 1,
+    gap: 2,
   },
   placeName: {
     color: colors.textPrimary,
-    flex: 1,
+  },
+  itemLine: {
+    color: colors.textSecondary,
   },
   time: {
     color: colors.textMuted,
