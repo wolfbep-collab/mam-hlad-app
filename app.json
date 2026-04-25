@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "mam-hlad-app",
+    "name": "Mám hlad",
     "slug": "mam-hlad-app",
-    "version": "1.0.0",
+    "scheme": "mamhlad",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -10,24 +11,30 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FFF7ED"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.wolfbep.mamhlad"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FFF7ED"
       },
+      "package": "com.wolfbep.mamhlad",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
