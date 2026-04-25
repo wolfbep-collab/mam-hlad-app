@@ -197,6 +197,148 @@ export function buildHumanReason(pref: UserPreference): string {
   return `Doporučeno, protože chceš něco ${adj} ${situationConnector[pref.situation]}.`;
 }
 
+type ReasonRule = {
+  match: (item: MenuItem) => boolean;
+  variants: Array<(item: MenuItem) => string>;
+};
+
+const reasonRules: ReasonRule[] = [
+  {
+    match: (i) => i.isLight && i.isQuick,
+    variants: [
+      (i) => `Lehká volba, hotová přibližně za ${i.preparationMinutes} minut.`,
+      () => `Něco lehčího, co dlouho nečeká na talíři.`,
+      () => `Rychlé a zároveň lehké — nezatíží.`,
+    ],
+  },
+  {
+    match: (i) => i.isHealthy && i.isQuick,
+    variants: [
+      () => `Dobré, když chceš něco zdravějšího bez dlouhého čekání.`,
+      (i) => `Zdravější varianta, kterou máš za ${i.preparationMinutes} minut.`,
+      () => `Vyvážená volba, která nezdrží.`,
+    ],
+  },
+  {
+    match: (i) => i.isWarm && i.isQuick,
+    variants: [
+      () => `Rychlá teplá volba, která tě zasytí.`,
+      (i) => `Teplé jídlo na stole zhruba za ${i.preparationMinutes} minut.`,
+      () => `Když chceš teplo a nemáš čas čekat.`,
+    ],
+  },
+  {
+    match: (i) => i.isSweet && i.isLight,
+    variants: [
+      () => `Jemná sladká varianta, když nechceš velké jídlo.`,
+      () => `Lehké sladké pohlazení, žádná tíha.`,
+      () => `Sladké, ale nepřejíš se.`,
+    ],
+  },
+  {
+    match: (i) => i.isSweet && i.isQuick,
+    variants: [
+      () => `Sladká odměna, kterou dlouho nečekáš.`,
+      (i) => `Něco sladkého za ${i.preparationMinutes} minut.`,
+    ],
+  },
+  {
+    match: (i) => i.isWarm && i.isHealthy,
+    variants: [
+      () => `Teplé a zároveň vyvážené — pohladí i zasytí.`,
+      () => `Zdravější teplé jídlo, které ti udělá dobře.`,
+    ],
+  },
+  {
+    match: (i) => i.isLight && i.isHealthy,
+    variants: [
+      () => `Lehké a vyvážené, bez zbytečné tíhy.`,
+      () => `Zdravější volba, která neleží v žaludku.`,
+    ],
+  },
+  {
+    match: (i) => !!i.isVegan && i.isWarm,
+    variants: [
+      () => `Teplá rostlinná volba, plně vegan.`,
+      () => `Vegan a teplé — sytí, ale bez masa.`,
+    ],
+  },
+  {
+    match: (i) => !!i.isVegan,
+    variants: [
+      () => `Plně rostlinná volba, vegan.`,
+      () => `Vegan, ale poctivé jídlo.`,
+    ],
+  },
+  {
+    match: (i) => i.isHealthy,
+    variants: [
+      () => `Vyvážená volba, dobrá pro tělo.`,
+      () => `Zdravější tip — nevyloží tě.`,
+    ],
+  },
+  {
+    match: (i) => i.isLight,
+    variants: [
+      () => `Lehčí volba, když nechceš nic těžkého.`,
+      () => `Něco menšího, co tě nezahltí.`,
+    ],
+  },
+  {
+    match: (i) => i.isWarm,
+    variants: [
+      () => `Teplé jídlo, které zahřeje a zasytí.`,
+      () => `Klasika teplé kuchyně — dobře padne.`,
+    ],
+  },
+  {
+    match: (i) => i.isSweet,
+    variants: [
+      () => `Sladká tečka, když máš chuť na něco dobrého.`,
+      () => `Pro mlsné jazýčky — sladká volba.`,
+    ],
+  },
+  {
+    match: (i) => i.isQuick,
+    variants: [
+      (i) => `Rychlá volba, hotová zhruba za ${i.preparationMinutes} minut.`,
+      () => `Když chceš mít hlad rychle vyřešený.`,
+    ],
+  },
+  {
+    match: (i) => i.priceLevel === 1,
+    variants: [
+      () => `Šetrná volba, která nezruinuje peněženku.`,
+      () => `Levnější tip — chuť za málo peněz.`,
+    ],
+  },
+  {
+    match: (i) => !!i.isVegetarian,
+    variants: [
+      () => `Bezmasá varianta, ale poctivá porce.`,
+      () => `Vegetariánská volba, sytá a chutná.`,
+    ],
+  },
+];
+
+function pickVariant<T>(variants: T[], seed: string): T {
+  let h = 5381;
+  for (let i = 0; i < seed.length; i++) {
+    h = ((h * 33) ^ seed.charCodeAt(i)) | 0;
+  }
+  return variants[Math.abs(h) % variants.length];
+}
+
+export function buildMenuItemReason(item: MenuItem): string {
+  for (const rule of reasonRules) {
+    if (rule.match(item)) {
+      const variant = pickVariant(rule.variants, item.id);
+      return variant(item);
+    }
+  }
+  return 'Solidní volba na běžný hlad.';
+}
+
 export interface RecommendationResult {
   recommendations: Recommendation[];
   considered: number;
@@ -227,31 +369,37 @@ export function recommend(
   const baseReason = buildHumanReason(pref);
   const recommendations: Recommendation[] = [];
 
+  const reasonFor = (item: MenuItem | undefined) =>
+    item ? buildMenuItemReason(item) : baseReason;
+
   if (best) {
+    const item = pickMenuItemForKind(best.place, pref, 'best');
     recommendations.push({
       kind: 'best',
       place: best.place,
-      menuItem: pickMenuItemForKind(best.place, pref, 'best'),
+      menuItem: item,
       score: best.breakdown.total,
-      reason: baseReason,
+      reason: reasonFor(item),
     });
   }
   if (fastest && fastest.place.id !== best?.place.id) {
+    const item = pickMenuItemForKind(fastest.place, pref, 'fastest');
     recommendations.push({
       kind: 'fastest',
       place: fastest.place,
-      menuItem: pickMenuItemForKind(fastest.place, pref, 'fastest'),
+      menuItem: item,
       score: fastest.breakdown.total,
-      reason: baseReason,
+      reason: reasonFor(item),
     });
   }
   if (alternative) {
+    const item = pickMenuItemForKind(alternative.place, pref, 'alternative');
     recommendations.push({
       kind: 'alternative',
       place: alternative.place,
-      menuItem: pickMenuItemForKind(alternative.place, pref, 'alternative'),
+      menuItem: item,
       score: alternative.breakdown.total,
-      reason: baseReason,
+      reason: reasonFor(item),
     });
   }
 

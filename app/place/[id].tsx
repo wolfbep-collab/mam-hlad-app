@@ -5,7 +5,7 @@ import { Button, Screen } from '../../src/components';
 import { demoPlaces } from '../../src/data/demoPlaces';
 import { priceLabel } from '../../src/lib/labels';
 import {
-  buildHumanReason,
+  buildMenuItemReason,
   pickMenuItems,
 } from '../../src/lib/recommendationEngine';
 import { colors, radius, spacing, typography } from '../../src/theme';
@@ -43,10 +43,6 @@ export default function PlaceDetailScreen() {
   const recommendedItems = useMemo(
     () => (place ? pickMenuItems(place, { mood, situation }, 3) : []),
     [place, mood, situation]
-  );
-  const reason = useMemo(
-    () => buildHumanReason({ mood, situation }),
-    [mood, situation]
   );
 
   if (!place) {
@@ -105,7 +101,11 @@ export default function PlaceDetailScreen() {
             Tři tipy z menu na míru.
           </Text>
           {recommendedItems.map((it) => (
-            <MenuItemRow key={it.id} item={it} reason={reason} />
+            <MenuItemRow
+              key={it.id}
+              item={it}
+              reason={buildMenuItemReason(it)}
+            />
           ))}
         </View>
       ) : null}
