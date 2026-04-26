@@ -55,6 +55,22 @@ export interface MenuItem {
   isHealthy: boolean;
 }
 
+export type Weekday =
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday'
+  | 'sunday';
+
+export interface TimeRange {
+  open: string;
+  close: string;
+}
+
+export type OpeningHours = Record<Weekday, TimeRange[]>;
+
 export interface Place {
   id: string;
   name: string;
@@ -64,8 +80,7 @@ export interface Place {
   priceLevel: PriceLevel;
   prepMinutes: number;
   services: ServiceMode[];
-  openNow: boolean;
-  hoursLabel: string;
+  openingHours: OpeningHours;
   description: string;
   rating: number;
   menuItems: MenuItem[];

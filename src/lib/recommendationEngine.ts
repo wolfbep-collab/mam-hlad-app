@@ -9,6 +9,7 @@ import type {
   Situation,
   UserPreference,
 } from '../types';
+import { isPlaceOpenNow } from './openingHours';
 
 const moodTagBoost: Record<Mood, FoodTag[]> = {
   warm: ['warm', 'soup'],
@@ -71,11 +72,15 @@ interface PlaceScoreBreakdown {
   reasons: string[];
 }
 
-function scorePlace(place: Place, pref: UserPreference): PlaceScoreBreakdown {
+function scorePlace(
+  place: Place,
+  pref: UserPreference,
+  now: Date
+): PlaceScoreBreakdown {
   const reasons: string[] = [];
   let score = 0;
 
-  if (!place.openNow) {
+  if (!isPlaceOpenNow(place, now)) {
     score -= 40;
     reasons.push('Nyní zavřeno');
   }
@@ -353,16 +358,18 @@ export function recommend(
   places: Place[],
   options: RecommendOptions = {}
 ): RecommendationResult {
+  const now = new Date();
   const excluded = new Set(options.excludePlaceIds ?? []);
   const filteredPlaces = places.filter((p) => !excluded.has(p.id));
   const scored = filteredPlaces
     .map((place) => ({
       place,
-      breakdown: scorePlace(place, pref),
+      breakdown: scorePlace(place, pref, now),
+      openNow: isPlaceOpenNow(place, now),
     }))
     .sort((a, b) => b.breakdown.total - a.breakdown.total);
 
-  const viable = scored.filter((s) => s.place.openNow);
+  const viable = scored.filter((s) => s.openNow);
   const pool = viable.length > 0 ? viable : scored;
 
   const best = pool[0];
@@ -417,11 +424,12 @@ export function countViableTips(
   pref: UserPreference,
   places: Place[]
 ): number {
+  const now = new Date();
   const requiredServices = situationToServices[pref.situation];
   const maxPrep = situationMaxPrepMinutes[pref.situation];
   const moodTags = moodTagBoost[pref.mood];
   return places.filter((p) => {
-    if (!p.openNow) return false;
+    if (!isPlaceOpenNow(p, now)) return false;
     if (!requiredServices.some((s) => p.services.includes(s))) return false;
     if (p.prepMinutes > maxPrep + 5) return false;
     if (moodTags.length > 0 && !moodTags.some((t) => p.tags.includes(t))) {

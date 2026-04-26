@@ -5,6 +5,10 @@ import { Button, Screen } from '../../src/components';
 import { demoPlaces } from '../../src/data/demoPlaces';
 import { priceLabel } from '../../src/lib/labels';
 import {
+  getOpenStatus,
+  getTodayHoursLabel,
+} from '../../src/lib/openingHours';
+import {
   buildMenuItemReason,
   pickMenuItems,
 } from '../../src/lib/recommendationEngine';
@@ -44,6 +48,14 @@ export default function PlaceDetailScreen() {
     () => (place ? pickMenuItems(place, { mood, situation }, 3) : []),
     [place, mood, situation]
   );
+  const openStatus = useMemo(
+    () => (place ? getOpenStatus(place) : null),
+    [place]
+  );
+  const todayHours = useMemo(
+    () => (place ? getTodayHoursLabel(place) : ''),
+    [place]
+  );
 
   if (!place) {
     return (
@@ -66,12 +78,17 @@ export default function PlaceDetailScreen() {
       <View
         style={[
           styles.statusPill,
-          place.openNow ? styles.statusOpen : styles.statusClosed,
+          openStatus?.open ? styles.statusOpen : styles.statusClosed,
         ]}
       >
         <Text style={styles.statusText}>
-          {place.openNow ? '● Otevřeno' : '● Zavřeno'} • {place.hoursLabel}
+          {openStatus?.label ?? 'Otevírací doba neznámá'}
         </Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={[typography.label, styles.cardLabel]}>Otevírací doba dnes</Text>
+        <Text style={[typography.body, styles.cardValue]}>{todayHours}</Text>
       </View>
 
       <View style={styles.metaGrid}>
@@ -202,7 +219,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.successSoft,
   },
   statusClosed: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.surfaceMuted,
   },
   statusText: {
     fontWeight: '700',

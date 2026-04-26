@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, shadow, spacing, typography } from '../theme';
 import type { Recommendation } from '../types';
 import { priceLabel } from '../lib/labels';
+import { getOpenStatus } from '../lib/openingHours';
 
 const kindBadge: Record<
   Recommendation['kind'],
@@ -24,6 +26,7 @@ export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
 
   const prepMinutes = menuItem?.preparationMinutes ?? place.prepMinutes;
   const itemPriceLevel = menuItem?.priceLevel ?? place.priceLevel;
+  const openStatus = useMemo(() => getOpenStatus(place), [place]);
 
   return (
     <Pressable
@@ -45,6 +48,15 @@ export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
         {menuItem ? menuItem.name : place.cuisine}
       </Text>
       <Text style={[typography.caption, styles.cuisine]}>{place.cuisine}</Text>
+
+      <View
+        style={[
+          styles.statusPill,
+          openStatus.open ? styles.statusOpen : styles.statusClosed,
+        ]}
+      >
+        <Text style={styles.statusText}>{openStatus.label}</Text>
+      </View>
 
       <View style={styles.metaRow}>
         <View style={styles.metaItem}>
@@ -154,5 +166,23 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     color: colors.primaryDark,
+  },
+  statusPill: {
+    alignSelf: 'flex-start',
+    paddingVertical: 4,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.pill,
+    marginTop: spacing.sm,
+  },
+  statusOpen: {
+    backgroundColor: colors.successSoft,
+  },
+  statusClosed: {
+    backgroundColor: colors.surfaceMuted,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textPrimary,
   },
 })

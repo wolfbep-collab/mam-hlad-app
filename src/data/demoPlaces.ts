@@ -1,4 +1,20 @@
-import type { MenuItem, Place } from '../types';
+import type { MenuItem, OpeningHours, Place, TimeRange } from '../types';
+
+const r = (open: string, close: string): TimeRange => ({ open, close });
+
+const week = (
+  weekdays: TimeRange[],
+  saturday: TimeRange[] = weekdays,
+  sunday: TimeRange[] = weekdays
+): OpeningHours => ({
+  monday: weekdays,
+  tuesday: weekdays,
+  wednesday: weekdays,
+  thursday: weekdays,
+  friday: weekdays,
+  saturday,
+  sunday,
+});
 
 const item = (
   id: string,
@@ -45,8 +61,7 @@ export const demoPlaces: Place[] = [
     priceLevel: 2,
     prepMinutes: 25,
     services: ['sitdown', 'pickup'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 22:00',
+    openingHours: week([r('11:00', '22:00')]),
     description: 'Tradiční česká restaurace, vyhlášené svíčkové a guláše.',
     rating: 4.6,
     menuItems: [
@@ -66,8 +81,11 @@ export const demoPlaces: Place[] = [
     priceLevel: 1,
     prepMinutes: 8,
     services: ['pickup', 'delivery'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 23:00',
+    openingHours: week(
+      [r('09:00', '23:00')],
+      [r('09:00', '23:30')],
+      [r('11:00', '22:00')]
+    ),
     description: 'Burgery, hot dogy a wrapy do 10 minut.',
     rating: 4.2,
     menuItems: [
@@ -87,8 +105,11 @@ export const demoPlaces: Place[] = [
     priceLevel: 2,
     prepMinutes: 12,
     services: ['sitdown', 'pickup', 'delivery'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 21:00',
+    openingHours: week(
+      [r('09:00', '21:00')],
+      [r('10:00', '20:00')],
+      []
+    ),
     description: 'Čerstvé saláty, bowls a vegan polévky.',
     rating: 4.7,
     menuItems: [
@@ -108,8 +129,7 @@ export const demoPlaces: Place[] = [
     priceLevel: 2,
     prepMinutes: 20,
     services: ['sitdown', 'delivery', 'pickup'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 23:30',
+    openingHours: week([r('11:00', '23:30')]),
     description: 'Pravá neapolská pizza z dřevěné pece.',
     rating: 4.5,
     menuItems: [
@@ -129,8 +149,7 @@ export const demoPlaces: Place[] = [
     priceLevel: 1,
     prepMinutes: 15,
     services: ['sitdown', 'pickup'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 22:00',
+    openingHours: week([r('11:00', '22:00')]),
     description: 'Autentické pho, bun bo a jarní závitky.',
     rating: 4.8,
     menuItems: [
@@ -150,8 +169,11 @@ export const demoPlaces: Place[] = [
     priceLevel: 2,
     prepMinutes: 5,
     services: ['sitdown', 'pickup'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 20:00',
+    openingHours: week(
+      [r('08:00', '20:00')],
+      [r('09:00', '18:00')],
+      [r('09:00', '18:00')]
+    ),
     description: 'Domácí dorty, croissanty a specialitová káva.',
     rating: 4.4,
     menuItems: [
@@ -171,8 +193,11 @@ export const demoPlaces: Place[] = [
     priceLevel: 1,
     prepMinutes: 7,
     services: ['pickup', 'sitdown'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 18:00',
+    openingHours: week(
+      [r('10:00', '18:00')],
+      [r('10:00', '15:00')],
+      []
+    ),
     description: 'Denně 6 čerstvých polévek a celozrnné pečivo.',
     rating: 4.5,
     menuItems: [
@@ -192,8 +217,11 @@ export const demoPlaces: Place[] = [
     priceLevel: 3,
     prepMinutes: 25,
     services: ['sitdown', 'delivery', 'pickup'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 22:30',
+    openingHours: week(
+      [r('11:30', '22:30')],
+      [r('11:30', '23:30')],
+      [r('12:00', '22:00')]
+    ),
     description: 'Čerstvé sushi sety a teplá japonská jídla.',
     rating: 4.6,
     menuItems: [
@@ -213,9 +241,12 @@ export const demoPlaces: Place[] = [
     priceLevel: 1,
     prepMinutes: 6,
     services: ['pickup', 'delivery'],
-    openNow: true,
-    hoursLabel: 'Otevřeno 24/7',
-    description: 'Kebab v chlebu i na talíři, falafel.',
+    openingHours: week(
+      [r('10:00', '04:00')],
+      [r('10:00', '05:00')],
+      [r('12:00', '02:00')]
+    ),
+    description: 'Kebab v chlebu i na talíři, falafel. Často otevřeno přes noc.',
     rating: 4.1,
     menuItems: [
       item('p09-i1', 'Kuřecí kebab v chlebu', 'Marinované kuře, salát, jogurtová omáčka.', 1, 5, ['warm', 'fast', 'meat', 'cheap'], { isWarm: true, isQuick: true }),
@@ -234,8 +265,11 @@ export const demoPlaces: Place[] = [
     priceLevel: 2,
     prepMinutes: 10,
     services: ['sitdown', 'pickup'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 19:00',
+    openingHours: week(
+      [r('07:00', '19:00')],
+      [r('08:00', '18:00')],
+      [r('08:00', '18:00')]
+    ),
     description: 'All-day snídaně, granola, avokádový toast.',
     rating: 4.6,
     menuItems: [
@@ -255,8 +289,11 @@ export const demoPlaces: Place[] = [
     priceLevel: 3,
     prepMinutes: 35,
     services: ['sitdown'],
-    openNow: false,
-    hoursLabel: 'Otevírá v 17:00',
+    openingHours: week(
+      [r('17:00', '23:30')],
+      [r('17:00', '24:00')],
+      []
+    ),
     description: 'Argentinské hovězí, suché zrání, výběr vín.',
     rating: 4.7,
     menuItems: [
@@ -276,8 +313,11 @@ export const demoPlaces: Place[] = [
     priceLevel: 1,
     prepMinutes: 4,
     services: ['pickup'],
-    openNow: true,
-    hoursLabel: 'Otevřeno do 17:00',
+    openingHours: week(
+      [r('06:30', '17:00')],
+      [r('07:00', '14:00')],
+      []
+    ),
     description: 'Kváskový chléb, koláče, sendviče s sebou.',
     rating: 4.5,
     menuItems: [
