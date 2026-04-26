@@ -31,6 +31,7 @@ export function MoodChip({ label, emoji, selected, onPress }: MoodChipProps) {
         >
           {label}
         </Text>
+        {selected ? <Text style={styles.check}>✓</Text> : null}
       </View>
     </Pressable>
   );
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
   chipSelected: {
     backgroundColor: colors.primarySoft,
     borderColor: colors.primary,
+    borderWidth: 2,
   },
   pressed: {
     opacity: 0.85,
@@ -67,5 +69,11 @@ const styles = StyleSheet.create({
   },
   labelSelected: {
     color: colors.primaryDark,
+  },
+  check: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.primaryDark,
+    marginLeft: spacing.xs,
   },
 });

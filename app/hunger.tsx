@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, MoodChip, Screen } from '../src/components';
+import { demoPlaces } from '../src/data/demoPlaces';
 import {
   moodEmoji,
   moodLabels,
@@ -9,8 +10,16 @@ import {
   situationLabels,
   situationOrder,
 } from '../src/lib/labels';
-import { colors, spacing, typography } from '../src/theme';
+import { countViableTips } from '../src/lib/recommendationEngine';
+import { colors, radius, spacing, typography } from '../src/theme';
 import type { Mood, Situation } from '../src/types';
+
+function tipsCaption(count: number): string {
+  if (count === 0) return 'Máme pro tebe několik vhodných tipů.';
+  if (count === 1) return 'Máme pro tebe jeden vhodný tip.';
+  if (count >= 2 && count <= 4) return `Máme pro tebe ${count} vhodné tipy.`;
+  return `Máme pro tebe ${count} vhodných tipů.`;
+}
 
 export default function HungerScreen() {
   const router = useRouter();
@@ -18,6 +27,11 @@ export default function HungerScreen() {
   const [situation, setSituation] = useState<Situation | null>(null);
 
   const canContinue = mood !== null && situation !== null;
+
+  const viableCount = useMemo(() => {
+    if (!canContinue || !mood || !situation) return 0;
+    return countViableTips({ mood, situation }, demoPlaces);
+  }, [canContinue, mood, situation]);
 
   const handleContinue = () => {
     if (!canContinue) return;
@@ -29,8 +43,12 @@ export default function HungerScreen() {
 
   return (
     <Screen contentStyle={styles.content}>
+      <Text style={[typography.body, styles.intro]}>
+        Vyber, co se ti hodí právě teď. Stačí jeden pocit a jedna situace.
+      </Text>
+
       <View style={styles.section}>
-        <Text style={[typography.h1, styles.heading]}>Jakou máš chuť?</Text>
+        <Text style={[typography.h1, styles.heading]}>Na co máš chuť?</Text>
         <Text style={[typography.body, styles.subheading]}>
           Vyber jednu volbu, která ti právě teď sedí.
         </Text>
@@ -48,7 +66,7 @@ export default function HungerScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={[typography.h1, styles.heading]}>Jaká je situace?</Text>
+        <Text style={[typography.h1, styles.heading]}>Jaká je tvoje situace?</Text>
         <Text style={[typography.body, styles.subheading]}>
           Pomůže nám to s časem a způsobem obsluhy.
         </Text>
@@ -66,10 +84,23 @@ export default function HungerScreen() {
 
       <View style={styles.cta}>
         <Button
-          label={canContinue ? 'Najít doporučení' : 'Vyber chuť i situaci'}
+          label="Najít jídlo"
           onPress={handleContinue}
           disabled={!canContinue}
         />
+        {canContinue ? (
+          <View style={styles.captionBox}>
+            <Text style={[typography.caption, styles.captionText]}>
+              {tipsCaption(viableCount)}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.hintBox}>
+            <Text style={[typography.caption, styles.hintText]}>
+              Vyber jeden pocit a jednu situaci, ať ti můžeme poradit.
+            </Text>
+          </View>
+        )}
       </View>
     </Screen>
   );
@@ -79,6 +110,9 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: spacing.lg,
     gap: spacing.xl,
+  },
+  intro: {
+    color: colors.textSecondary,
   },
   section: {
     gap: spacing.md,
@@ -97,5 +131,23 @@ const styles = StyleSheet.create({
   },
   cta: {
     marginTop: spacing.lg,
+    gap: spacing.sm,
+  },
+  captionBox: {
+    alignSelf: 'center',
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: radius.pill,
+  },
+  captionText: {
+    color: colors.textSecondary,
+  },
+  hintBox: {
+    alignSelf: 'center',
+  },
+  hintText: {
+    color: colors.textMuted,
+    textAlign: 'center',
   },
 });

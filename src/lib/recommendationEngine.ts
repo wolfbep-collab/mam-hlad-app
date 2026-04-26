@@ -413,6 +413,24 @@ export function recommend(
   return { recommendations, considered: places.length };
 }
 
+export function countViableTips(
+  pref: UserPreference,
+  places: Place[]
+): number {
+  const requiredServices = situationToServices[pref.situation];
+  const maxPrep = situationMaxPrepMinutes[pref.situation];
+  const moodTags = moodTagBoost[pref.mood];
+  return places.filter((p) => {
+    if (!p.openNow) return false;
+    if (!requiredServices.some((s) => p.services.includes(s))) return false;
+    if (p.prepMinutes > maxPrep + 5) return false;
+    if (moodTags.length > 0 && !moodTags.some((t) => p.tags.includes(t))) {
+      return false;
+    }
+    return true;
+  }).length;
+}
+
 export const __test = {
   scorePlace,
   scoreMenuItem,
