@@ -74,18 +74,6 @@ export default function PlaceDetailScreen() {
         </Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={[typography.label, styles.cardLabel]}>Adresa</Text>
-        <Text style={[typography.body, styles.cardValue]}>{place.address}</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={[typography.label, styles.cardLabel]}>O místě</Text>
-        <Text style={[typography.body, styles.cardValue]}>
-          {place.description}
-        </Text>
-      </View>
-
       <View style={styles.metaGrid}>
         <Meta label="Příprava" value={`~${place.prepMinutes} min`} />
         <Meta label="Cena" value={priceLabel(place.priceLevel)} />
@@ -104,11 +92,23 @@ export default function PlaceDetailScreen() {
             <MenuItemRow
               key={it.id}
               item={it}
-              reason={buildMenuItemReason(it)}
+              reason={buildMenuItemReason(it, 'detail')}
             />
           ))}
         </View>
       ) : null}
+
+      <View style={styles.card}>
+        <Text style={[typography.label, styles.cardLabel]}>Adresa</Text>
+        <Text style={[typography.body, styles.cardValue]}>{place.address}</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={[typography.label, styles.cardLabel]}>O místě</Text>
+        <Text style={[typography.body, styles.cardValue]}>
+          {place.description}
+        </Text>
+      </View>
 
       <View style={styles.card}>
         <Text style={[typography.label, styles.cardLabel]}>Obsluha</Text>

@@ -329,10 +329,10 @@ function pickVariant<T>(variants: T[], seed: string): T {
   return variants[Math.abs(h) % variants.length];
 }
 
-export function buildMenuItemReason(item: MenuItem): string {
+export function buildMenuItemReason(item: MenuItem, seedSuffix = ''): string {
   for (const rule of reasonRules) {
     if (rule.match(item)) {
-      const variant = pickVariant(rule.variants, item.id);
+      const variant = pickVariant(rule.variants, item.id + seedSuffix);
       return variant(item);
     }
   }
