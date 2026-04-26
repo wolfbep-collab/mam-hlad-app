@@ -10,6 +10,7 @@ import type {
   UserPreference,
 } from '../types';
 import { isPlaceOpenNow } from './openingHours';
+import { calculateDistanceMeters, type UserLocation } from './location';
 
 const moodTagBoost: Record<Mood, FoodTag[]> = {
   warm: ['warm', 'soup'],
@@ -72,10 +73,20 @@ interface PlaceScoreBreakdown {
   reasons: string[];
 }
 
+function scoreDistance(meters: number | null): number {
+  if (meters == null) return 0;
+  if (meters < 500) return 12;
+  if (meters < 1000) return 6;
+  if (meters < 2000) return 0;
+  if (meters < 5000) return -6;
+  return -14;
+}
+
 function scorePlace(
   place: Place,
   pref: UserPreference,
-  now: Date
+  now: Date,
+  userLocation?: UserLocation | null
 ): PlaceScoreBreakdown {
   const reasons: string[] = [];
   let score = 0;
@@ -83,6 +94,11 @@ function scorePlace(
   if (!isPlaceOpenNow(place, now)) {
     score -= 40;
     reasons.push('Nyní zavřeno');
+  }
+
+  if (userLocation) {
+    const d = calculateDistanceMeters(userLocation, place);
+    score += scoreDistance(d);
   }
 
   const requiredServices = situationToServices[pref.situation];
@@ -351,6 +367,7 @@ export interface RecommendationResult {
 
 export interface RecommendOptions {
   excludePlaceIds?: string[];
+  userLocation?: UserLocation | null;
 }
 
 export function recommend(
@@ -360,12 +377,16 @@ export function recommend(
 ): RecommendationResult {
   const now = new Date();
   const excluded = new Set(options.excludePlaceIds ?? []);
+  const userLocation = options.userLocation ?? null;
   const filteredPlaces = places.filter((p) => !excluded.has(p.id));
   const scored = filteredPlaces
     .map((place) => ({
       place,
-      breakdown: scorePlace(place, pref, now),
+      breakdown: scorePlace(place, pref, now, userLocation),
       openNow: isPlaceOpenNow(place, now),
+      distanceMeters: userLocation
+        ? calculateDistanceMeters(userLocation, place)
+        : null,
     }))
     .sort((a, b) => b.breakdown.total - a.breakdown.total);
 
@@ -394,6 +415,7 @@ export function recommend(
       menuItem: item,
       score: best.breakdown.total,
       reason: reasonFor(item),
+      distanceMeters: best.distanceMeters ?? undefined,
     });
   }
   if (fastest && fastest.place.id !== best?.place.id) {
@@ -404,6 +426,7 @@ export function recommend(
       menuItem: item,
       score: fastest.breakdown.total,
       reason: reasonFor(item),
+      distanceMeters: fastest.distanceMeters ?? undefined,
     });
   }
   if (alternative) {
@@ -414,6 +437,7 @@ export function recommend(
       menuItem: item,
       score: alternative.breakdown.total,
       reason: reasonFor(item),
+      distanceMeters: alternative.distanceMeters ?? undefined,
     });
   }
 

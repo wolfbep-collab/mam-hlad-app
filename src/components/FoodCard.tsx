@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, shadow, spacing, typography } from '../theme';
 import type { Recommendation } from '../types';
 import { priceLabel } from '../lib/labels';
+import { formatDistance } from '../lib/location';
 import { getOpenStatus } from '../lib/openingHours';
 
 const kindBadge: Record<
@@ -21,7 +22,7 @@ interface FoodCardProps {
 }
 
 export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
-  const { place, menuItem, reason, kind } = recommendation;
+  const { place, menuItem, reason, kind, distanceMeters } = recommendation;
   const badge = kindBadge[kind];
 
   const prepMinutes = menuItem?.preparationMinutes ?? place.prepMinutes;
@@ -77,6 +78,14 @@ export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
             {place.rating.toFixed(1)}
           </Text>
         </View>
+        {distanceMeters != null ? (
+          <View style={styles.metaItem}>
+            <Text style={styles.metaIcon}>📍</Text>
+            <Text style={[typography.caption, styles.metaText]}>
+              {formatDistance(distanceMeters)}
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.reasonBox}>

@@ -5,6 +5,14 @@ import { Button, FoodCard, Screen } from '../src/components';
 import { demoPlaces } from '../src/data/demoPlaces';
 import { appendHistory } from '../src/lib/history';
 import { moodLabels, situationLabels } from '../src/lib/labels';
+import {
+  getCachedLocation,
+  getCachedStatus,
+  getCurrentLocation,
+  setCachedLocation,
+  type LocationStatus,
+  type UserLocation,
+} from '../src/lib/location';
 import { recommend } from '../src/lib/recommendationEngine';
 import { colors, radius, spacing, typography } from '../src/theme';
 import type { Mood, Situation } from '../src/types';
@@ -37,12 +45,20 @@ export default function ResultsScreen() {
   const microcopyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyLogged = useRef(false);
 
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>(
+    getCachedStatus()
+  );
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(
+    getCachedLocation()
+  );
+
   const result = useMemo(
     () =>
       recommend({ mood, situation }, demoPlaces, {
         excludePlaceIds: dismissedIds,
+        userLocation,
       }),
-    [mood, situation, dismissedIds]
+    [mood, situation, dismissedIds, userLocation]
   );
 
   useEffect(() => {
@@ -87,6 +103,14 @@ export default function ResultsScreen() {
     if (microcopyTimer.current) clearTimeout(microcopyTimer.current);
   };
 
+  const handleRequestLocation = async () => {
+    setLocationStatus('loading');
+    const { location, status } = await getCurrentLocation();
+    setCachedLocation(location, status);
+    setLocationStatus(status);
+    setUserLocation(location);
+  };
+
   const hasMore = result.recommendations.length > 0;
   const everDismissed = dismissedIds.length > 0;
 
@@ -96,6 +120,20 @@ export default function ResultsScreen() {
       params: { id: placeId, mood, situation },
     });
   };
+
+  const locationButtonLabel =
+    locationStatus === 'loading'
+      ? 'Hledám tvou polohu…'
+      : locationStatus === 'granted'
+        ? 'Tipy seřazeny podle vzdálenosti'
+        : 'Najít bližší tipy';
+
+  const locationHint =
+    locationStatus === 'denied'
+      ? 'Nevadí, tipy můžeš používat i bez polohy.'
+      : locationStatus === 'unavailable'
+        ? 'Polohu se teď nepodařilo zjistit. Tipy fungují i bez ní.'
+        : null;
 
   return (
     <Screen contentStyle={styles.content}>
@@ -107,6 +145,23 @@ export default function ResultsScreen() {
           {moodLabels[mood]} • {situationLabels[situation].toLowerCase()}
         </Text>
       </View>
+
+      {locationStatus !== 'granted' ? (
+        <View style={styles.locationCard}>
+          <Button
+            label={locationButtonLabel}
+            variant="secondary"
+            size="md"
+            onPress={handleRequestLocation}
+            disabled={locationStatus === 'loading'}
+          />
+          {locationHint ? (
+            <Text style={[typography.caption, styles.locationHint]}>
+              {locationHint}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
 
       {microcopy ? (
         <View style={styles.microcopy}>
@@ -217,5 +272,12 @@ const styles = StyleSheet.create({
   },
   microcopyText: {
     color: colors.textSecondary,
+  },
+  locationCard: {
+    gap: spacing.xs,
+  },
+  locationHint: {
+    color: colors.textSecondary,
+    paddingHorizontal: spacing.xs,
   },
 });

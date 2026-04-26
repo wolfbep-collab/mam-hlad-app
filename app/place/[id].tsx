@@ -5,6 +5,11 @@ import { Button, Screen } from '../../src/components';
 import { demoPlaces } from '../../src/data/demoPlaces';
 import { priceLabel } from '../../src/lib/labels';
 import {
+  calculateDistanceMeters,
+  formatDistance,
+  getCachedLocation,
+} from '../../src/lib/location';
+import {
   getOpenStatus,
   getTodayHoursLabel,
 } from '../../src/lib/openingHours';
@@ -56,6 +61,13 @@ export default function PlaceDetailScreen() {
     () => (place ? getTodayHoursLabel(place) : ''),
     [place]
   );
+  const distanceLabel = useMemo(() => {
+    if (!place) return null;
+    const loc = getCachedLocation();
+    if (!loc) return null;
+    const meters = calculateDistanceMeters(loc, place);
+    return meters != null ? formatDistance(meters) : null;
+  }, [place]);
 
   if (!place) {
     return (
@@ -96,6 +108,15 @@ export default function PlaceDetailScreen() {
         <Meta label="Cena" value={priceLabel(place.priceLevel)} />
         <Meta label="Hodnocení" value={`★ ${place.rating.toFixed(1)}`} />
       </View>
+
+      {distanceLabel ? (
+        <View style={styles.card}>
+          <Text style={[typography.label, styles.cardLabel]}>Vzdálenost</Text>
+          <Text style={[typography.body, styles.cardValue]}>
+            {distanceLabel} od tebe
+          </Text>
+        </View>
+      ) : null}
 
       {recommendedItems.length > 0 ? (
         <View style={styles.menuSection}>

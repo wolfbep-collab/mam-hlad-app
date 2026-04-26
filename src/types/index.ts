@@ -84,6 +84,8 @@ export interface Place {
   description: string;
   rating: number;
   menuItems: MenuItem[];
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface UserPreference {
@@ -99,6 +101,7 @@ export interface Recommendation {
   menuItem?: MenuItem;
   score: number;
   reason: string;
+  distanceMeters?: number;
 }
 
 export interface HistoryEntry {
