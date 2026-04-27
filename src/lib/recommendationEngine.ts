@@ -209,9 +209,17 @@ function pickMenuItemForKind(
   );
   if (eligible.length === 0) return undefined;
   if (kind === 'fastest') {
-    return [...eligible].sort(
+    const sortedBySpeed = [...eligible].sort(
       (a, b) => a.preparationMinutes - b.preparationMinutes
-    )[0];
+    );
+    const minPrep = sortedBySpeed[0]?.preparationMinutes ?? 0;
+    const speedWindow = sortedBySpeed.filter(
+      (it) => it.preparationMinutes <= minPrep + 3
+    );
+    const ranked = speedWindow
+      .map((it) => ({ it, s: scoreMenuItem(it, pref, recentMenuItemNames) }))
+      .sort((a, b) => b.s - a.s);
+    return ranked[0]?.it ?? sortedBySpeed[0];
   }
   return [...eligible]
     .map((it) => ({ it, s: scoreMenuItem(it, pref, recentMenuItemNames) }))
@@ -447,9 +455,16 @@ export function recommend(
   const pool = viable.length > 0 ? viable : sortedAdjusted;
 
   const best = pool[0];
-  const fastest = [...pool].sort(
+  const sortedBySpeed = [...pool].sort(
     (a, b) => a.place.prepMinutes - b.place.prepMinutes
-  )[0];
+  );
+  const fastestMinPrep = sortedBySpeed[0]?.place.prepMinutes ?? 0;
+  const fastestWindow = sortedBySpeed.filter(
+    (s) => s.place.prepMinutes <= fastestMinPrep + 5
+  );
+  const fastest =
+    [...fastestWindow].sort((a, b) => b.adjustedTotal - a.adjustedTotal)[0] ??
+    sortedBySpeed[0];
   const alternative = pool.find(
     (s) => s.place.id !== best?.place.id && s.place.id !== fastest?.place.id
   );

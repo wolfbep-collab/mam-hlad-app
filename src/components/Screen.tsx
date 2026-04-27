@@ -19,6 +19,8 @@ interface ScreenProps {
   edges?: ('top' | 'right' | 'bottom' | 'left')[];
 }
 
+const BOTTOM_BUFFER = spacing.xxxl + spacing.xl;
+
 export function Screen({
   children,
   scroll = true,
@@ -26,7 +28,7 @@ export function Screen({
   edges = ['top', 'left', 'right'],
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
-  const bottomPad = insets.bottom + spacing.xxxl;
+  const bottomPad = Math.max(insets.bottom, spacing.lg) + BOTTOM_BUFFER;
   return (
     <SafeAreaView style={styles.safe} edges={edges}>
       {scroll ? (
