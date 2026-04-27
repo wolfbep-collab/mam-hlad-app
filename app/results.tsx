@@ -114,6 +114,15 @@ export default function ResultsScreen() {
     if (microcopyTimer.current) clearTimeout(microcopyTimer.current);
   };
 
+  const showConfirmation = (message: string) => {
+    setLocationConfirmation(message);
+    if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
+    confirmationTimer.current = setTimeout(
+      () => setLocationConfirmation(null),
+      4000
+    );
+  };
+
   const handleRequestLocation = async () => {
     setLocationStatus('loading');
     const { location, status } = await getCurrentLocation();
@@ -121,13 +130,26 @@ export default function ResultsScreen() {
     setLocationStatus(status);
     setUserLocation(location);
     if (status === 'granted') {
-      setLocationConfirmation('Hotovo, seřadili jsme tipy podle blízkosti.');
-      if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
-      confirmationTimer.current = setTimeout(
-        () => setLocationConfirmation(null),
-        4000
-      );
+      showConfirmation('Hotovo, seřadili jsme tipy podle blízkosti.');
     }
+  };
+
+  const handleRefreshLocation = async () => {
+    setLocationStatus('loading');
+    const { location, status } = await getCurrentLocation();
+    setCachedLocation(location, status);
+    setLocationStatus(status);
+    setUserLocation(location);
+    if (status === 'granted') {
+      showConfirmation('Hotovo, tipy jsme seřadili podle aktuální polohy.');
+    }
+  };
+
+  const handleOptOut = () => {
+    setCachedLocation(null, 'opted_out');
+    setLocationStatus('opted_out');
+    setUserLocation(null);
+    showConfirmation('Dobře, tipy můžeš používat i bez polohy.');
   };
 
   const hasMore = result.recommendations.length > 0;
@@ -151,7 +173,9 @@ export default function ResultsScreen() {
       ? 'Nevadí, tipy můžeš používat i bez polohy.'
       : locationStatus === 'unavailable'
         ? 'Polohu se teď nepodařilo zjistit. Tipy fungují i bez ní.'
-        : null;
+        : locationStatus === 'opted_out'
+          ? 'Tipy teď řadíme bez polohy. Kdykoli ji můžeš zase zapnout.'
+          : null;
 
   return (
     <Screen contentStyle={styles.content}>
@@ -248,6 +272,22 @@ export default function ResultsScreen() {
             size="md"
             onPress={handleReset}
           />
+        ) : null}
+        {locationStatus === 'granted' ? (
+          <>
+            <Button
+              label="Aktualizovat polohu"
+              variant="ghost"
+              size="md"
+              onPress={handleRefreshLocation}
+            />
+            <Button
+              label="Používat bez polohy"
+              variant="ghost"
+              size="md"
+              onPress={handleOptOut}
+            />
+          </>
         ) : null}
         <Button
           label="Vybrat znovu"

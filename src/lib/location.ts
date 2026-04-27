@@ -6,7 +6,8 @@ export type LocationStatus =
   | 'loading'
   | 'granted'
   | 'denied'
-  | 'unavailable';
+  | 'unavailable'
+  | 'opted_out';
 
 export interface UserLocation {
   latitude: number;
