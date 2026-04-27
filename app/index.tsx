@@ -31,6 +31,12 @@ export default function HomeScreen() {
           onPress={() => router.push('/hunger')}
           accessibilityLabel="Začít vybírat jídlo"
         />
+        <Button
+          label="Vím, co si dát"
+          variant="secondary"
+          onPress={() => router.push('/known')}
+          accessibilityLabel="Vyhledat konkrétní jídlo"
+        />
         <Pressable
           onPress={() => router.push('/history')}
           style={({ pressed }) => [

@@ -96,7 +96,11 @@ export interface UserPreference {
   dietaryPreference: DietaryPreference;
 }
 
-export type RecommendationKind = 'best' | 'fastest' | 'alternative';
+export type RecommendationKind =
+  | 'best'
+  | 'fastest'
+  | 'alternative'
+  | 'match';
 
 export interface Recommendation {
   kind: RecommendationKind;

@@ -13,7 +13,10 @@ import type {
 import { isPlaceOpenNow } from './openingHours';
 import { calculateDistanceMeters, type UserLocation } from './location';
 
-function matchesDiet(item: MenuItem, diet: DietaryPreference): boolean {
+export function matchesDiet(
+  item: MenuItem,
+  diet: DietaryPreference
+): boolean {
   if (diet === 'any') return true;
   if (diet === 'vegan') return item.isVegan === true;
   return item.isVegetarian === true || item.isVegan === true;

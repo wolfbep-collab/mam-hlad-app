@@ -13,6 +13,7 @@ const kindBadge: Record<
   best: { label: 'Nejlepší volba teď', bg: '#F97316', fg: '#FFFFFF' },
   fastest: { label: 'Nejrychlejší volba', bg: '#65A30D', fg: '#FFFFFF' },
   alternative: { label: 'Alternativa', bg: '#FFEDD5', fg: '#9A3412' },
+  match: { label: 'Mohlo by sedět', bg: '#FFEDD5', fg: '#9A3412' },
 };
 
 interface FoodCardProps {
