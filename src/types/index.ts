@@ -88,9 +88,12 @@ export interface Place {
   longitude?: number;
 }
 
+export type DietaryPreference = 'any' | 'vegetarian' | 'vegan';
+
 export interface UserPreference {
   mood: Mood;
   situation: Situation;
+  dietaryPreference: DietaryPreference;
 }
 
 export type RecommendationKind = 'best' | 'fastest' | 'alternative';

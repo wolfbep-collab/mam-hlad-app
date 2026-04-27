@@ -96,7 +96,7 @@ export const demoPlaces: Place[] = [
       item('p02-i1', 'Cheeseburger', 'Hovězí placka, čedar, salát, domácí pečivo.', 1, 8, ['warm', 'fast', 'burger', 'meat'], { isWarm: true, isQuick: true }),
       item('p02-i2', 'Kuřecí wrap', 'Grilované kuře, zelenina, jogurtová omáčka.', 1, 7, ['warm', 'fast', 'meat'], { isWarm: true, isQuick: true }),
       item('p02-i3', 'Hot dog klasik', 'Párek, hořčice, pražená cibulka.', 1, 5, ['warm', 'fast', 'meat'], { isWarm: true, isQuick: true }),
-      item('p02-i4', 'Hranolky velké', 'Křupavé, posypané solí.', 1, 5, ['fast', 'vegetarian'], { isWarm: true, isVegetarian: true, isQuick: true }),
+      item('p02-i4', 'Hranolky velké', 'Křupavé, posypané solí.', 1, 5, ['fast', 'vegetarian', 'vegan'], { isWarm: true, isVegetarian: true, isVegan: true, isQuick: true }),
       item('p02-i5', 'Veggie burger', 'Cizrnová placka, avokádo, rajče.', 1, 8, ['warm', 'fast', 'burger', 'vegetarian'], { isWarm: true, isVegetarian: true, isQuick: true }),
     ],
   },
@@ -268,7 +268,7 @@ export const demoPlaces: Place[] = [
     rating: 4.1,
     menuItems: [
       item('p09-i1', 'Kuřecí kebab v chlebu', 'Marinované kuře, salát, jogurtová omáčka.', 1, 5, ['warm', 'fast', 'meat', 'cheap'], { isWarm: true, isQuick: true }),
-      item('p09-i2', 'Falafel wrap', 'Cizrnové kuličky, hummus, tahini, zelenina.', 1, 6, ['warm', 'fast', 'vegetarian', 'cheap'], { isWarm: true, isVegetarian: true, isQuick: true }),
+      item('p09-i2', 'Falafel wrap', 'Cizrnové kuličky, hummus, tahini, zelenina.', 1, 6, ['warm', 'fast', 'vegetarian', 'vegan', 'cheap'], { isWarm: true, isVegetarian: true, isVegan: true, isQuick: true }),
       item('p09-i3', 'Hovězí kebab talíř', 'S rýží, salátem a omáčkami.', 2, 8, ['warm', 'meat'], { isWarm: true, isQuick: true }),
       item('p09-i4', 'Hranolky s česnekem', 'S česnekovým dipem.', 1, 4, ['fast', 'vegetarian', 'cheap'], { isWarm: true, isVegetarian: true, isQuick: true }),
       item('p09-i5', 'Veggie talíř', 'Hummus, falafel, tabbouleh, pita.', 1, 6, ['light', 'vegetarian', 'cheap'], { isVegetarian: true, isLight: true, isQuick: true }),
@@ -323,7 +323,7 @@ export const demoPlaces: Place[] = [
       item('p11-i2', 'Ribeye 300 g', 'Argentinské hovězí, gril, rozmarýn.', 3, 30, ['warm', 'meat'], { isWarm: true }),
       item('p11-i3', 'Caesar salát s grilovaným kuřetem', 'Římský salát, parmezán, krutony.', 2, 12, ['light', 'salad', 'meat'], { isLight: true }),
       item('p11-i4', 'Hovězí tatarák', 'Klasický s topinkami a česnekem.', 3, 8, ['light', 'meat'], { isLight: true, isQuick: true }),
-      item('p11-i5', 'Pečené brambory s rozmarýnem', 'Příloha nebo samostatně.', 2, 14, ['warm', 'vegetarian'], { isWarm: true, isVegetarian: true }),
+      item('p11-i5', 'Pečené brambory s rozmarýnem', 'Příloha nebo samostatně.', 2, 14, ['warm', 'vegetarian', 'vegan'], { isWarm: true, isVegetarian: true, isVegan: true }),
     ],
   },
   {

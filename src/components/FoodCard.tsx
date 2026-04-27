@@ -86,6 +86,15 @@ export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
             </Text>
           </View>
         ) : null}
+        {menuItem?.isVegan ? (
+          <View style={styles.dietPill}>
+            <Text style={styles.dietText}>Vegan</Text>
+          </View>
+        ) : menuItem?.isVegetarian ? (
+          <View style={styles.dietPill}>
+            <Text style={styles.dietText}>Vegetariánské</Text>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.reasonBox}>
@@ -193,5 +202,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.textPrimary,
+  },
+  dietPill: {
+    backgroundColor: colors.successSoft,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: radius.pill,
+    alignSelf: 'center',
+  },
+  dietText: {
+    color: '#3F6212',
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
   },
 })

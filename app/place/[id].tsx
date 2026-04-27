@@ -19,7 +19,7 @@ import {
   pickMenuItems,
 } from '../../src/lib/recommendationEngine';
 import { colors, radius, spacing, typography } from '../../src/theme';
-import type { MenuItem, Mood, Situation } from '../../src/types';
+import type { DietaryPreference, MenuItem, Mood, Situation } from '../../src/types';
 
 const serviceLabel: Record<string, string> = {
   sitdown: 'Posezení',
@@ -35,18 +35,25 @@ const isSituation = (v: string | undefined): v is Situation =>
   !!v &&
   ['now', '15min', '30min', 'sitdown', 'delivery', 'pickup'].includes(v);
 
+const isDiet = (v: string | undefined): v is DietaryPreference =>
+  !!v && ['any', 'vegetarian', 'vegan'].includes(v);
+
 export default function PlaceDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     id: string;
     mood?: string;
     situation?: string;
+    diet?: string;
   }>();
 
   const mood: Mood = isMood(params.mood) ? params.mood : 'any';
   const situation: Situation = isSituation(params.situation)
     ? params.situation
     : 'now';
+  const dietaryPreference: DietaryPreference = isDiet(params.diet)
+    ? params.diet
+    : 'any';
 
   const cachedLocation = getCachedLocation();
   const place = useMemo(() => {
@@ -55,8 +62,11 @@ export default function PlaceDetailScreen() {
   }, [cachedLocation, params.id]);
 
   const recommendedItems = useMemo(
-    () => (place ? pickMenuItems(place, { mood, situation }, 3) : []),
-    [place, mood, situation]
+    () =>
+      place
+        ? pickMenuItems(place, { mood, situation, dietaryPreference }, 3)
+        : [],
+    [place, mood, situation, dietaryPreference]
   );
   const openStatus = useMemo(
     () => (place ? getOpenStatus(place) : null),
@@ -208,11 +218,11 @@ function MenuItemRow({ item, reason }: { item: MenuItem; reason: string }) {
         </View>
         {item.isVegan ? (
           <View style={styles.dietPill}>
-            <Text style={styles.dietText}>vegan</Text>
+            <Text style={styles.dietText}>Vegan</Text>
           </View>
         ) : item.isVegetarian ? (
           <View style={styles.dietPill}>
-            <Text style={styles.dietText}>veggie</Text>
+            <Text style={styles.dietText}>Vegetariánské</Text>
           </View>
         ) : null}
       </View>

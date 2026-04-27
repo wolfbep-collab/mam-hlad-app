@@ -4,6 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, MoodChip, Screen } from '../src/components';
 import { demoPlaces } from '../src/data/demoPlaces';
 import {
+  dietaryLabels,
+  dietaryOrder,
   moodEmoji,
   moodLabels,
   moodOrder,
@@ -12,7 +14,7 @@ import {
 } from '../src/lib/labels';
 import { countViableTips } from '../src/lib/recommendationEngine';
 import { colors, radius, spacing, typography } from '../src/theme';
-import type { Mood, Situation } from '../src/types';
+import type { DietaryPreference, Mood, Situation } from '../src/types';
 
 function tipsCaption(count: number): string {
   if (count === 0) return 'Máme pro tebe několik vhodných tipů.';
@@ -25,19 +27,24 @@ export default function HungerScreen() {
   const router = useRouter();
   const [mood, setMood] = useState<Mood | null>(null);
   const [situation, setSituation] = useState<Situation | null>(null);
+  const [dietaryPreference, setDietaryPreference] =
+    useState<DietaryPreference>('any');
 
   const canContinue = mood !== null && situation !== null;
 
   const viableCount = useMemo(() => {
     if (!canContinue || !mood || !situation) return 0;
-    return countViableTips({ mood, situation }, demoPlaces);
-  }, [canContinue, mood, situation]);
+    return countViableTips(
+      { mood, situation, dietaryPreference },
+      demoPlaces
+    );
+  }, [canContinue, mood, situation, dietaryPreference]);
 
   const handleContinue = () => {
     if (!canContinue) return;
     router.push({
       pathname: '/results',
-      params: { mood, situation },
+      params: { mood, situation, diet: dietaryPreference },
     });
   };
 
@@ -77,6 +84,23 @@ export default function HungerScreen() {
               label={situationLabels[s]}
               selected={situation === s}
               onPress={() => setSituation(s)}
+            />
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[typography.h2, styles.dietHeading]}>Jak jíš?</Text>
+        <Text style={[typography.caption, styles.dietSubheading]}>
+          Vegetariánům a veganům doporučíme jen vhodné položky.
+        </Text>
+        <View style={styles.chipRow}>
+          {dietaryOrder.map((d) => (
+            <MoodChip
+              key={d}
+              label={dietaryLabels[d]}
+              selected={dietaryPreference === d}
+              onPress={() => setDietaryPreference(d)}
             />
           ))}
         </View>
@@ -149,5 +173,12 @@ const styles = StyleSheet.create({
   hintText: {
     color: colors.textMuted,
     textAlign: 'center',
+  },
+  dietHeading: {
+    color: colors.textPrimary,
+  },
+  dietSubheading: {
+    color: colors.textMuted,
+    marginTop: -spacing.xs,
   },
 });

@@ -1,4 +1,4 @@
-import type { Mood, PriceLevel, Situation } from '../types';
+import type { DietaryPreference, Mood, PriceLevel, Situation } from '../types';
 
 export const moodLabels: Record<Mood, string> = {
   warm: 'Něco teplého',
@@ -48,4 +48,16 @@ export const situationOrder: Situation[] = [
   'sitdown',
   'delivery',
   'pickup',
+];
+
+export const dietaryLabels: Record<DietaryPreference, string> = {
+  any: 'Jím všechno',
+  vegetarian: 'Vegetariánsky',
+  vegan: 'Vegansky',
+};
+
+export const dietaryOrder: DietaryPreference[] = [
+  'any',
+  'vegetarian',
+  'vegan',
 ];

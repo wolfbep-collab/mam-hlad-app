@@ -16,7 +16,7 @@ import {
 } from '../src/lib/location';
 import { recommend } from '../src/lib/recommendationEngine';
 import { colors, radius, spacing, typography } from '../src/theme';
-import type { Mood, Situation } from '../src/types';
+import type { DietaryPreference, Mood, Situation } from '../src/types';
 
 const microcopyVariants = [
   'Dobře, zkusíme něco jiného.',
@@ -32,14 +32,24 @@ const isSituation = (v: string | undefined): v is Situation =>
   !!v &&
   ['now', '15min', '30min', 'sitdown', 'delivery', 'pickup'].includes(v);
 
+const isDiet = (v: string | undefined): v is DietaryPreference =>
+  !!v && ['any', 'vegetarian', 'vegan'].includes(v);
+
 export default function ResultsScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ mood?: string; situation?: string }>();
+  const params = useLocalSearchParams<{
+    mood?: string;
+    situation?: string;
+    diet?: string;
+  }>();
 
   const mood: Mood = isMood(params.mood) ? params.mood : 'any';
   const situation: Situation = isSituation(params.situation)
     ? params.situation
     : 'now';
+  const dietaryPreference: DietaryPreference = isDiet(params.diet)
+    ? params.diet
+    : 'any';
 
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [microcopy, setMicrocopy] = useState<string | null>(null);
@@ -64,11 +74,22 @@ export default function ResultsScreen() {
 
   const result = useMemo(
     () =>
-      recommend({ mood, situation }, effectivePlaces, {
-        excludePlaceIds: dismissedIds,
-        userLocation,
-      }),
-    [mood, situation, dismissedIds, userLocation, effectivePlaces]
+      recommend(
+        { mood, situation, dietaryPreference },
+        effectivePlaces,
+        {
+          excludePlaceIds: dismissedIds,
+          userLocation,
+        }
+      ),
+    [
+      mood,
+      situation,
+      dietaryPreference,
+      dismissedIds,
+      userLocation,
+      effectivePlaces,
+    ]
   );
 
   useEffect(() => {
@@ -79,13 +100,13 @@ export default function ResultsScreen() {
     void appendHistory({
       id: `${Date.now()}-${top.place.id}`,
       timestamp: Date.now(),
-      preference: { mood, situation },
+      preference: { mood, situation, dietaryPreference },
       placeId: top.place.id,
       placeName: top.place.name,
       menuItemName: top.menuItem?.name,
       kind: top.kind,
     });
-  }, [result, mood, situation]);
+  }, [result, mood, situation, dietaryPreference]);
 
   useEffect(() => {
     return () => {
@@ -158,7 +179,7 @@ export default function ResultsScreen() {
   const openPlace = (placeId: string) => {
     router.push({
       pathname: '/place/[id]',
-      params: { id: placeId, mood, situation },
+      params: { id: placeId, mood, situation, diet: dietaryPreference },
     });
   };
 
@@ -232,17 +253,29 @@ export default function ResultsScreen() {
         </View>
       ) : null}
 
+      {result.scarce && hasMore ? (
+        <View style={styles.scarceNote}>
+          <Text style={[typography.caption, styles.scarceNoteText]}>
+            Pro tuhle volbu máme méně tipů. Zkusíme ti ukázat nejbližší vhodné možnosti.
+          </Text>
+        </View>
+      ) : null}
+
       {!hasMore ? (
         <View style={styles.empty}>
           <Text style={[typography.h3, styles.emptyTitle]}>
             {everDismissed
               ? 'Pro tuto chvíli jsme tipy vyčerpali'
-              : 'Nic na tebe nesedí 😕'}
+              : dietaryPreference !== 'any'
+                ? 'Pro tuhle volbu nemáme vhodný tip'
+                : 'Nic na tebe nesedí 😕'}
           </Text>
           <Text style={[typography.body, styles.emptyText]}>
             {everDismissed
               ? 'Zkus se vrátit a zvolit jinou náladu nebo situaci.'
-              : 'Zkus jinou kombinaci — třeba uvolni situaci na „Mám 30 minut".'}
+              : dietaryPreference !== 'any'
+                ? 'Zkus jinou náladu nebo situaci, případně uvolni stravovací volbu.'
+                : 'Zkus jinou kombinaci — třeba uvolni situaci na „Mám 30 minut".'}
           </Text>
         </View>
       ) : (
@@ -375,5 +408,14 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     paddingHorizontal: spacing.xs,
     fontStyle: 'italic',
+  },
+  scarceNote: {
+    backgroundColor: colors.surfaceMuted,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
+  },
+  scarceNoteText: {
+    color: colors.textSecondary,
   },
 });

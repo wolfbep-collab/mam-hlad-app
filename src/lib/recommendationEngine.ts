@@ -1,4 +1,5 @@
 import type {
+  DietaryPreference,
   FoodTag,
   MenuItem,
   Mood,
@@ -11,6 +12,17 @@ import type {
 } from '../types';
 import { isPlaceOpenNow } from './openingHours';
 import { calculateDistanceMeters, type UserLocation } from './location';
+
+function matchesDiet(item: MenuItem, diet: DietaryPreference): boolean {
+  if (diet === 'any') return true;
+  if (diet === 'vegan') return item.isVegan === true;
+  return item.isVegetarian === true || item.isVegan === true;
+}
+
+function placeHasDietaryItem(place: Place, diet: DietaryPreference): boolean {
+  if (diet === 'any') return true;
+  return place.menuItems.some((it) => matchesDiet(it, diet));
+}
 
 const moodTagBoost: Record<Mood, FoodTag[]> = {
   warm: ['warm', 'soup'],
@@ -180,13 +192,16 @@ function pickMenuItemForKind(
   pref: UserPreference,
   kind: RecommendationKind
 ): MenuItem | undefined {
-  if (place.menuItems.length === 0) return undefined;
+  const eligible = place.menuItems.filter((it) =>
+    matchesDiet(it, pref.dietaryPreference)
+  );
+  if (eligible.length === 0) return undefined;
   if (kind === 'fastest') {
-    return [...place.menuItems].sort(
+    return [...eligible].sort(
       (a, b) => a.preparationMinutes - b.preparationMinutes
     )[0];
   }
-  return [...place.menuItems]
+  return [...eligible]
     .map((it) => ({ it, s: scoreMenuItem(it, pref) }))
     .sort((a, b) => b.s - a.s)[0]?.it;
 }
@@ -196,8 +211,11 @@ export function pickMenuItems(
   pref: UserPreference,
   count = 3
 ): MenuItem[] {
-  if (place.menuItems.length === 0) return [];
-  return [...place.menuItems]
+  const eligible = place.menuItems.filter((it) =>
+    matchesDiet(it, pref.dietaryPreference)
+  );
+  if (eligible.length === 0) return [];
+  return [...eligible]
     .map((it) => ({ it, s: scoreMenuItem(it, pref) }))
     .sort((a, b) => b.s - a.s)
     .slice(0, count)
@@ -363,12 +381,15 @@ export function buildMenuItemReason(item: MenuItem, seedSuffix = ''): string {
 export interface RecommendationResult {
   recommendations: Recommendation[];
   considered: number;
+  scarce: boolean;
 }
 
 export interface RecommendOptions {
   excludePlaceIds?: string[];
   userLocation?: UserLocation | null;
 }
+
+const SCARCE_THRESHOLD = 3;
 
 export function recommend(
   pref: UserPreference,
@@ -378,7 +399,10 @@ export function recommend(
   const now = new Date();
   const excluded = new Set(options.excludePlaceIds ?? []);
   const userLocation = options.userLocation ?? null;
-  const filteredPlaces = places.filter((p) => !excluded.has(p.id));
+  const dietEligible = places.filter((p) =>
+    placeHasDietaryItem(p, pref.dietaryPreference)
+  );
+  const filteredPlaces = dietEligible.filter((p) => !excluded.has(p.id));
   const scored = filteredPlaces
     .map((place) => ({
       place,
@@ -441,7 +465,12 @@ export function recommend(
     });
   }
 
-  return { recommendations, considered: places.length };
+  const scarce =
+    pref.dietaryPreference !== 'any' &&
+    (dietEligible.length < SCARCE_THRESHOLD ||
+      pool.filter((s) => s.openNow).length < SCARCE_THRESHOLD);
+
+  return { recommendations, considered: places.length, scarce };
 }
 
 export function countViableTips(
@@ -453,6 +482,7 @@ export function countViableTips(
   const maxPrep = situationMaxPrepMinutes[pref.situation];
   const moodTags = moodTagBoost[pref.mood];
   return places.filter((p) => {
+    if (!placeHasDietaryItem(p, pref.dietaryPreference)) return false;
     if (!isPlaceOpenNow(p, now)) return false;
     if (!requiredServices.some((s) => p.services.includes(s))) return false;
     if (p.prepMinutes > maxPrep + 5) return false;
