@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, FoodCard, Screen } from '../src/components';
 import { demoPlaces } from '../src/data/demoPlaces';
+import { maybeLocalizeDemoPlaces } from '../src/lib/demoPlaceLocalizer';
 import { appendHistory } from '../src/lib/history';
 import { moodLabels, situationLabels } from '../src/lib/labels';
 import {
@@ -51,14 +52,23 @@ export default function ResultsScreen() {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(
     getCachedLocation()
   );
+  const [locationConfirmation, setLocationConfirmation] = useState<string | null>(
+    null
+  );
+  const confirmationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { places: effectivePlaces, localized: isLocalizedDemo } = useMemo(
+    () => maybeLocalizeDemoPlaces(userLocation, demoPlaces),
+    [userLocation]
+  );
 
   const result = useMemo(
     () =>
-      recommend({ mood, situation }, demoPlaces, {
+      recommend({ mood, situation }, effectivePlaces, {
         excludePlaceIds: dismissedIds,
         userLocation,
       }),
-    [mood, situation, dismissedIds, userLocation]
+    [mood, situation, dismissedIds, userLocation, effectivePlaces]
   );
 
   useEffect(() => {
@@ -80,6 +90,7 @@ export default function ResultsScreen() {
   useEffect(() => {
     return () => {
       if (microcopyTimer.current) clearTimeout(microcopyTimer.current);
+      if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
     };
   }, []);
 
@@ -109,6 +120,14 @@ export default function ResultsScreen() {
     setCachedLocation(location, status);
     setLocationStatus(status);
     setUserLocation(location);
+    if (status === 'granted') {
+      setLocationConfirmation('Hotovo, seřadili jsme tipy podle blízkosti.');
+      if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
+      confirmationTimer.current = setTimeout(
+        () => setLocationConfirmation(null),
+        4000
+      );
+    }
   };
 
   const hasMore = result.recommendations.length > 0;
@@ -122,11 +141,10 @@ export default function ResultsScreen() {
   };
 
   const locationButtonLabel =
-    locationStatus === 'loading'
-      ? 'Hledám tvou polohu…'
-      : locationStatus === 'granted'
-        ? 'Tipy seřazeny podle vzdálenosti'
-        : 'Najít bližší tipy';
+    locationStatus === 'loading' ? 'Hledám tvou polohu…' : 'Najít bližší tipy';
+
+  const showRationale =
+    locationStatus === 'not_requested' || locationStatus === 'loading';
 
   const locationHint =
     locationStatus === 'denied'
@@ -148,6 +166,11 @@ export default function ResultsScreen() {
 
       {locationStatus !== 'granted' ? (
         <View style={styles.locationCard}>
+          {showRationale ? (
+            <Text style={[typography.caption, styles.locationRationale]}>
+              Polohu použijeme jen k tomu, abychom ti ukázali bližší možnosti.
+            </Text>
+          ) : null}
           <Button
             label={locationButtonLabel}
             variant="secondary"
@@ -161,6 +184,20 @@ export default function ResultsScreen() {
             </Text>
           ) : null}
         </View>
+      ) : null}
+
+      {locationConfirmation ? (
+        <View style={styles.locationConfirm}>
+          <Text style={[typography.caption, styles.locationConfirmText]}>
+            {locationConfirmation}
+          </Text>
+        </View>
+      ) : null}
+
+      {isLocalizedDemo && locationStatus === 'granted' ? (
+        <Text style={[typography.caption, styles.demoNote]}>
+          Testovací podniky jsou dočasně rozmístěné kolem tebe.
+        </Text>
       ) : null}
 
       {microcopy ? (
@@ -274,10 +311,29 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   locationCard: {
-    gap: spacing.xs,
+    gap: spacing.sm,
+  },
+  locationRationale: {
+    color: colors.textSecondary,
+    paddingHorizontal: spacing.xs,
   },
   locationHint: {
     color: colors.textSecondary,
     paddingHorizontal: spacing.xs,
+  },
+  locationConfirm: {
+    backgroundColor: colors.successSoft,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
+    alignSelf: 'flex-start',
+  },
+  locationConfirmText: {
+    color: colors.textPrimary,
+  },
+  demoNote: {
+    color: colors.textMuted,
+    paddingHorizontal: spacing.xs,
+    fontStyle: 'italic',
   },
 });

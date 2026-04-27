@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, Screen } from '../../src/components';
 import { demoPlaces } from '../../src/data/demoPlaces';
+import { maybeLocalizeDemoPlaces } from '../../src/lib/demoPlaceLocalizer';
 import { priceLabel } from '../../src/lib/labels';
 import {
   calculateDistanceMeters,
@@ -47,7 +48,11 @@ export default function PlaceDetailScreen() {
     ? params.situation
     : 'now';
 
-  const place = demoPlaces.find((p) => p.id === params.id);
+  const cachedLocation = getCachedLocation();
+  const place = useMemo(() => {
+    const { places } = maybeLocalizeDemoPlaces(cachedLocation, demoPlaces);
+    return places.find((p) => p.id === params.id);
+  }, [cachedLocation, params.id]);
 
   const recommendedItems = useMemo(
     () => (place ? pickMenuItems(place, { mood, situation }, 3) : []),
@@ -63,11 +68,10 @@ export default function PlaceDetailScreen() {
   );
   const distanceLabel = useMemo(() => {
     if (!place) return null;
-    const loc = getCachedLocation();
-    if (!loc) return null;
-    const meters = calculateDistanceMeters(loc, place);
+    if (!cachedLocation) return null;
+    const meters = calculateDistanceMeters(cachedLocation, place);
     return meters != null ? formatDistance(meters) : null;
-  }, [place]);
+  }, [place, cachedLocation]);
 
   if (!place) {
     return (
