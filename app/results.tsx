@@ -104,6 +104,8 @@ export default function ResultsScreen() {
       placeId: top.place.id,
       placeName: top.place.name,
       menuItemName: top.menuItem?.name,
+      menuItemIsVegetarian: top.menuItem?.isVegetarian,
+      menuItemIsVegan: top.menuItem?.isVegan,
       kind: top.kind,
     });
   }, [result, mood, situation, dietaryPreference]);

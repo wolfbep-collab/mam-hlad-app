@@ -114,5 +114,7 @@ export interface HistoryEntry {
   placeId: string;
   placeName: string;
   menuItemName?: string;
+  menuItemIsVegetarian?: boolean;
+  menuItemIsVegan?: boolean;
   kind: RecommendationKind;
 }

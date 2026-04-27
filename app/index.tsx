@@ -39,7 +39,7 @@ export default function HomeScreen() {
           ]}
         >
           <Text style={[typography.bodyStrong, styles.linkLabel]}>
-            Moje poslední volby
+            Tvoje tipy
           </Text>
         </Pressable>
       </View>
