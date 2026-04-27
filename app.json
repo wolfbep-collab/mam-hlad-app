@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Mám hlad",
-    "slug": "mam-hlad-app",
+    "slug": "mam-hlad",
     "scheme": "mamhlad",
     "version": "0.1.0",
     "orientation": "portrait",
@@ -15,16 +15,23 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.wolfbep.mamhlad"
+      "bundleIdentifier": "app.mamhlad.mobile",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Polohu použijeme jen k tomu, abychom ti ukázali bližší možnosti."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFF7ED"
       },
-      "package": "com.wolfbep.mamhlad",
+      "package": "app.mamhlad.mobile",
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
