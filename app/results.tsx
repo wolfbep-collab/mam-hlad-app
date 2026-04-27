@@ -4,7 +4,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, FoodCard, Screen } from '../src/components';
 import { demoPlaces } from '../src/data/demoPlaces';
 import { maybeLocalizeDemoPlaces } from '../src/lib/demoPlaceLocalizer';
-import { appendHistory } from '../src/lib/history';
+import { appendHistory, loadHistory } from '../src/lib/history';
+import {
+  getRecentHistorySignals,
+  type RecentHistorySignals,
+} from '../src/lib/historySignals';
 import { moodLabels, situationLabels } from '../src/lib/labels';
 import {
   getCachedLocation,
@@ -67,6 +71,25 @@ export default function ResultsScreen() {
   );
   const confirmationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [recentSignals, setRecentSignals] = useState<RecentHistorySignals>({
+    recentPlaceIds: [],
+    recentMenuItemNames: [],
+    hasRecent: false,
+  });
+  const recentSignalsLoaded = useRef(false);
+
+  useEffect(() => {
+    let active = true;
+    void loadHistory().then((items) => {
+      if (!active) return;
+      setRecentSignals(getRecentHistorySignals(items));
+      recentSignalsLoaded.current = true;
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const { places: effectivePlaces, localized: isLocalizedDemo } = useMemo(
     () => maybeLocalizeDemoPlaces(userLocation, demoPlaces),
     [userLocation]
@@ -80,6 +103,8 @@ export default function ResultsScreen() {
         {
           excludePlaceIds: dismissedIds,
           userLocation,
+          recentPlaceIds: recentSignals.recentPlaceIds,
+          recentMenuItemNames: recentSignals.recentMenuItemNames,
         }
       ),
     [
@@ -89,6 +114,7 @@ export default function ResultsScreen() {
       dismissedIds,
       userLocation,
       effectivePlaces,
+      recentSignals,
     ]
   );
 
@@ -263,6 +289,12 @@ export default function ResultsScreen() {
         </View>
       ) : null}
 
+      {result.freshenedFromHistory && hasMore ? (
+        <Text style={[typography.caption, styles.freshenedNote]}>
+          Zkusíme dnes něco jiného než minule.
+        </Text>
+      ) : null}
+
       {!hasMore ? (
         <View style={styles.empty}>
           <Text style={[typography.h3, styles.emptyTitle]}>
@@ -419,5 +451,10 @@ const styles = StyleSheet.create({
   },
   scarceNoteText: {
     color: colors.textSecondary,
+  },
+  freshenedNote: {
+    color: colors.textMuted,
+    paddingHorizontal: spacing.xs,
+    fontStyle: 'italic',
   },
 });

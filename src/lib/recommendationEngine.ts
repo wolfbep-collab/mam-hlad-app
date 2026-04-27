@@ -149,7 +149,14 @@ function scorePlace(
   return { total: score, reasons };
 }
 
-function scoreMenuItem(item: MenuItem, pref: UserPreference): number {
+const RECENT_PLACE_PENALTY = -10;
+const RECENT_MENU_ITEM_PENALTY = -15;
+
+function scoreMenuItem(
+  item: MenuItem,
+  pref: UserPreference,
+  recentMenuItemNames?: Set<string>
+): number {
   let score = 0;
 
   switch (pref.mood) {
@@ -184,13 +191,18 @@ function scoreMenuItem(item: MenuItem, pref: UserPreference): number {
   }
   if (item.isQuick) score += 2;
 
+  if (recentMenuItemNames && recentMenuItemNames.has(item.name)) {
+    score += RECENT_MENU_ITEM_PENALTY;
+  }
+
   return score;
 }
 
 function pickMenuItemForKind(
   place: Place,
   pref: UserPreference,
-  kind: RecommendationKind
+  kind: RecommendationKind,
+  recentMenuItemNames?: Set<string>
 ): MenuItem | undefined {
   const eligible = place.menuItems.filter((it) =>
     matchesDiet(it, pref.dietaryPreference)
@@ -202,7 +214,7 @@ function pickMenuItemForKind(
     )[0];
   }
   return [...eligible]
-    .map((it) => ({ it, s: scoreMenuItem(it, pref) }))
+    .map((it) => ({ it, s: scoreMenuItem(it, pref, recentMenuItemNames) }))
     .sort((a, b) => b.s - a.s)[0]?.it;
 }
 
@@ -382,11 +394,14 @@ export interface RecommendationResult {
   recommendations: Recommendation[];
   considered: number;
   scarce: boolean;
+  freshenedFromHistory: boolean;
 }
 
 export interface RecommendOptions {
   excludePlaceIds?: string[];
   userLocation?: UserLocation | null;
+  recentPlaceIds?: string[];
+  recentMenuItemNames?: string[];
 }
 
 const SCARCE_THRESHOLD = 3;
@@ -399,23 +414,37 @@ export function recommend(
   const now = new Date();
   const excluded = new Set(options.excludePlaceIds ?? []);
   const userLocation = options.userLocation ?? null;
+  const recentPlaceIds = new Set(options.recentPlaceIds ?? []);
+  const recentMenuItemNames = new Set(options.recentMenuItemNames ?? []);
+  const hasRecentSignals =
+    recentPlaceIds.size > 0 || recentMenuItemNames.size > 0;
   const dietEligible = places.filter((p) =>
     placeHasDietaryItem(p, pref.dietaryPreference)
   );
   const filteredPlaces = dietEligible.filter((p) => !excluded.has(p.id));
-  const scored = filteredPlaces
-    .map((place) => ({
+  const scored = filteredPlaces.map((place) => {
+    const baseTotal = scorePlace(place, pref, now, userLocation).total;
+    const recentPenalty = recentPlaceIds.has(place.id)
+      ? RECENT_PLACE_PENALTY
+      : 0;
+    return {
       place,
-      breakdown: scorePlace(place, pref, now, userLocation),
+      baseTotal,
+      adjustedTotal: baseTotal + recentPenalty,
       openNow: isPlaceOpenNow(place, now),
       distanceMeters: userLocation
         ? calculateDistanceMeters(userLocation, place)
         : null,
-    }))
-    .sort((a, b) => b.breakdown.total - a.breakdown.total);
+      isRecent: recentPenalty < 0,
+    };
+  });
 
-  const viable = scored.filter((s) => s.openNow);
-  const pool = viable.length > 0 ? viable : scored;
+  const sortedAdjusted = [...scored].sort(
+    (a, b) => b.adjustedTotal - a.adjustedTotal
+  );
+
+  const viable = sortedAdjusted.filter((s) => s.openNow);
+  const pool = viable.length > 0 ? viable : sortedAdjusted;
 
   const best = pool[0];
   const fastest = [...pool].sort(
@@ -432,34 +461,49 @@ export function recommend(
     item ? buildMenuItemReason(item) : baseReason;
 
   if (best) {
-    const item = pickMenuItemForKind(best.place, pref, 'best');
+    const item = pickMenuItemForKind(
+      best.place,
+      pref,
+      'best',
+      recentMenuItemNames
+    );
     recommendations.push({
       kind: 'best',
       place: best.place,
       menuItem: item,
-      score: best.breakdown.total,
+      score: best.adjustedTotal,
       reason: reasonFor(item),
       distanceMeters: best.distanceMeters ?? undefined,
     });
   }
   if (fastest && fastest.place.id !== best?.place.id) {
-    const item = pickMenuItemForKind(fastest.place, pref, 'fastest');
+    const item = pickMenuItemForKind(
+      fastest.place,
+      pref,
+      'fastest',
+      recentMenuItemNames
+    );
     recommendations.push({
       kind: 'fastest',
       place: fastest.place,
       menuItem: item,
-      score: fastest.breakdown.total,
+      score: fastest.adjustedTotal,
       reason: reasonFor(item),
       distanceMeters: fastest.distanceMeters ?? undefined,
     });
   }
   if (alternative) {
-    const item = pickMenuItemForKind(alternative.place, pref, 'alternative');
+    const item = pickMenuItemForKind(
+      alternative.place,
+      pref,
+      'alternative',
+      recentMenuItemNames
+    );
     recommendations.push({
       kind: 'alternative',
       place: alternative.place,
       menuItem: item,
-      score: alternative.breakdown.total,
+      score: alternative.adjustedTotal,
       reason: reasonFor(item),
       distanceMeters: alternative.distanceMeters ?? undefined,
     });
@@ -470,7 +514,23 @@ export function recommend(
     (dietEligible.length < SCARCE_THRESHOLD ||
       pool.filter((s) => s.openNow).length < SCARCE_THRESHOLD);
 
-  return { recommendations, considered: places.length, scarce };
+  let freshenedFromHistory = false;
+  if (hasRecentSignals && best) {
+    const sortedBase = [...scored]
+      .filter((s) => (viable.length > 0 ? s.openNow : true))
+      .sort((a, b) => b.baseTotal - a.baseTotal);
+    const baseTop = sortedBase[0];
+    if (baseTop && baseTop.place.id !== best.place.id && baseTop.isRecent) {
+      freshenedFromHistory = true;
+    }
+  }
+
+  return {
+    recommendations,
+    considered: places.length,
+    scarce,
+    freshenedFromHistory,
+  };
 }
 
 export function countViableTips(
