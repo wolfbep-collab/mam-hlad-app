@@ -25,10 +25,13 @@ export function Screen({
   children,
   scroll = true,
   contentStyle,
-  edges = ['top', 'left', 'right'],
+  edges = ['top', 'left', 'right', 'bottom'],
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
-  const bottomPad = Math.max(insets.bottom, spacing.lg) + BOTTOM_BUFFER;
+  const includesBottom = edges.includes('bottom');
+  const bottomPad = includesBottom
+    ? BOTTOM_BUFFER
+    : Math.max(insets.bottom, spacing.lg) + BOTTOM_BUFFER;
   return (
     <SafeAreaView style={styles.safe} edges={edges}>
       {scroll ? (

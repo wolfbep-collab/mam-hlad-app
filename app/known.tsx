@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Keyboard,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -215,6 +216,7 @@ export default function KnownScreen() {
     if (value.length === 0) return;
     if (text !== undefined) setQuery(text);
     setSubmittedQuery(value);
+    Keyboard.dismiss();
   };
 
   const onSuggestion = (label: string) => {
@@ -354,6 +356,7 @@ const styles = StyleSheet.create({
   suggestionsRow: {
     gap: spacing.sm,
     paddingVertical: spacing.xs,
+    paddingRight: spacing.xl,
   },
   suggestionChip: {
     backgroundColor: colors.surfaceMuted,
