@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Button, Screen } from '../src/components';
 import { colors, spacing, typography } from '../src/theme';
 
+const FOOD_DECO = ['🍕', '🍜', '🥗'];
+
 export default function HomeScreen() {
   const router = useRouter();
 
@@ -19,10 +21,16 @@ export default function HomeScreen() {
         </Text>
       </View>
 
-      <View style={styles.featureRow}>
-        <Feature emoji="⚡" label="Rychlé" />
-        <Feature emoji="🎯" label="Trefa" />
-        <Feature emoji="🤝" label="Lidsky" />
+      <View
+        style={styles.foodStrip}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        {FOOD_DECO.map((emoji) => (
+          <Text key={emoji} style={styles.foodEmoji}>
+            {emoji}
+          </Text>
+        ))}
       </View>
 
       <View style={styles.ctaBlock}>
@@ -50,15 +58,6 @@ export default function HomeScreen() {
         </Pressable>
       </View>
     </Screen>
-  );
-}
-
-function Feature({ emoji, label }: { emoji: string; label: string }) {
-  return (
-    <View style={styles.feature}>
-      <Text style={styles.featureEmoji}>{emoji}</Text>
-      <Text style={[typography.label, styles.featureLabel]}>{label}</Text>
-    </View>
   );
 }
 
@@ -90,28 +89,16 @@ const styles = StyleSheet.create({
   lead: {
     color: colors.textSecondary,
   },
-  featureRow: {
+  foodStrip: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: spacing.xxl,
-    gap: spacing.md,
-  },
-  feature: {
-    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.md,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+    gap: spacing.xxl,
+    marginVertical: spacing.xl,
   },
-  featureEmoji: {
-    fontSize: 24,
-    marginBottom: spacing.xs,
-  },
-  featureLabel: {
-    color: colors.textSecondary,
+  foodEmoji: {
+    fontSize: 44,
+    opacity: 0.85,
   },
   ctaBlock: {
     gap: spacing.md,
