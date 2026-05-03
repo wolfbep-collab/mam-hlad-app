@@ -79,13 +79,21 @@ export function mergeDemoAndLocalCheckIns(
   return [...local, ...filteredDemo];
 }
 
+export function menuItemMatchesDiet(
+  item: StreetFoodMenuItem,
+  diet: DietaryPreference
+): boolean {
+  if (diet === 'any') return true;
+  if (diet === 'vegan') return item.isVegan === true;
+  return item.isVegan === true || item.isVegetarian === true;
+}
+
 export function vendorMatchesDiet(
   vendor: StreetFoodVendor,
   diet: DietaryPreference
 ): boolean {
   if (diet === 'any') return true;
-  if (diet === 'vegan') return vendor.menuItems.some((i) => i.isVegan);
-  return vendor.menuItems.some((i) => i.isVegetarian || i.isVegan);
+  return vendor.menuItems.some((i) => menuItemMatchesDiet(i, diet));
 }
 
 export function filterVendorMenuByDiet(
@@ -93,8 +101,16 @@ export function filterVendorMenuByDiet(
   diet: DietaryPreference
 ): StreetFoodMenuItem[] {
   if (diet === 'any') return vendor.menuItems;
-  if (diet === 'vegan') return vendor.menuItems.filter((i) => i.isVegan);
-  return vendor.menuItems.filter((i) => i.isVegetarian || i.isVegan);
+  return vendor.menuItems.filter((i) => menuItemMatchesDiet(i, diet));
+}
+
+export function selectFeaturedMenu(
+  vendor: StreetFoodVendor,
+  diet: DietaryPreference,
+  maxWhenAny: number = 3
+): StreetFoodMenuItem[] {
+  if (diet === 'any') return vendor.menuItems.slice(0, maxWhenAny);
+  return filterVendorMenuByDiet(vendor, diet);
 }
 
 export function filterStreetFoodByDiet(

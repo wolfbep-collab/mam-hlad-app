@@ -5,11 +5,11 @@ import { MoodChip, Screen } from '../src/components';
 import { dietaryLabels, dietaryOrder } from '../src/lib/labels';
 import { formatDistance, getCachedLocation } from '../src/lib/location';
 import {
-  filterVendorMenuByDiet,
   formatCheckInTime,
   formatRemainingHours,
   getActiveStreetFoodVendors,
   loadLocalCheckIns,
+  selectFeaturedMenu,
   streetFoodCategoryEmoji,
 } from '../src/lib/streetFood';
 import { colors, radius, spacing, typography } from '../src/theme';
@@ -80,15 +80,24 @@ export default function StreetFoodScreen() {
       {vendors.length === 0 ? (
         <View style={styles.empty}>
           <Text style={[typography.h3, styles.emptyTitle]}>
-            Teď tu nikdo není
+            {diet === 'any'
+              ? 'Teď tu nikdo není'
+              : 'Pro tuhle volbu dnes nemáme žádný aktivní stánek.'}
           </Text>
           <Text style={[typography.body, styles.emptyText]}>
-            Zkus to později — stánky se v průběhu dne mění. Můžeš si zatím dát
-            tip přes „Mám hlad" nebo „Vím, co si dát".
+            {diet === 'any'
+              ? 'Zkus to později — stánky se v průběhu dne mění. Můžeš si zatím dát tip přes „Mám hlad" nebo „Vím, co si dát".'
+              : 'Zkus změnit dietní volbu — třeba „Vegetariánsky" nebo „Jím všechno".'}
           </Text>
         </View>
       ) : (
         <View style={styles.list}>
+          <Text
+            style={[typography.caption, styles.countCaption]}
+            key={`count-${diet}-${vendors.length}`}
+          >
+            {countCaption(diet, vendors.length)}
+          </Text>
           {vendors.map((v) => (
             <VendorCard
               key={v.vendor.id}
@@ -122,15 +131,50 @@ interface VendorCardProps {
   diet: DietaryPreference;
 }
 
+function countCaption(diet: DietaryPreference, count: number): string {
+  const noun = pluralStanky(count);
+  if (diet === 'vegan') return `Dnes je tu ${count} ${noun} s vegan nabídkou.`;
+  if (diet === 'vegetarian')
+    return `Dnes je tu ${count} ${noun} s vegetariánskou nabídkou.`;
+  const adj = count >= 5 ? 'aktivních' : 'aktivní';
+  return `Dnes je tu ${count} ${adj} ${noun}.`;
+}
+
+function pluralStanky(count: number): string {
+  if (count === 1) return 'stánek';
+  if (count >= 2 && count <= 4) return 'stánky';
+  return 'stánků';
+}
+
+function pluralPolozky(count: number): string {
+  if (count === 1) return 'položka';
+  if (count >= 2 && count <= 4) return 'položky';
+  return 'položek';
+}
+
+function vegetarianAdj(count: number): string {
+  if (count === 1) return 'vegetariánská';
+  if (count >= 2 && count <= 4) return 'vegetariánské';
+  return 'vegetariánských';
+}
+
+function dietMenuHeading(
+  diet: DietaryPreference,
+  count: number
+): string | null {
+  if (diet === 'any' || count === 0) return null;
+  const noun = pluralPolozky(count);
+  if (diet === 'vegan') return `${count} vegan ${noun} z menu`;
+  return `${count} ${vegetarianAdj(count)} ${noun} z menu`;
+}
+
 function VendorCard({ entry, now, diet }: VendorCardProps) {
   const { vendor, checkIn, distanceMeters } = entry;
-  const dietItems = filterVendorMenuByDiet(vendor, diet);
-  const featured: StreetFoodMenuItem[] = (
-    dietItems.length > 0 ? dietItems : vendor.menuItems
-  ).slice(0, 2);
+  const featured: StreetFoodMenuItem[] = selectFeaturedMenu(vendor, diet);
   const emoji = streetFoodCategoryEmoji[vendor.category];
   const timeLabel = formatCheckInTime(checkIn, now);
   const remaining = formatRemainingHours(checkIn, now);
+  const dietHeading = dietMenuHeading(diet, featured.length);
 
   return (
     <View style={styles.card}>
@@ -172,6 +216,11 @@ function VendorCard({ entry, now, diet }: VendorCardProps) {
       ) : null}
 
       <View style={styles.menuList}>
+        {dietHeading ? (
+          <Text style={[typography.caption, styles.menuHeading]}>
+            {dietHeading}
+          </Text>
+        ) : null}
         {featured.map((item) => (
           <View key={item.id} style={styles.menuRow}>
             <View style={styles.menuTextBlock}>
@@ -225,6 +274,17 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: spacing.lg,
+  },
+  countCaption: {
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
+  },
+  menuHeading: {
+    color: colors.primaryDark,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+    marginBottom: spacing.xs,
   },
   card: {
     backgroundColor: colors.surface,

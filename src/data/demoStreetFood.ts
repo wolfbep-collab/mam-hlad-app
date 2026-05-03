@@ -25,21 +25,24 @@ const item = (
       | 'isHealthy'
     >
   >
-): StreetFoodMenuItem => ({
-  id,
-  name,
-  description,
-  priceLevel,
-  preparationMinutes,
-  tags,
-  isVegetarian: flags.isVegetarian ?? flags.isVegan ?? false,
-  isVegan: flags.isVegan ?? false,
-  isWarm: flags.isWarm ?? false,
-  isSweet: flags.isSweet ?? false,
-  isLight: flags.isLight ?? false,
-  isQuick: flags.isQuick ?? preparationMinutes <= 6,
-  isHealthy: flags.isHealthy ?? false,
-});
+): StreetFoodMenuItem => {
+  const isVegan = flags.isVegan ?? false;
+  return {
+    id,
+    name,
+    description,
+    priceLevel,
+    preparationMinutes,
+    tags,
+    isVegan,
+    isVegetarian: isVegan || (flags.isVegetarian ?? false),
+    isWarm: flags.isWarm ?? false,
+    isSweet: flags.isSweet ?? false,
+    isLight: flags.isLight ?? false,
+    isQuick: flags.isQuick ?? preparationMinutes <= 6,
+    isHealthy: flags.isHealthy ?? false,
+  };
+};
 
 export const demoStreetFoodVendors: StreetFoodVendor[] = [
   {
