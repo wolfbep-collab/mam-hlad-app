@@ -122,3 +122,65 @@ export interface HistoryEntry {
   menuItemIsVegan?: boolean;
   kind: RecommendationKind;
 }
+
+export type StreetFoodCategory =
+  | 'coffee'
+  | 'sandwich'
+  | 'burger'
+  | 'vegan_bowl'
+  | 'tacos'
+  | 'soup'
+  | 'sweet'
+  | 'asian_noodles'
+  | 'other';
+
+export interface StreetFoodMenuItem {
+  id: string;
+  name: string;
+  description: string;
+  priceLevel: PriceLevel;
+  preparationMinutes: number;
+  tags: FoodTag[];
+  isVegetarian: boolean;
+  isVegan: boolean;
+  isWarm: boolean;
+  isSweet: boolean;
+  isLight: boolean;
+  isQuick: boolean;
+  isHealthy: boolean;
+}
+
+export interface StreetFoodVendor {
+  id: string;
+  name: string;
+  description: string;
+  category: StreetFoodCategory;
+  tags: FoodTag[];
+  serviceModes: ServiceMode[];
+  menuItems: StreetFoodMenuItem[];
+  isDemo: boolean;
+  contactLabel?: string;
+  instagram?: string;
+  website?: string;
+}
+
+export type StreetFoodCheckInStatus = 'active' | 'inactive';
+
+export interface StreetFoodCheckIn {
+  id: string;
+  vendorId: string;
+  latitude: number;
+  longitude: number;
+  locationLabel: string;
+  activeFrom: number;
+  activeUntil: number;
+  createdAt: number;
+  status: StreetFoodCheckInStatus;
+  note?: string;
+}
+
+export interface ActiveStreetFoodVendor {
+  vendor: StreetFoodVendor;
+  checkIn: StreetFoodCheckIn;
+  distanceMeters: number | null;
+}

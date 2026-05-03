@@ -46,6 +46,19 @@ export default function HomeScreen() {
           accessibilityLabel="Vyhledat konkrétní jídlo"
         />
         <Pressable
+          onPress={() => router.push('/street-food')}
+          style={({ pressed }) => [
+            styles.linkBtn,
+            pressed && { opacity: 0.7 },
+          ]}
+          accessibilityRole="link"
+          accessibilityLabel="Zobrazit aktivní street food stánky"
+        >
+          <Text style={[typography.bodyStrong, styles.linkLabel]}>
+            🛺 Street food dnes
+          </Text>
+        </Pressable>
+        <Pressable
           onPress={() => router.push('/history')}
           style={({ pressed }) => [
             styles.linkBtn,

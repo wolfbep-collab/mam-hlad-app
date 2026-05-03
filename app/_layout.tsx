@@ -24,6 +24,14 @@ export default function RootLayout() {
           <Stack.Screen name="results" options={{ title: 'Doporučení' }} />
           <Stack.Screen name="place/[id]" options={{ title: 'Detail' }} />
           <Stack.Screen name="history" options={{ title: 'Tvoje tipy' }} />
+          <Stack.Screen
+            name="street-food"
+            options={{ title: 'Street food dnes' }}
+          />
+          <Stack.Screen
+            name="vendor-checkin"
+            options={{ title: 'Demo: prodejce check-in' }}
+          />
         </Stack>
       </SafeAreaProvider>
     </GestureHandlerRootView>
