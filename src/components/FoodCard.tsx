@@ -93,7 +93,7 @@ export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
           </View>
         ) : menuItem?.isVegetarian ? (
           <View style={styles.dietPill}>
-            <Text style={styles.dietText}>Vegetariánské</Text>
+            <Text style={styles.dietText}>Vege</Text>
           </View>
         ) : null}
       </View>
@@ -154,13 +154,17 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     flexDirection: 'row',
-    gap: spacing.lg,
+    flexWrap: 'wrap',
+    columnGap: spacing.lg,
+    rowGap: spacing.sm,
     marginTop: spacing.md,
+    alignItems: 'center',
   },
   metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
+    flexShrink: 1,
   },
   metaIcon: {
     fontSize: 14,
@@ -210,6 +214,8 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: radius.pill,
     alignSelf: 'center',
+    flexShrink: 0,
+    maxWidth: '100%',
   },
   dietText: {
     color: '#3F6212',

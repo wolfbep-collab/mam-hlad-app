@@ -183,7 +183,7 @@ export default function HistoryScreen() {
               <View style={styles.pillRow}>
                 <View style={styles.dietPill}>
                   <Text style={styles.dietPillText}>
-                    {showVeganPill ? 'Vegan' : 'Vegetariánské'}
+                    {showVeganPill ? 'Vegan' : 'Vege'}
                   </Text>
                 </View>
               </View>

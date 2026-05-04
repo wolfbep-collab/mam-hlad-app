@@ -200,7 +200,7 @@ export default function StreetFoodDetailScreen() {
                 </View>
               ) : item.isVegetarian ? (
                 <View style={styles.dietPill}>
-                  <Text style={styles.dietPillText}>Vegetariánské</Text>
+                  <Text style={styles.dietPillText}>Vege</Text>
                 </View>
               ) : null}
             </View>
@@ -349,9 +349,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.md,
+    flexWrap: 'wrap',
   },
   menuTextBlock: {
     flex: 1,
+    minWidth: 0,
     gap: 4,
   },
   menuName: {
@@ -362,7 +364,9 @@ const styles = StyleSheet.create({
   },
   menuMetaRow: {
     flexDirection: 'row',
-    gap: spacing.md,
+    flexWrap: 'wrap',
+    columnGap: spacing.md,
+    rowGap: spacing.xs,
     marginTop: spacing.xs,
   },
   menuMeta: {

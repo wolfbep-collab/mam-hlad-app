@@ -156,19 +156,21 @@ export default function StreetFoodScreen() {
         </View>
       )}
 
-      <View style={styles.vendorBlock}>
-        <Text style={[typography.h2, styles.vendorBlockTitle]}>
-          Máš stánek?
+      <Pressable
+        onPress={() => router.push('/vendor-checkin')}
+        style={({ pressed }) => [
+          styles.vendorLink,
+          pressed && { opacity: 0.7 },
+        ]}
+        accessibilityRole="link"
+      >
+        <Text style={[typography.bodyStrong, styles.vendorLinkText]}>
+          Mám stánek →
         </Text>
-        <Text style={[typography.body, styles.vendorBlockLead]}>
+        <Text style={[typography.caption, styles.vendorLinkHint]}>
           Ukaž lidem, kde dnes prodáváš.
         </Text>
-        <Button
-          label="Přidat dnešní místo"
-          variant="secondary"
-          onPress={() => router.push('/vendor-checkin')}
-        />
-      </View>
+      </Pressable>
     </Screen>
   );
 }
@@ -291,7 +293,7 @@ function VendorCard({ entry, now, diet, onOpen }: VendorCardProps) {
               </View>
             ) : item.isVegetarian ? (
               <View style={styles.dietPill}>
-                <Text style={styles.dietPillText}>Vegetariánské</Text>
+                <Text style={styles.dietPillText}>Vege</Text>
               </View>
             ) : null}
           </View>
@@ -409,11 +411,13 @@ const styles = StyleSheet.create({
   },
   menuRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: spacing.sm,
+    flexWrap: 'wrap',
   },
   menuTextBlock: {
     flex: 1,
+    minWidth: 0,
     gap: 2,
   },
   menuName: {
@@ -473,19 +477,16 @@ const styles = StyleSheet.create({
   openLabel: {
     color: colors.primaryDark,
   },
-  vendorBlock: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-    gap: spacing.sm,
-    marginTop: spacing.md,
+  vendorLink: {
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+    gap: 2,
+    marginTop: spacing.sm,
   },
-  vendorBlockTitle: {
-    color: colors.textPrimary,
+  vendorLinkText: {
+    color: colors.primaryDark,
   },
-  vendorBlockLead: {
-    color: colors.textSecondary,
+  vendorLinkHint: {
+    color: colors.textMuted,
   },
 });

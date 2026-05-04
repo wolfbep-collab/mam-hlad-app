@@ -29,8 +29,12 @@ export const situationLabels: Record<Situation, string> = {
   pickup: 'Chci vyzvednout',
 };
 
-export const formatPriceLevel = (level: PriceLevel): string =>
-  Array.from({ length: level }, () => 'Kč').join(' ');
+export const formatPriceLevel = (level: PriceLevel | number | undefined): string => {
+  if (level === 1) return 'do 120 Kč';
+  if (level === 2) return '120–220 Kč';
+  if (level === 3) return '220+ Kč';
+  return 'cena neuvedena';
+};
 
 export const moodOrder: Mood[] = [
   'warm',

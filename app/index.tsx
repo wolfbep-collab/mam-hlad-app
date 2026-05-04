@@ -45,19 +45,34 @@ export default function HomeScreen() {
           onPress={() => router.push('/known')}
           accessibilityLabel="Vyhledat konkrétní jídlo"
         />
-        <Pressable
-          onPress={() => router.push('/street-food')}
-          style={({ pressed }) => [
-            styles.linkBtn,
-            pressed && { opacity: 0.7 },
-          ]}
-          accessibilityRole="link"
-          accessibilityLabel="Zobrazit aktivní street food stánky"
-        >
-          <Text style={[typography.bodyStrong, styles.linkLabel]}>
-            🛺 Street food dnes
-          </Text>
-        </Pressable>
+        <View style={styles.streetFoodGroup}>
+          <Pressable
+            onPress={() => router.push('/street-food')}
+            style={({ pressed }) => [
+              styles.linkBtn,
+              pressed && { opacity: 0.7 },
+            ]}
+            accessibilityRole="link"
+            accessibilityLabel="Zobrazit aktivní street food stánky"
+          >
+            <Text style={[typography.bodyStrong, styles.linkLabel]}>
+              🛺 Street food dnes
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/vendor-checkin')}
+            style={({ pressed }) => [
+              styles.subLinkBtn,
+              pressed && { opacity: 0.7 },
+            ]}
+            accessibilityRole="link"
+            accessibilityLabel="Přidat dnešní místo, pokud máš stánek"
+          >
+            <Text style={[typography.caption, styles.subLinkLabel]}>
+              Mám stánek →
+            </Text>
+          </Pressable>
+        </View>
         <Pressable
           onPress={() => router.push('/history')}
           style={({ pressed }) => [
@@ -123,5 +138,16 @@ const styles = StyleSheet.create({
   },
   linkLabel: {
     color: colors.primaryDark,
+  },
+  streetFoodGroup: {
+    alignItems: 'center',
+  },
+  subLinkBtn: {
+    alignItems: 'center',
+    paddingTop: 0,
+    paddingBottom: spacing.sm,
+  },
+  subLinkLabel: {
+    color: colors.textMuted,
   },
 });

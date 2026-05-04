@@ -222,7 +222,7 @@ function MenuItemRow({ item, reason }: { item: MenuItem; reason: string }) {
           </View>
         ) : item.isVegetarian ? (
           <View style={styles.dietPill}>
-            <Text style={styles.dietText}>Vegetariánské</Text>
+            <Text style={styles.dietText}>Vege</Text>
           </View>
         ) : null}
       </View>
@@ -323,8 +323,10 @@ const styles = StyleSheet.create({
   },
   itemMetaRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    gap: spacing.lg,
+    columnGap: spacing.lg,
+    rowGap: spacing.sm,
     marginTop: spacing.xs,
   },
   itemMeta: {
