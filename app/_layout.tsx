@@ -19,7 +19,7 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="hunger" options={{ title: 'Mám hlad na…' }} />
+          <Stack.Screen name="hunger" options={{ title: '' }} />
           <Stack.Screen name="known" options={{ title: 'Vím, co si dát' }} />
           <Stack.Screen name="results" options={{ title: 'Doporučení' }} />
           <Stack.Screen name="place/[id]" options={{ title: 'Detail' }} />
@@ -29,8 +29,12 @@ export default function RootLayout() {
             options={{ title: 'Street food dnes' }}
           />
           <Stack.Screen
+            name="street-food/[id]"
+            options={{ title: 'Detail stánku' }}
+          />
+          <Stack.Screen
             name="vendor-checkin"
-            options={{ title: 'Demo: prodejce check-in' }}
+            options={{ title: 'Mám stánek' }}
           />
         </Stack>
       </SafeAreaProvider>

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, shadow, spacing, typography } from '../theme';
 import type { Recommendation } from '../types';
-import { priceLabel } from '../lib/labels';
+import { formatPriceLevel } from '../lib/labels';
 import { formatDistance } from '../lib/location';
 import { getOpenStatus } from '../lib/openingHours';
 
@@ -70,7 +70,7 @@ export function FoodCard({ recommendation, onPress, onDetail }: FoodCardProps) {
         <View style={styles.metaItem}>
           <Text style={styles.metaIcon}>💸</Text>
           <Text style={[typography.caption, styles.metaText]}>
-            {priceLabel(itemPriceLevel)}
+            {formatPriceLevel(itemPriceLevel)}
           </Text>
         </View>
         <View style={styles.metaItem}>

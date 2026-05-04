@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { Button, MoodChip, Screen } from '../src/components';
 import { demoPlaces } from '../src/data/demoPlaces';
 import {
@@ -50,14 +50,19 @@ export default function HungerScreen() {
 
   return (
     <Screen contentStyle={styles.content}>
-      <Text style={[typography.body, styles.intro]}>
-        Vyber, co se ti hodí právě teď. Stačí jeden pocit a jedna situace.
-      </Text>
+      <View style={styles.brandRow}>
+        <Image
+          source={require('../assets/adaptive-icon.png')}
+          style={styles.brandLogo}
+          resizeMode="contain"
+          accessibilityLabel="Mám hlad"
+        />
+      </View>
 
       <View style={styles.section}>
         <Text style={[typography.h1, styles.heading]}>Na co máš chuť?</Text>
         <Text style={[typography.body, styles.subheading]}>
-          Vyber jednu volbu, která ti právě teď sedí.
+          Vyber volbu, která ti teď sedí.
         </Text>
         <View style={styles.chipRow}>
           {moodOrder.map((m) => (
@@ -132,11 +137,15 @@ export default function HungerScreen() {
 
 const styles = StyleSheet.create({
   content: {
-    paddingTop: spacing.lg,
+    paddingTop: spacing.md,
     gap: spacing.xl,
   },
-  intro: {
-    color: colors.textSecondary,
+  brandRow: {
+    alignItems: 'flex-start',
+  },
+  brandLogo: {
+    width: 64,
+    height: 64,
   },
   section: {
     gap: spacing.md,

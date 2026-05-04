@@ -1,9 +1,17 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { MoodChip, Screen } from '../src/components';
+import { Button, MoodChip, Screen } from '../src/components';
 import { dietaryLabels, dietaryOrder } from '../src/lib/labels';
-import { formatDistance, getCachedLocation } from '../src/lib/location';
+import {
+  formatDistance,
+  getCachedLocation,
+  getCachedStatus,
+  getCurrentLocation,
+  setCachedLocation,
+  type LocationStatus,
+  type UserLocation,
+} from '../src/lib/location';
 import {
   formatCheckInTime,
   formatRemainingHours,
@@ -25,8 +33,12 @@ export default function StreetFoodScreen() {
   const [diet, setDiet] = useState<DietaryPreference>('any');
   const [localCheckIns, setLocalCheckIns] = useState<StreetFoodCheckIn[]>([]);
   const [now, setNow] = useState<Date>(() => new Date());
-
-  const userLocation = getCachedLocation();
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(() =>
+    getCachedLocation()
+  );
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>(() =>
+    getCachedStatus()
+  );
 
   useEffect(() => {
     let active = true;
@@ -42,6 +54,14 @@ export default function StreetFoodScreen() {
     const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
   }, []);
+
+  const handleRequestLocation = async () => {
+    setLocationStatus('loading');
+    const { location, status } = await getCurrentLocation();
+    setCachedLocation(location, status);
+    setLocationStatus(status);
+    setUserLocation(location);
+  };
 
   const vendors = useMemo<ActiveStreetFoodVendor[]>(
     () =>
@@ -77,6 +97,27 @@ export default function StreetFoodScreen() {
         </View>
       </View>
 
+      {!userLocation && locationStatus !== 'denied' ? (
+        <Pressable
+          onPress={handleRequestLocation}
+          disabled={locationStatus === 'loading'}
+          style={({ pressed }) => [
+            styles.locationBtn,
+            pressed && { opacity: 0.85 },
+          ]}
+          accessibilityRole="button"
+        >
+          <Text style={[typography.bodyStrong, styles.locationBtnText]}>
+            {locationStatus === 'loading'
+              ? 'Hledám tvou polohu…'
+              : '📍 Použít polohu'}
+          </Text>
+          <Text style={[typography.caption, styles.locationBtnHint]}>
+            Seřadíme stánky podle vzdálenosti.
+          </Text>
+        </Pressable>
+      ) : null}
+
       {vendors.length === 0 ? (
         <View style={styles.empty}>
           <Text style={[typography.h3, styles.emptyTitle]}>
@@ -104,23 +145,30 @@ export default function StreetFoodScreen() {
               entry={v}
               now={now}
               diet={diet}
+              onOpen={() =>
+                router.push({
+                  pathname: '/street-food/[id]',
+                  params: { id: v.vendor.id, diet },
+                })
+              }
             />
           ))}
         </View>
       )}
 
-      <Pressable
-        onPress={() => router.push('/vendor-checkin')}
-        style={({ pressed }) => [
-          styles.vendorLink,
-          pressed && { opacity: 0.7 },
-        ]}
-        accessibilityRole="link"
-      >
-        <Text style={[typography.caption, styles.vendorLinkText]}>
-          Jste prodejce? Demo check-in →
+      <View style={styles.vendorBlock}>
+        <Text style={[typography.h2, styles.vendorBlockTitle]}>
+          Máš stánek?
         </Text>
-      </Pressable>
+        <Text style={[typography.body, styles.vendorBlockLead]}>
+          Ukaž lidem, kde dnes prodáváš.
+        </Text>
+        <Button
+          label="Přidat dnešní místo"
+          variant="secondary"
+          onPress={() => router.push('/vendor-checkin')}
+        />
+      </View>
     </Screen>
   );
 }
@@ -129,6 +177,7 @@ interface VendorCardProps {
   entry: ActiveStreetFoodVendor;
   now: Date;
   diet: DietaryPreference;
+  onOpen: () => void;
 }
 
 function countCaption(diet: DietaryPreference, count: number): string {
@@ -168,7 +217,7 @@ function dietMenuHeading(
   return `${count} ${vegetarianAdj(count)} ${noun} z menu`;
 }
 
-function VendorCard({ entry, now, diet }: VendorCardProps) {
+function VendorCard({ entry, now, diet, onOpen }: VendorCardProps) {
   const { vendor, checkIn, distanceMeters } = entry;
   const featured: StreetFoodMenuItem[] = selectFeaturedMenu(vendor, diet);
   const emoji = streetFoodCategoryEmoji[vendor.category];
@@ -177,7 +226,12 @@ function VendorCard({ entry, now, diet }: VendorCardProps) {
   const dietHeading = dietMenuHeading(diet, featured.length);
 
   return (
-    <View style={styles.card}>
+    <Pressable
+      onPress={onOpen}
+      style={({ pressed }) => [styles.card, pressed && { opacity: 0.92 }]}
+      accessibilityRole="button"
+      accessibilityLabel={`Otevřít detail stánku ${vendor.name}`}
+    >
       <View style={styles.cardHead}>
         <Text style={styles.cardEmoji}>{emoji}</Text>
         <View style={styles.cardHeadText}>
@@ -243,7 +297,13 @@ function VendorCard({ entry, now, diet }: VendorCardProps) {
           </View>
         ))}
       </View>
-    </View>
+
+      <View style={styles.openRow}>
+        <Text style={[typography.bodyStrong, styles.openLabel]}>
+          Otevřít stánek →
+        </Text>
+      </View>
+    </Pressable>
   );
 }
 
@@ -390,11 +450,42 @@ const styles = StyleSheet.create({
   emptyText: {
     color: colors.textSecondary,
   },
-  vendorLink: {
-    alignItems: 'center',
+  locationBtn: {
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
+    alignItems: 'flex-start',
+    gap: 4,
   },
-  vendorLinkText: {
-    color: colors.textMuted,
+  locationBtnText: {
+    color: colors.primaryDark,
+  },
+  locationBtnHint: {
+    color: colors.textSecondary,
+  },
+  openRow: {
+    alignSelf: 'flex-end',
+    marginTop: spacing.sm,
+  },
+  openLabel: {
+    color: colors.primaryDark,
+  },
+  vendorBlock: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  vendorBlockTitle: {
+    color: colors.textPrimary,
+  },
+  vendorBlockLead: {
+    color: colors.textSecondary,
   },
 });

@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Screen } from '../../src/components';
 import { demoPlaces } from '../../src/data/demoPlaces';
 import { maybeLocalizeDemoPlaces } from '../../src/lib/demoPlaceLocalizer';
-import { priceLabel } from '../../src/lib/labels';
+import { formatPriceLevel } from '../../src/lib/labels';
 import {
   calculateDistanceMeters,
   formatDistance,
@@ -119,7 +119,7 @@ export default function PlaceDetailScreen() {
 
       <View style={styles.metaGrid}>
         <Meta label="Příprava" value={`~${place.prepMinutes} min`} />
-        <Meta label="Cena" value={priceLabel(place.priceLevel)} />
+        <Meta label="Cena" value={formatPriceLevel(place.priceLevel)} />
         <Meta label="Hodnocení" value={`★ ${place.rating.toFixed(1)}`} />
       </View>
 
@@ -213,7 +213,7 @@ function MenuItemRow({ item, reason }: { item: MenuItem; reason: string }) {
         <View style={styles.itemMeta}>
           <Text style={styles.itemMetaIcon}>💸</Text>
           <Text style={[typography.caption, styles.itemMetaText]}>
-            {priceLabel(item.priceLevel)}
+            {formatPriceLevel(item.priceLevel)}
           </Text>
         </View>
         {item.isVegan ? (

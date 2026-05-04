@@ -91,13 +91,20 @@ export default function VendorCheckInScreen() {
 
   return (
     <Screen contentStyle={styles.content}>
+      <View style={styles.intro}>
+        <Text style={[typography.h1, styles.introTitle]}>Mám stánek</Text>
+        <Text style={[typography.body, styles.introLead]}>
+          Řekni lidem, kde dnes prodáváš.
+        </Text>
+      </View>
+
       <View style={styles.banner}>
         <Text style={[typography.label, styles.bannerLabel]}>
-          Demo režim pro prodejce
+          Demo režim pro stánkaře
         </Text>
         <Text style={[typography.caption, styles.bannerText]}>
-          Toto je interní prototyp. Žádný účet, žádný backend, žádné odeslání
-          dat ven. Check-in se uloží jen do tohoto telefonu.
+          Tady si můžeš vyzkoušet, jak by prodejce jednoduše oznámil: dnes
+          prodávám tady. Check-in se uloží jen do tohoto telefonu.
         </Text>
       </View>
 
@@ -125,36 +132,24 @@ export default function VendorCheckInScreen() {
           placeholderTextColor={colors.textMuted}
           style={[typography.body, styles.input]}
         />
-        <Pressable
-          onPress={() => setUseDeviceLocation((v) => !v)}
-          style={({ pressed }) => [
-            styles.toggleRow,
-            pressed && { opacity: 0.7 },
-          ]}
-          accessibilityRole="switch"
-          accessibilityState={{ checked: useDeviceLocation }}
-        >
-          <View
-            style={[
-              styles.toggleBox,
-              useDeviceLocation && styles.toggleBoxOn,
-            ]}
-          >
-            {useDeviceLocation ? (
-              <Text style={styles.toggleCheck}>✓</Text>
-            ) : null}
-          </View>
-          <View style={styles.toggleTextBlock}>
-            <Text style={[typography.bodyStrong, styles.toggleTitle]}>
-              Použít aktuální polohu zařízení
-            </Text>
-            <Text style={[typography.caption, styles.toggleHint]}>
-              {cachedLocation
-                ? 'Použijeme přesné GPS souřadnice z telefonu.'
-                : 'Poloha není dostupná — použijeme demo polohu.'}
-            </Text>
-          </View>
-        </Pressable>
+        <View style={styles.locationChoiceRow}>
+          <LocationOption
+            label="Použít moji aktuální polohu"
+            hint={
+              cachedLocation
+                ? 'Použijeme GPS souřadnice z telefonu.'
+                : 'Poloha zatím není povolená — vrátíme se k demo poloze.'
+            }
+            selected={useDeviceLocation}
+            onPress={() => setUseDeviceLocation(true)}
+          />
+          <LocationOption
+            label="Použít demo polohu"
+            hint="Stánek se ukáže v okolí Prahy (demo)."
+            selected={!useDeviceLocation}
+            onPress={() => setUseDeviceLocation(false)}
+          />
+        </View>
       </View>
 
       <View style={styles.section}>
@@ -162,7 +157,7 @@ export default function VendorCheckInScreen() {
         <TextInput
           value={note}
           onChangeText={setNote}
-          placeholder="např. Dnes do 15:00, máme čerstvé rajčata."
+          placeholder="např. Dnes do 15:00 u parku."
           placeholderTextColor={colors.textMuted}
           style={[typography.body, styles.input, styles.inputMultiline]}
           multiline
@@ -171,14 +166,19 @@ export default function VendorCheckInScreen() {
       </View>
 
       <Button
-        label={`Dnes jsem tady (~${DEFAULT_DURATION_HOURS} h)`}
+        label="Ukázat mě dnes"
         onPress={onSave}
         disabled={!selectedVendor}
       />
 
+      <Text style={[typography.caption, styles.demoFooter]}>
+        Zatím jde jen o demo režim v tomto zařízení.
+      </Text>
+
       {savedAt ? (
         <Text style={[typography.caption, styles.savedHint]}>
-          Uloženo. Tvůj demo check-in se teď zobrazí v sekci „Street food dnes".
+          Hotovo. Lidé tě teď uvidí ve „Street food dnes" (jen v tomto
+          telefonu).
         </Text>
       ) : null}
 
@@ -227,9 +227,55 @@ export default function VendorCheckInScreen() {
   );
 }
 
+interface LocationOptionProps {
+  label: string;
+  hint: string;
+  selected: boolean;
+  onPress: () => void;
+}
+
+function LocationOption({ label, hint, selected, onPress }: LocationOptionProps) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.locationOption,
+        selected && styles.locationOptionSelected,
+        pressed && { opacity: 0.85 },
+      ]}
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+    >
+      <View
+        style={[
+          styles.radioDot,
+          selected && styles.radioDotSelected,
+        ]}
+      />
+      <View style={styles.locationOptionText}>
+        <Text style={[typography.bodyStrong, styles.locationOptionLabel]}>
+          {label}
+        </Text>
+        <Text style={[typography.caption, styles.locationOptionHint]}>
+          {hint}
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   content: {
     gap: spacing.xl,
+  },
+  intro: {
+    gap: spacing.xs,
+  },
+  introTitle: {
+    color: colors.textPrimary,
+  },
+  introLead: {
+    color: colors.textSecondary,
   },
   banner: {
     backgroundColor: colors.primarySoft,
@@ -273,7 +319,11 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: 'top',
   },
-  toggleRow: {
+  locationChoiceRow: {
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  locationOption: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: spacing.md,
@@ -282,35 +332,36 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     padding: spacing.md,
-    marginTop: spacing.xs,
   },
-  toggleBox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  toggleBoxOn: {
-    backgroundColor: colors.primary,
+  locationOptionSelected: {
     borderColor: colors.primary,
+    backgroundColor: colors.primarySoft,
   },
-  toggleCheck: {
-    color: colors.surface,
-    fontWeight: '700',
-    fontSize: 14,
+  radioDot: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: colors.border,
+    marginTop: 2,
   },
-  toggleTextBlock: {
+  radioDotSelected: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
+  },
+  locationOptionText: {
     flex: 1,
     gap: 2,
   },
-  toggleTitle: {
+  locationOptionLabel: {
     color: colors.textPrimary,
   },
-  toggleHint: {
+  locationOptionHint: {
     color: colors.textSecondary,
+  },
+  demoFooter: {
+    color: colors.textMuted,
+    textAlign: 'center',
   },
   savedHint: {
     color: colors.success,
