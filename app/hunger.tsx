@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Button, MoodChip, Screen } from '../src/components';
 import { demoPlaces } from '../src/data/demoPlaces';
 import {
@@ -50,20 +50,21 @@ export default function HungerScreen() {
 
   return (
     <Screen contentStyle={styles.content}>
-      <View style={styles.brandRow}>
-        <Image
-          source={require('../assets/adaptive-icon.png')}
-          style={styles.brandLogo}
-          resizeMode="contain"
+      <View style={styles.heroBlock}>
+        <View
+          style={styles.bowlBadge}
           accessibilityLabel="Mám hlad"
-        />
+          accessibilityRole="image"
+        >
+          <Text style={styles.bowlEmoji}>🍜</Text>
+        </View>
+        <Text style={[typography.h1, styles.heroHeading]}>Na co máš chuť?</Text>
+        <Text style={[typography.body, styles.heroSubheading]}>
+          Vyber volbu, která ti teď sedí.
+        </Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={[typography.h1, styles.heading]}>Na co máš chuť?</Text>
-        <Text style={[typography.body, styles.subheading]}>
-          Vyber volbu, která ti teď sedí.
-        </Text>
         <View style={styles.chipRow}>
           {moodOrder.map((m) => (
             <MoodChip
@@ -137,15 +138,24 @@ export default function HungerScreen() {
 
 const styles = StyleSheet.create({
   content: {
-    paddingTop: spacing.md,
+    paddingTop: spacing.lg,
     gap: spacing.xl,
   },
-  brandRow: {
-    alignItems: 'flex-start',
+  heroBlock: {
+    alignItems: 'center',
+    gap: spacing.sm,
   },
-  brandLogo: {
-    width: 64,
-    height: 64,
+  bowlBadge: {
+    width: 112,
+    height: 112,
+    borderRadius: 56,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  bowlEmoji: {
+    fontSize: 60,
   },
   section: {
     gap: spacing.md,
@@ -155,6 +165,14 @@ const styles = StyleSheet.create({
   },
   subheading: {
     color: colors.textSecondary,
+  },
+  heroHeading: {
+    color: colors.textPrimary,
+    textAlign: 'center',
+  },
+  heroSubheading: {
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
   chipRow: {
     flexDirection: 'row',
