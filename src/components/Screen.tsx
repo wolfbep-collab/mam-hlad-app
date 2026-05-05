@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -17,6 +19,7 @@ interface ScreenProps {
   scroll?: boolean;
   contentStyle?: StyleProp<ViewStyle>;
   edges?: ('top' | 'right' | 'bottom' | 'left')[];
+  keyboardAvoiding?: boolean;
 }
 
 const BOTTOM_BUFFER = spacing.xxxl + spacing.xl;
@@ -26,32 +29,44 @@ export function Screen({
   scroll = true,
   contentStyle,
   edges = ['top', 'left', 'right', 'bottom'],
+  keyboardAvoiding = false,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
   const includesBottom = edges.includes('bottom');
   const bottomPad = includesBottom
     ? BOTTOM_BUFFER
     : Math.max(insets.bottom, spacing.lg) + BOTTOM_BUFFER;
+  const inner = scroll ? (
+    <ScrollView
+      contentContainerStyle={[
+        styles.content,
+        contentStyle,
+        { paddingBottom: bottomPad },
+      ]}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="interactive"
+    >
+      {children}
+    </ScrollView>
+  ) : (
+    <View
+      style={[styles.content, contentStyle, { paddingBottom: bottomPad }]}
+    >
+      {children}
+    </View>
+  );
   return (
     <SafeAreaView style={styles.safe} edges={edges}>
-      {scroll ? (
-        <ScrollView
-          contentContainerStyle={[
-            styles.content,
-            contentStyle,
-            { paddingBottom: bottomPad },
-          ]}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+      {keyboardAvoiding ? (
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          {children}
-        </ScrollView>
+          {inner}
+        </KeyboardAvoidingView>
       ) : (
-        <View
-          style={[styles.content, contentStyle, { paddingBottom: bottomPad }]}
-        >
-          {children}
-        </View>
+        inner
       )}
     </SafeAreaView>
   );
@@ -61,6 +76,9 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  flex: {
+    flex: 1,
   },
   content: {
     paddingHorizontal: spacing.xl,

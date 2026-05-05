@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Keyboard,
   Pressable,
@@ -29,6 +29,7 @@ export default function VendorCheckInScreen() {
   const [useDeviceLocation, setUseDeviceLocation] = useState<boolean>(false);
   const [localCheckIns, setLocalCheckIns] = useState<StreetFoodCheckIn[]>([]);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const noteInputRef = useRef<TextInput | null>(null);
 
   const cachedLocation = getCachedLocation();
 
@@ -90,7 +91,7 @@ export default function VendorCheckInScreen() {
   const activeLocal = localCheckIns.filter((c) => c.status === 'active');
 
   return (
-    <Screen contentStyle={styles.content}>
+    <Screen contentStyle={styles.content} keyboardAvoiding>
       <View style={styles.intro}>
         <Text style={[typography.h1, styles.introTitle]}>Mám stánek</Text>
         <Text style={[typography.body, styles.introLead]}>
@@ -131,6 +132,9 @@ export default function VendorCheckInScreen() {
           placeholder="např. U parku na Letné"
           placeholderTextColor={colors.textMuted}
           style={[typography.body, styles.input]}
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => noteInputRef.current?.focus()}
         />
         <View style={styles.locationChoiceRow}>
           <LocationOption
@@ -155,6 +159,7 @@ export default function VendorCheckInScreen() {
       <View style={styles.section}>
         <Text style={[typography.h2, styles.sectionTitle]}>Krátká poznámka</Text>
         <TextInput
+          ref={noteInputRef}
           value={note}
           onChangeText={setNote}
           placeholder="např. Dnes do 15:00 u parku."
@@ -162,6 +167,7 @@ export default function VendorCheckInScreen() {
           style={[typography.body, styles.input, styles.inputMultiline]}
           multiline
           maxLength={140}
+          returnKeyType="done"
         />
       </View>
 
