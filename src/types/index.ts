@@ -177,6 +177,7 @@ export interface StreetFoodCheckIn {
   createdAt: number;
   status: StreetFoodCheckInStatus;
   note?: string;
+  offering?: string;
 }
 
 export interface ActiveStreetFoodVendor {
