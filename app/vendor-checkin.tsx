@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
-  type LayoutChangeEvent,
   Platform,
   Pressable,
   ScrollView,
@@ -10,6 +9,7 @@ import {
   Text,
   TextInput,
   View,
+  findNodeHandle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../src/components';
@@ -28,13 +28,13 @@ const DEFAULT_DURATION_HOURS = 4;
 // Internal demo vendor used purely as a back-end anchor for the local check-in;
 // the user never sees a vendor picker.
 const DEFAULT_VENDOR_ID = demoStreetFoodVendors[0].id;
-// Extra room added to the scroll content when the keyboard is visible so the
-// fields and CTA can scroll into view above the keyboard on Android edge-to-edge.
-const KEYBOARD_EXTRA_PADDING = 320;
-// Top breathing room above the section that's being scrolled into view.
-const SCROLL_TARGET_OFFSET = 80;
-// Wait for the soft keyboard's animation to finish before measuring/scrolling.
-const SCROLL_DELAY_MS = 250;
+// Generous bottom padding so the deepest fields (note + CTA + footer) can always
+// scroll above the keyboard, regardless of which input is focused.
+const KEYBOARD_EXTRA_PADDING = 480;
+// Top breathing room above the section we're bringing into view.
+const SCROLL_TOP_MARGIN = 60;
+// Wait for the soft keyboard's open animation to finish before measuring.
+const SCROLL_DELAY_MS = 280;
 
 type FieldKey = 'location' | 'offering' | 'note';
 
@@ -47,14 +47,13 @@ export default function VendorCheckInScreen() {
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [keyboardVisible, setKeyboardVisible] = useState<boolean>(false);
 
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollView | null>(null);
+  const locationSectionRef = useRef<View | null>(null);
+  const offeringSectionRef = useRef<View | null>(null);
+  const noteSectionRef = useRef<View | null>(null);
   const offeringInputRef = useRef<TextInput | null>(null);
   const noteInputRef = useRef<TextInput | null>(null);
-  const sectionY = useRef<Record<FieldKey, number>>({
-    location: 0,
-    offering: 0,
-    note: 0,
-  });
+  const focusedField = useRef<FieldKey | null>(null);
 
   const cachedLocation = getCachedLocation();
 
@@ -68,36 +67,83 @@ export default function VendorCheckInScreen() {
     };
   }, []);
 
+  const sectionRefFor = (k: FieldKey): React.RefObject<View | null> =>
+    k === 'note'
+      ? noteSectionRef
+      : k === 'offering'
+        ? offeringSectionRef
+        : locationSectionRef;
+
+  // Always measure the section's current position relative to the ScrollView's
+  // inner content view, then scroll there. Doesn't depend on stored layout
+  // values, so it works the first time the user taps any field, regardless of
+  // whether previous fields are filled or empty.
+  const bringSectionIntoView = (target: FieldKey) => {
+    const scroll = scrollRef.current;
+    const view = sectionRefFor(target).current;
+    if (!scroll || !view) return;
+
+    const innerHandle =
+      (scroll as unknown as { getInnerViewNode?: () => number | null })
+        .getInnerViewNode?.() ?? findNodeHandle(scroll);
+    if (innerHandle == null) return;
+
+    const onMeasured = (_x: number, y: number) => {
+      const targetY = Math.max(0, y - SCROLL_TOP_MARGIN);
+      scroll.scrollTo({ y: targetY, animated: true });
+      // For the note (last field before CTA + footer) reinforce the scroll a
+      // moment later: even if the first scrollTo lands a few pixels short,
+      // a second pass with the now-settled layout brings the field comfortably
+      // above the keyboard.
+      if (target === 'note') {
+        setTimeout(() => {
+          const node = sectionRefFor(target).current;
+          const sc = scrollRef.current;
+          if (!node || !sc) return;
+          node.measureLayout(
+            innerHandle,
+            (_x2, y2) => {
+              sc.scrollTo({ y: Math.max(0, y2 - SCROLL_TOP_MARGIN), animated: true });
+            },
+            () => {}
+          );
+        }, 220);
+      }
+    };
+
+    view.measureLayout(innerHandle, onMeasured, () => {});
+  };
+
   useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardDidShow', () =>
-      setKeyboardVisible(true)
-    );
-    const hideSub = Keyboard.addListener('keyboardDidHide', () =>
-      setKeyboardVisible(false)
-    );
+    const showSub = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+      const target = focusedField.current;
+      if (target) {
+        // Defer past the layout pass that just added bottom padding.
+        setTimeout(() => bringSectionIntoView(target), 50);
+      }
+    });
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+    });
     return () => {
       showSub.remove();
       hideSub.remove();
     };
   }, []);
 
-  const refreshLocal = async () => {
-    const items = await loadLocalCheckIns();
-    setLocalCheckIns(items);
-  };
-
-  const scrollToInput = (target: FieldKey) => {
+  const handleFocus = (target: FieldKey) => () => {
+    focusedField.current = target;
+    // Always fire — also covers the case where the keyboard is already open
+    // and the user just switches between fields (keyboardDidShow won't re-fire).
     setTimeout(() => {
-      const y = sectionY.current[target];
-      scrollRef.current?.scrollTo({
-        y: Math.max(0, y - SCROLL_TARGET_OFFSET),
-        animated: true,
-      });
+      if (focusedField.current === target) bringSectionIntoView(target);
     }, SCROLL_DELAY_MS);
   };
 
-  const onSectionLayout = (key: FieldKey) => (e: LayoutChangeEvent) => {
-    sectionY.current[key] = e.nativeEvent.layout.y;
+  const refreshLocal = async () => {
+    const items = await loadLocalCheckIns();
+    setLocalCheckIns(items);
   };
 
   const onPublish = async () => {
@@ -142,7 +188,10 @@ export default function VendorCheckInScreen() {
     scrollRef.current?.scrollTo({ y: 0, animated: true });
   };
 
-  const activeLocal = localCheckIns.filter((c) => c.status === 'active');
+  const activeLocal = useMemo(
+    () => localCheckIns.filter((c) => c.status === 'active'),
+    [localCheckIns]
+  );
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right', 'bottom']}>
@@ -174,7 +223,11 @@ export default function VendorCheckInScreen() {
             </Text>
           </View>
 
-          <View style={styles.section} onLayout={onSectionLayout('location')}>
+          <View
+            ref={locationSectionRef}
+            collapsable={false}
+            style={styles.section}
+          >
             <Text style={[typography.h2, styles.sectionTitle]}>Kde dnes stojíš?</Text>
             <TextInput
               value={locationLabel}
@@ -184,7 +237,7 @@ export default function VendorCheckInScreen() {
               style={[typography.body, styles.input]}
               returnKeyType="next"
               blurOnSubmit={false}
-              onFocus={() => scrollToInput('location')}
+              onFocus={handleFocus('location')}
               onSubmitEditing={() => offeringInputRef.current?.focus()}
             />
             <View style={styles.locationChoiceRow}>
@@ -207,7 +260,11 @@ export default function VendorCheckInScreen() {
             </View>
           </View>
 
-          <View style={styles.section} onLayout={onSectionLayout('offering')}>
+          <View
+            ref={offeringSectionRef}
+            collapsable={false}
+            style={styles.section}
+          >
             <Text style={[typography.h2, styles.sectionTitle]}>Co dnes nabízíš?</Text>
             <TextInput
               ref={offeringInputRef}
@@ -218,12 +275,16 @@ export default function VendorCheckInScreen() {
               style={[typography.body, styles.input]}
               returnKeyType="next"
               blurOnSubmit={false}
-              onFocus={() => scrollToInput('offering')}
+              onFocus={handleFocus('offering')}
               onSubmitEditing={() => noteInputRef.current?.focus()}
             />
           </View>
 
-          <View style={styles.section} onLayout={onSectionLayout('note')}>
+          <View
+            ref={noteSectionRef}
+            collapsable={false}
+            style={styles.section}
+          >
             <View style={styles.noteHeading}>
               <Text style={[typography.h2, styles.sectionTitle]}>Krátká poznámka</Text>
               <Text style={[typography.caption, styles.optional]}>volitelné</Text>
@@ -238,7 +299,7 @@ export default function VendorCheckInScreen() {
               multiline
               maxLength={140}
               returnKeyType="done"
-              onFocus={() => scrollToInput('note')}
+              onFocus={handleFocus('note')}
             />
           </View>
 
