@@ -1,7 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  type RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Dimensions,
   Keyboard,
+  type KeyboardEvent,
   KeyboardAvoidingView,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   Platform,
   Pressable,
   ScrollView,
@@ -9,7 +19,6 @@ import {
   Text,
   TextInput,
   View,
-  findNodeHandle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../src/components';
@@ -25,18 +34,15 @@ import type { StreetFoodCheckIn } from '../src/types';
 
 const HOUR_MS = 60 * 60 * 1000;
 const DEFAULT_DURATION_HOURS = 4;
-// Internal demo vendor used purely as a back-end anchor for the local check-in;
-// the user never sees a vendor picker.
+// Internal anchor for the persisted check-in. The stánkař never sees a vendor list.
 const DEFAULT_VENDOR_ID = demoStreetFoodVendors[0].id;
-// Generous bottom padding so the deepest fields (note + CTA + footer) can always
-// scroll above the keyboard, regardless of which input is focused.
-const KEYBOARD_EXTRA_PADDING = 480;
-// Top breathing room above the section we're bringing into view.
-const SCROLL_TOP_MARGIN = 60;
-// Wait for the soft keyboard's open animation to finish before measuring.
-const SCROLL_DELAY_MS = 280;
-
-type FieldKey = 'location' | 'offering' | 'note';
+// Generous bottom spacer so the deepest fields + CTA stay reachable even when
+// the keyboard is open.
+const KEYBOARD_BOTTOM_SPACER = 480;
+// Margin between the focused input's bottom edge and the keyboard top.
+const INPUT_KEYBOARD_MARGIN = 32;
+// Wait for the soft keyboard's open animation to finish on Android before measuring.
+const FOCUS_SCROLL_DELAY_MS = 320;
 
 export default function VendorCheckInScreen() {
   const [locationLabel, setLocationLabel] = useState<string>('');
@@ -48,12 +54,18 @@ export default function VendorCheckInScreen() {
   const [keyboardVisible, setKeyboardVisible] = useState<boolean>(false);
 
   const scrollRef = useRef<ScrollView | null>(null);
-  const locationSectionRef = useRef<View | null>(null);
-  const offeringSectionRef = useRef<View | null>(null);
-  const noteSectionRef = useRef<View | null>(null);
+  const locationInputRef = useRef<TextInput | null>(null);
   const offeringInputRef = useRef<TextInput | null>(null);
   const noteInputRef = useRef<TextInput | null>(null);
-  const focusedField = useRef<FieldKey | null>(null);
+
+  // Tracked in refs so we don't re-render every scroll/keyboard frame.
+  const scrollOffsetY = useRef<number>(0);
+  // Distance from the top of the window to the top of the keyboard, in screen
+  // coordinates. Number.POSITIVE_INFINITY when the keyboard is hidden.
+  const keyboardTopY = useRef<number>(Number.POSITIVE_INFINITY);
+  // Ref of the currently focused input so we can re-scroll once the keyboard
+  // finishes opening.
+  const focusedInputRef = useRef<RefObject<TextInput | null> | null>(null);
 
   const cachedLocation = getCachedLocation();
 
@@ -67,78 +79,75 @@ export default function VendorCheckInScreen() {
     };
   }, []);
 
-  const sectionRefFor = (k: FieldKey): React.RefObject<View | null> =>
-    k === 'note'
-      ? noteSectionRef
-      : k === 'offering'
-        ? offeringSectionRef
-        : locationSectionRef;
-
-  // Always measure the section's current position relative to the ScrollView's
-  // inner content view, then scroll there. Doesn't depend on stored layout
-  // values, so it works the first time the user taps any field, regardless of
-  // whether previous fields are filled or empty.
-  const bringSectionIntoView = (target: FieldKey) => {
-    const scroll = scrollRef.current;
-    const view = sectionRefFor(target).current;
-    if (!scroll || !view) return;
-
-    const innerHandle =
-      (scroll as unknown as { getInnerViewNode?: () => number | null })
-        .getInnerViewNode?.() ?? findNodeHandle(scroll);
-    if (innerHandle == null) return;
-
-    const onMeasured = (_x: number, y: number) => {
-      const targetY = Math.max(0, y - SCROLL_TOP_MARGIN);
-      scroll.scrollTo({ y: targetY, animated: true });
-      // For the note (last field before CTA + footer) reinforce the scroll a
-      // moment later: even if the first scrollTo lands a few pixels short,
-      // a second pass with the now-settled layout brings the field comfortably
-      // above the keyboard.
-      if (target === 'note') {
-        setTimeout(() => {
-          const node = sectionRefFor(target).current;
-          const sc = scrollRef.current;
-          if (!node || !sc) return;
-          node.measureLayout(
-            innerHandle,
-            (_x2, y2) => {
-              sc.scrollTo({ y: Math.max(0, y2 - SCROLL_TOP_MARGIN), animated: true });
-            },
-            () => {}
-          );
-        }, 220);
-      }
-    };
-
-    view.measureLayout(innerHandle, onMeasured, () => {});
-  };
-
+  // Keep the screen-absolute keyboard top up to date. measureInWindow returns
+  // window-relative y, and Keyboard.endCoordinates also lives in window coords,
+  // so this comparison is apples-to-apples.
   useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardDidShow', () => {
+    const onShow = (event: KeyboardEvent) => {
+      const windowHeight = Dimensions.get('window').height;
+      const kbHeight = event.endCoordinates?.height ?? 0;
+      keyboardTopY.current =
+        kbHeight > 0 ? windowHeight - kbHeight : Number.POSITIVE_INFINITY;
       setKeyboardVisible(true);
-      const target = focusedField.current;
-      if (target) {
-        // Defer past the layout pass that just added bottom padding.
-        setTimeout(() => bringSectionIntoView(target), 50);
-      }
-    });
-    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
+      // Re-scroll the currently focused input now that we know exactly where
+      // the keyboard is. Covers the cold-start case where focus fired before
+      // the keyboard finished opening.
+      const focused = focusedInputRef.current;
+      if (focused) ensureInputAboveKeyboard(focused);
+    };
+    const onHide = () => {
+      keyboardTopY.current = Number.POSITIVE_INFINITY;
       setKeyboardVisible(false);
-    });
+    };
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      onShow
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      onHide
+    );
     return () => {
       showSub.remove();
       hideSub.remove();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleFocus = (target: FieldKey) => () => {
-    focusedField.current = target;
-    // Always fire — also covers the case where the keyboard is already open
-    // and the user just switches between fields (keyboardDidShow won't re-fire).
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    scrollOffsetY.current = e.nativeEvent.contentOffset.y;
+  };
+
+  // Measures the input's position on the screen (window coords) and, if the
+  // input's bottom is below or under the keyboard top, scrolls the ScrollView
+  // up by exactly the overlap. Doesn't depend on cached layout values, on the
+  // form's filled state, or on the order in which the user taps fields.
+  const ensureInputAboveKeyboard = (
+    inputRef: RefObject<TextInput | null>
+  ) => {
+    const input = inputRef.current;
+    const scroll = scrollRef.current;
+    if (!input || !scroll) return;
+    if (typeof input.measureInWindow !== 'function') return;
+    input.measureInWindow((_x, y, _w, h) => {
+      if (typeof y !== 'number' || typeof h !== 'number') return;
+      const inputBottom = y + h;
+      const kbTop = keyboardTopY.current;
+      const overlap = inputBottom + INPUT_KEYBOARD_MARGIN - kbTop;
+      if (overlap <= 0) return;
+      const targetOffset = scrollOffsetY.current + overlap;
+      scroll.scrollTo({ y: targetOffset, animated: true });
+    });
+  };
+
+  const handleFocus = (inputRef: RefObject<TextInput | null>) => () => {
+    focusedInputRef.current = inputRef;
+    // Always run, regardless of any input value or location toggle.
     setTimeout(() => {
-      if (focusedField.current === target) bringSectionIntoView(target);
-    }, SCROLL_DELAY_MS);
+      if (focusedInputRef.current === inputRef) {
+        ensureInputAboveKeyboard(inputRef);
+      }
+    }, FOCUS_SCROLL_DELAY_MS);
   };
 
   const refreshLocal = async () => {
@@ -203,33 +212,18 @@ export default function VendorCheckInScreen() {
           ref={scrollRef}
           contentContainerStyle={[
             styles.scrollContent,
-            keyboardVisible && { paddingBottom: KEYBOARD_EXTRA_PADDING },
+            keyboardVisible && { paddingBottom: KEYBOARD_BOTTOM_SPACER },
           ]}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
         >
-          <View style={styles.heroBlock}>
-            <View
-              style={styles.heroBadge}
-              accessibilityRole="image"
-              accessibilityLabel="Stánek"
-            >
-              <Text style={styles.heroEmoji}>🛺</Text>
-            </View>
-            <Text style={[typography.h1, styles.heroTitle]}>Mám stánek</Text>
-            <Text style={[typography.body, styles.heroLead]}>
-              Dej lidem vědět, kde dnes prodáváš a co nabízíš.
-            </Text>
-          </View>
-
-          <View
-            ref={locationSectionRef}
-            collapsable={false}
-            style={styles.section}
-          >
+          <View style={styles.section}>
             <Text style={[typography.h2, styles.sectionTitle]}>Kde dnes stojíš?</Text>
             <TextInput
+              ref={locationInputRef}
               value={locationLabel}
               onChangeText={setLocationLabel}
               placeholder="např. U parku na Letné"
@@ -237,7 +231,7 @@ export default function VendorCheckInScreen() {
               style={[typography.body, styles.input]}
               returnKeyType="next"
               blurOnSubmit={false}
-              onFocus={handleFocus('location')}
+              onFocus={handleFocus(locationInputRef)}
               onSubmitEditing={() => offeringInputRef.current?.focus()}
             />
             <View style={styles.locationChoiceRow}>
@@ -260,11 +254,7 @@ export default function VendorCheckInScreen() {
             </View>
           </View>
 
-          <View
-            ref={offeringSectionRef}
-            collapsable={false}
-            style={styles.section}
-          >
+          <View style={styles.section}>
             <Text style={[typography.h2, styles.sectionTitle]}>Co dnes nabízíš?</Text>
             <TextInput
               ref={offeringInputRef}
@@ -275,16 +265,12 @@ export default function VendorCheckInScreen() {
               style={[typography.body, styles.input]}
               returnKeyType="next"
               blurOnSubmit={false}
-              onFocus={handleFocus('offering')}
+              onFocus={handleFocus(offeringInputRef)}
               onSubmitEditing={() => noteInputRef.current?.focus()}
             />
           </View>
 
-          <View
-            ref={noteSectionRef}
-            collapsable={false}
-            style={styles.section}
-          >
+          <View style={styles.section}>
             <View style={styles.noteHeading}>
               <Text style={[typography.h2, styles.sectionTitle]}>Krátká poznámka</Text>
               <Text style={[typography.caption, styles.optional]}>volitelné</Text>
@@ -299,20 +285,15 @@ export default function VendorCheckInScreen() {
               multiline
               maxLength={140}
               returnKeyType="done"
-              onFocus={handleFocus('note')}
+              onFocus={handleFocus(noteInputRef)}
             />
           </View>
 
           <Button label="Zveřejnit dnešní stánek" onPress={onPublish} />
 
-          <Text style={[typography.caption, styles.demoFooter]}>
-            Zatím jde jen o lokální režim v tomto zařízení.
-          </Text>
-
           {savedAt ? (
             <Text style={[typography.caption, styles.savedHint]}>
-              Hotovo. Lidé tě teď uvidí ve „Street food dnes" (jen v tomto
-              telefonu).
+              Hotovo. Lidé tě teď uvidí ve „Street food dnes".
             </Text>
           ) : null}
 
@@ -320,10 +301,6 @@ export default function VendorCheckInScreen() {
             <View style={styles.section}>
               <Text style={[typography.h2, styles.sectionTitle]}>
                 Aktivní dnešní oznámení
-              </Text>
-              <Text style={[typography.caption, styles.activeHint]}>
-                Tady vidíš svoje aktivní oznámení. Můžeš je upravit nebo
-                ukončit.
               </Text>
               <View style={styles.activeList}>
                 {activeLocal.map((c) => (
@@ -434,30 +411,6 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxxl + spacing.xl,
     gap: spacing.xl,
   },
-  heroBlock: {
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  heroBadge: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-  },
-  heroEmoji: {
-    fontSize: 44,
-  },
-  heroTitle: {
-    color: colors.textPrimary,
-    textAlign: 'center',
-  },
-  heroLead: {
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
   section: {
     gap: spacing.sm,
   },
@@ -526,17 +479,10 @@ const styles = StyleSheet.create({
   locationOptionHint: {
     color: colors.textSecondary,
   },
-  demoFooter: {
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
   savedHint: {
     color: colors.success,
     fontWeight: '600',
     textAlign: 'center',
-  },
-  activeHint: {
-    color: colors.textSecondary,
   },
   activeList: {
     gap: spacing.sm,
