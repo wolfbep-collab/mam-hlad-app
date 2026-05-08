@@ -22,6 +22,22 @@ export function matchesDiet(
   return item.isVegetarian === true || item.isVegan === true;
 }
 
+/** Returns the user's selected moods, deduplicated and stripped of `any`.
+ * Falls back to `[pref.mood]` when the optional `moods` array isn't set. */
+function effectiveMoods(pref: UserPreference): Mood[] {
+  const list =
+    pref.moods && pref.moods.length > 0 ? pref.moods : [pref.mood];
+  const seen = new Set<Mood>();
+  const out: Mood[] = [];
+  for (const m of list) {
+    if (m === 'any') continue;
+    if (seen.has(m)) continue;
+    seen.add(m);
+    out.push(m);
+  }
+  return out;
+}
+
 function placeHasDietaryItem(place: Place, diet: DietaryPreference): boolean {
   if (diet === 'any') return true;
   return place.menuItems.some((it) => matchesDiet(it, diet));
@@ -126,11 +142,14 @@ function scorePlace(
     score -= 25;
   }
 
-  const moodTags = moodTagBoost[pref.mood];
-  if (moodTags.length === 0) {
+  const moods = effectiveMoods(pref);
+  const moodTagsUnion = Array.from(
+    new Set(moods.flatMap((m) => moodTagBoost[m]))
+  );
+  if (moods.length === 0 || moodTagsUnion.length === 0) {
     score += 6;
   } else {
-    const hits = moodTags.filter((t) => place.tags.includes(t)).length;
+    const hits = moodTagsUnion.filter((t) => place.tags.includes(t)).length;
     if (hits > 0) score += hits * 14;
     else score -= 6;
   }
@@ -143,7 +162,7 @@ function scorePlace(
     score -= (place.prepMinutes - maxPrep) * 1.5;
   }
 
-  if (pref.mood === 'cheap' || pref.situation === 'now') {
+  if (moods.includes('cheap') || pref.situation === 'now') {
     score += (4 - place.priceLevel) * 4;
   }
 
@@ -162,28 +181,33 @@ function scoreMenuItem(
 ): number {
   let score = 0;
 
-  switch (pref.mood) {
-    case 'warm':
-      if (item.isWarm) score += 16;
-      break;
-    case 'fast':
-      if (item.isQuick) score += 16;
-      break;
-    case 'light':
-      if (item.isLight) score += 16;
-      break;
-    case 'cheap':
-      score += (4 - item.priceLevel) * 5;
-      break;
-    case 'healthy':
-      if (item.isHealthy) score += 16;
-      break;
-    case 'sweet':
-      if (item.isSweet) score += 16;
-      break;
-    case 'any':
-      score += 4;
-      break;
+  const moods = effectiveMoods(pref);
+  if (moods.length === 0) {
+    score += 4;
+  } else {
+    // Each selected mood adds its own boost — items matching both moods stack.
+    for (const m of moods) {
+      switch (m) {
+        case 'warm':
+          if (item.isWarm) score += 16;
+          break;
+        case 'fast':
+          if (item.isQuick) score += 16;
+          break;
+        case 'light':
+          if (item.isLight) score += 16;
+          break;
+        case 'cheap':
+          score += (4 - item.priceLevel) * 5;
+          break;
+        case 'healthy':
+          if (item.isHealthy) score += 16;
+          break;
+        case 'sweet':
+          if (item.isSweet) score += 16;
+          break;
+      }
+    }
   }
 
   const maxPrep = situationMaxPrepMinutes[pref.situation];
@@ -246,17 +270,27 @@ export function pickMenuItems(
 }
 
 export function buildHumanReason(pref: UserPreference): string {
-  const adj = moodAdjective[pref.mood];
-  if (!adj) {
+  const moods = effectiveMoods(pref);
+  const adjs = moods
+    .map((m) => moodAdjective[m])
+    .filter((a): a is string => !!a);
+  if (adjs.length === 0) {
     return situationStandalone[pref.situation];
   }
+  const moodPart =
+    adjs.length === 1
+      ? `chceš něco ${adjs[0]}`
+      : `chceš něco ${adjs[0]} a ${adjs[1]}`;
+  if (adjs.length >= 2) {
+    return `Doporučeno, protože ${moodPart}. ${situationStandalone[pref.situation]}`;
+  }
   const fastMoodOnFastSit =
-    pref.mood === 'fast' &&
+    moods.includes('fast') &&
     (pref.situation === 'now' || pref.situation === '15min');
   if (fastMoodOnFastSit) {
-    return `Doporučeno, protože chceš něco ${adj}.`;
+    return `Doporučeno, protože ${moodPart}.`;
   }
-  return `Doporučeno, protože chceš něco ${adj} ${situationConnector[pref.situation]}.`;
+  return `Doporučeno, protože ${moodPart} ${situationConnector[pref.situation]}.`;
 }
 
 type ReasonRule = {
@@ -558,13 +592,19 @@ export function countViableTips(
   const now = new Date();
   const requiredServices = situationToServices[pref.situation];
   const maxPrep = situationMaxPrepMinutes[pref.situation];
-  const moodTags = moodTagBoost[pref.mood];
+  const moods = effectiveMoods(pref);
+  const moodTagsUnion = Array.from(
+    new Set(moods.flatMap((m) => moodTagBoost[m]))
+  );
   return places.filter((p) => {
     if (!placeHasDietaryItem(p, pref.dietaryPreference)) return false;
     if (!isPlaceOpenNow(p, now)) return false;
     if (!requiredServices.some((s) => p.services.includes(s))) return false;
     if (p.prepMinutes > maxPrep + 5) return false;
-    if (moodTags.length > 0 && !moodTags.some((t) => p.tags.includes(t))) {
+    if (
+      moodTagsUnion.length > 0 &&
+      !moodTagsUnion.some((t) => p.tags.includes(t))
+    ) {
       return false;
     }
     return true;

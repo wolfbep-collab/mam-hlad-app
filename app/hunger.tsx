@@ -23,28 +23,48 @@ function tipsCaption(count: number): string {
   return `Máme pro tebe ${count} vhodných tipů.`;
 }
 
+const MAX_MOODS = 2;
+
 export default function HungerScreen() {
   const router = useRouter();
-  const [mood, setMood] = useState<Mood | null>(null);
+  const [moods, setMoods] = useState<Mood[]>([]);
   const [situation, setSituation] = useState<Situation | null>(null);
   const [dietaryPreference, setDietaryPreference] =
     useState<DietaryPreference>('any');
 
-  const canContinue = mood !== null && situation !== null;
+  const canContinue = moods.length >= 1 && situation !== null;
+
+  const toggleMood = (m: Mood) => {
+    setMoods((prev) => {
+      if (prev.includes(m)) {
+        return prev.filter((x) => x !== m);
+      }
+      if (prev.length >= MAX_MOODS) {
+        // Replace the oldest selection — drop the first, push the new one.
+        return [...prev.slice(1), m];
+      }
+      return [...prev, m];
+    });
+  };
 
   const viableCount = useMemo(() => {
-    if (!canContinue || !mood || !situation) return 0;
+    if (!canContinue || !situation || moods.length === 0) return 0;
     return countViableTips(
-      { mood, situation, dietaryPreference },
+      { mood: moods[0], moods, situation, dietaryPreference },
       demoPlaces
     );
-  }, [canContinue, mood, situation, dietaryPreference]);
+  }, [canContinue, moods, situation, dietaryPreference]);
 
   const handleContinue = () => {
-    if (!canContinue) return;
+    if (!canContinue || !situation || moods.length === 0) return;
     router.push({
       pathname: '/results',
-      params: { mood, situation, diet: dietaryPreference },
+      params: {
+        mood: moods[0],
+        moods: moods.join(','),
+        situation,
+        diet: dietaryPreference,
+      },
     });
   };
 
@@ -60,7 +80,7 @@ export default function HungerScreen() {
         </View>
         <Text style={[typography.h1, styles.heroHeading]}>Na co máš chuť?</Text>
         <Text style={[typography.body, styles.heroSubheading]}>
-          Vyber volbu, která ti teď sedí.
+          Vyber jednu nebo dvě volby, které ti teď sedí.
         </Text>
       </View>
 
@@ -71,8 +91,8 @@ export default function HungerScreen() {
               key={m}
               label={moodLabels[m]}
               emoji={moodEmoji[m]}
-              selected={mood === m}
-              onPress={() => setMood(m)}
+              selected={moods.includes(m)}
+              onPress={() => toggleMood(m)}
             />
           ))}
         </View>
@@ -127,7 +147,7 @@ export default function HungerScreen() {
         ) : (
           <View style={styles.hintBox}>
             <Text style={[typography.caption, styles.hintText]}>
-              Vyber jeden pocit a jednu situaci, ať ti můžeme poradit.
+              Vyber aspoň jeden pocit a jednu situaci, ať ti můžeme poradit.
             </Text>
           </View>
         )}

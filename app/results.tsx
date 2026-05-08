@@ -39,15 +39,30 @@ const isSituation = (v: string | undefined): v is Situation =>
 const isDiet = (v: string | undefined): v is DietaryPreference =>
   !!v && ['any', 'vegetarian', 'vegan'].includes(v);
 
+function parseMoodList(
+  raw: string | undefined,
+  fallback: Mood
+): Mood[] {
+  if (!raw) return [fallback];
+  const parts = raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s): s is Mood => isMood(s));
+  if (parts.length === 0) return [fallback];
+  return parts.slice(0, 2);
+}
+
 export default function ResultsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     mood?: string;
+    moods?: string;
     situation?: string;
     diet?: string;
   }>();
 
   const mood: Mood = isMood(params.mood) ? params.mood : 'any';
+  const moods: Mood[] = parseMoodList(params.moods, mood);
   const situation: Situation = isSituation(params.situation)
     ? params.situation
     : 'now';
@@ -95,10 +110,11 @@ export default function ResultsScreen() {
     [userLocation]
   );
 
+  const moodsKey = moods.join(',');
   const result = useMemo(
     () =>
       recommend(
-        { mood, situation, dietaryPreference },
+        { mood, moods, situation, dietaryPreference },
         effectivePlaces,
         {
           excludePlaceIds: dismissedIds,
@@ -107,8 +123,12 @@ export default function ResultsScreen() {
           recentMenuItemNames: recentSignals.recentMenuItemNames,
         }
       ),
+    // moodsKey is the stable serialised view of `moods`; including it instead
+    // of the array keeps the deps shallow-comparable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       mood,
+      moodsKey,
       situation,
       dietaryPreference,
       dismissedIds,
@@ -207,7 +227,13 @@ export default function ResultsScreen() {
   const openPlace = (placeId: string) => {
     router.push({
       pathname: '/place/[id]',
-      params: { id: placeId, mood, situation, diet: dietaryPreference },
+      params: {
+        id: placeId,
+        mood,
+        moods: moods.join(','),
+        situation,
+        diet: dietaryPreference,
+      },
     });
   };
 
@@ -233,7 +259,8 @@ export default function ResultsScreen() {
           Hledáme pro tebe
         </Text>
         <Text style={[typography.h2, styles.summaryTitle]}>
-          {moodLabels[mood]} • {situationLabels[situation].toLowerCase()}
+          {moods.map((m) => moodLabels[m]).join(' + ')} •{' '}
+          {situationLabels[situation].toLowerCase()}
         </Text>
       </View>
 

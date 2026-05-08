@@ -91,7 +91,12 @@ export interface Place {
 export type DietaryPreference = 'any' | 'vegetarian' | 'vegan';
 
 export interface UserPreference {
+  /** Primary mood. For backward compatibility this stays a single value — it is
+   * the first chip the user selected. */
   mood: Mood;
+  /** Full list of selected moods (1 or 2). When omitted the engine treats the
+   * preference as `[mood]`. */
+  moods?: Mood[];
   situation: Situation;
   dietaryPreference: DietaryPreference;
 }

@@ -38,16 +38,31 @@ const isSituation = (v: string | undefined): v is Situation =>
 const isDiet = (v: string | undefined): v is DietaryPreference =>
   !!v && ['any', 'vegetarian', 'vegan'].includes(v);
 
+function parseMoodList(
+  raw: string | undefined,
+  fallback: Mood
+): Mood[] {
+  if (!raw) return [fallback];
+  const parts = raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s): s is Mood => isMood(s));
+  if (parts.length === 0) return [fallback];
+  return parts.slice(0, 2);
+}
+
 export default function PlaceDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     id: string;
     mood?: string;
+    moods?: string;
     situation?: string;
     diet?: string;
   }>();
 
   const mood: Mood = isMood(params.mood) ? params.mood : 'any';
+  const moods: Mood[] = parseMoodList(params.moods, mood);
   const situation: Situation = isSituation(params.situation)
     ? params.situation
     : 'now';
@@ -61,12 +76,14 @@ export default function PlaceDetailScreen() {
     return places.find((p) => p.id === params.id);
   }, [cachedLocation, params.id]);
 
+  const moodsKey = moods.join(',');
   const recommendedItems = useMemo(
     () =>
       place
-        ? pickMenuItems(place, { mood, situation, dietaryPreference }, 3)
+        ? pickMenuItems(place, { mood, moods, situation, dietaryPreference }, 3)
         : [],
-    [place, mood, situation, dietaryPreference]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [place, mood, moodsKey, situation, dietaryPreference]
   );
   const openStatus = useMemo(
     () => (place ? getOpenStatus(place) : null),
