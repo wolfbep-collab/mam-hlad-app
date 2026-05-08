@@ -23,7 +23,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFF7ED"
+        "backgroundColor": "#FFEDD5"
       },
       "package": "app.mamhlad.mobile",
       "edgeToEdgeEnabled": true,

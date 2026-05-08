@@ -58,11 +58,14 @@ function rgba(hex, a = 255) {
     a,
   ];
 }
-// Warm-only palette: cream background, orange bowl, amber/caramel chopsticks
-// (no near-black tones — kept readable but never reads as a black detail at
-// small launcher sizes), warm yellow noodles.
+// Warm-only palette: launcher-icon background uses primarySoft (#FFEDD5) — the
+// same colour as the round bowl badge on the home screen — so the app icon and
+// the in-app brand mark read as one. Bowl interior stays a deeper beige so the
+// rim still pops on the slightly more orange-cream backdrop. No near-black
+// tones — chopsticks are warm amber, never read as a black detail at small
+// launcher sizes.
 const PALETTE = {
-  CREAM_BG: rgba('#FFF7ED'),
+  CREAM_BG: rgba('#FFEDD5'),
   RIM_INSIDE: rgba('#FFE4C4'),
   ORANGE: rgba('#F97316'),
   ORANGE_DARK: rgba('#C2410C'),
