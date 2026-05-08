@@ -238,7 +238,7 @@ export default function KnownScreen() {
       <View style={styles.header}>
         <Text style={[typography.h1, styles.title]}>Co by sis dal?</Text>
         <Text style={[typography.body, styles.lead]}>
-          Napiš třeba pizza, nudle, polévka nebo sendvič.
+          Vyber rychlou volbu, nebo napiš jídlo, které si chceš dát.
         </Text>
       </View>
 
