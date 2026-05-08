@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Image, StyleSheet, Text } from 'react-native';
 import { colors, typography } from '../theme';
+
+const BOWL_LOGO = require('../../assets/adaptive-icon.png');
 
 interface SteamLogoIntroProps {
   /** Fired once the closing fade-out finishes — parent unmounts the intro then. */
@@ -9,16 +11,18 @@ interface SteamLogoIntroProps {
   durationMs?: number;
 }
 
-const BADGE_SIZE = 132;
+const LOGO_SIZE = 220;
+const STEAM_CUSHION = 64;
 const STEAM_W = 12;
 const STEAM_H = 24;
 const FADE_OUT_MS = 320;
 
 /**
- * Lightweight launch intro. Renders the same 🍜 bowl badge used elsewhere in
- * the app, with three poloprůhledné páry that rise and dissipate above the
- * bowl. All animations run on the native driver (opacity + translate + scaleX
- * only), there are no images, GIFs, SVGs or external libraries involved.
+ * Lightweight launch intro. Renders the actual bowl logo asset (the same image
+ * used as the Android adaptive icon) with three poloprůhledné páry that rise
+ * and dissipate above it. The image is a static PNG bundled with the app — no
+ * video, no GIF, no SVG, no extra dependency. All steam animations run on the
+ * native driver (opacity + translate + scaleX only).
  */
 export function SteamLogoIntro({
   onDone,
@@ -121,9 +125,12 @@ export function SteamLogoIntro({
         <Animated.View style={[styles.steam, styles.steamLeft, wispStyle(steamA)]} />
         <Animated.View style={[styles.steam, styles.steamCenter, wispStyle(steamB)]} />
         <Animated.View style={[styles.steam, styles.steamRight, wispStyle(steamC)]} />
-        <View style={styles.bowlBadge}>
-          <Text style={styles.bowlEmoji}>🍜</Text>
-        </View>
+        <Image
+          source={BOWL_LOGO}
+          style={styles.bowlImage}
+          resizeMode="contain"
+          accessibilityIgnoresInvertColors
+        />
       </Animated.View>
       <Text style={[typography.display, styles.brand]}>Mám hlad</Text>
     </Animated.View>
@@ -145,21 +152,14 @@ const styles = StyleSheet.create({
     elevation: 100,
   },
   logoArea: {
-    width: BADGE_SIZE,
-    height: BADGE_SIZE + 64,
+    width: LOGO_SIZE,
+    height: LOGO_SIZE + STEAM_CUSHION,
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
-  bowlBadge: {
-    width: BADGE_SIZE,
-    height: BADGE_SIZE,
-    borderRadius: BADGE_SIZE / 2,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bowlEmoji: {
-    fontSize: 72,
+  bowlImage: {
+    width: LOGO_SIZE,
+    height: LOGO_SIZE,
   },
   steam: {
     position: 'absolute',
@@ -167,16 +167,16 @@ const styles = StyleSheet.create({
     height: STEAM_H,
     borderRadius: STEAM_W / 2,
     backgroundColor: colors.textMuted,
-    bottom: BADGE_SIZE - 4,
+    bottom: LOGO_SIZE - 8,
   },
   steamLeft: {
-    left: BADGE_SIZE / 2 - STEAM_W / 2 - 24,
+    left: LOGO_SIZE / 2 - STEAM_W / 2 - 28,
   },
   steamCenter: {
-    left: BADGE_SIZE / 2 - STEAM_W / 2,
+    left: LOGO_SIZE / 2 - STEAM_W / 2,
   },
   steamRight: {
-    left: BADGE_SIZE / 2 - STEAM_W / 2 + 24,
+    left: LOGO_SIZE / 2 - STEAM_W / 2 + 28,
   },
   brand: {
     color: colors.primaryDark,
