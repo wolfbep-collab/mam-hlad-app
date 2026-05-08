@@ -1,16 +1,10 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { SteamLogoIntro } from '../src/components';
 import { colors } from '../src/theme';
 
 export default function RootLayout() {
-  // RootLayout mounts once per JS session, so this state — and therefore the
-  // intro — only appears on cold start, never during in-app navigation.
-  const [introDone, setIntroDone] = useState(false);
-
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background }}>
       <SafeAreaProvider>
@@ -43,9 +37,6 @@ export default function RootLayout() {
             options={{ title: 'Mám stánek' }}
           />
         </Stack>
-        {!introDone ? (
-          <SteamLogoIntro onDone={() => setIntroDone(true)} />
-        ) : null}
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

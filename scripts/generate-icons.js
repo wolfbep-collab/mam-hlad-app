@@ -58,12 +58,15 @@ function rgba(hex, a = 255) {
     a,
   ];
 }
+// Warm-only palette: cream background, orange bowl, amber/caramel chopsticks
+// (no near-black tones — kept readable but never reads as a black detail at
+// small launcher sizes), warm yellow noodles.
 const PALETTE = {
   CREAM_BG: rgba('#FFF7ED'),
   RIM_INSIDE: rgba('#FFE4C4'),
   ORANGE: rgba('#F97316'),
   ORANGE_DARK: rgba('#C2410C'),
-  WOOD: rgba('#8B4513'),
+  WOOD: rgba('#B45309'),
   NOODLE: rgba('#FBBF24'),
   TRANSPARENT: [0, 0, 0, 0],
 };
