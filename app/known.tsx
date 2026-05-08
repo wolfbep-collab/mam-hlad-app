@@ -315,11 +315,10 @@ export default function KnownScreen() {
       {isEmpty ? (
         <View style={styles.empty}>
           <Text style={[typography.h3, styles.emptyTitle]}>
-            Nic přesně nesedí
+            Tohle zatím v nabídce nemáme.
           </Text>
           <Text style={[typography.body, styles.emptyText]}>
-            Tohle zatím v nabídce nemáme. Zkus jiné slovo, třeba nudle, polévka
-            nebo salát.
+            Zkus obecnější název jídla, třeba nudle, polévka nebo salát.
           </Text>
         </View>
       ) : null}
