@@ -16,8 +16,7 @@ export default function HomeScreen() {
         </View>
         <Text style={[typography.display, styles.title]}>Mám hlad</Text>
         <Text style={[typography.body, styles.lead]}>
-          Rozhodni se za 30 sekund. Řekni nám, jakou máš chuť a kolik máš času —
-          najdeme to nejlepší, co si dát teď.
+          Vyber, na co máš chuť. My ti najdeme vhodné jídlo.
         </Text>
       </View>
 
