@@ -317,9 +317,6 @@ export default function KnownScreen() {
           <Text style={[typography.h3, styles.emptyTitle]}>
             Tohle zatím v nabídce nemáme.
           </Text>
-          <Text style={[typography.body, styles.emptyText]}>
-            Zkus obecnější název jídla, třeba nudle, polévka nebo salát.
-          </Text>
         </View>
       ) : null}
     </Screen>
