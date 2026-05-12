@@ -97,7 +97,11 @@ export interface UserPreference {
   /** Full list of selected moods (1 or 2). When omitted the engine treats the
    * preference as `[mood]`. */
   moods?: Mood[];
+  /** Primary situation. Kept as a single value for backward compatibility. */
   situation: Situation;
+  /** Full list of selected situations (1 or 2). When omitted the engine treats
+   * the preference as `[situation]`. */
+  situations?: Situation[];
   dietaryPreference: DietaryPreference;
 }
 

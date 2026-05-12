@@ -24,15 +24,16 @@ function tipsCaption(count: number): string {
 }
 
 const MAX_MOODS = 2;
+const MAX_SITUATIONS = 2;
 
 export default function HungerScreen() {
   const router = useRouter();
   const [moods, setMoods] = useState<Mood[]>([]);
-  const [situation, setSituation] = useState<Situation | null>(null);
+  const [situations, setSituations] = useState<Situation[]>([]);
   const [dietaryPreference, setDietaryPreference] =
     useState<DietaryPreference>('any');
 
-  const canContinue = moods.length >= 1 && situation !== null;
+  const canContinue = moods.length >= 1 && situations.length >= 1;
 
   const toggleMood = (m: Mood) => {
     setMoods((prev) => {
@@ -47,22 +48,41 @@ export default function HungerScreen() {
     });
   };
 
+  const toggleSituation = (s: Situation) => {
+    setSituations((prev) => {
+      if (prev.includes(s)) {
+        return prev.filter((x) => x !== s);
+      }
+      if (prev.length >= MAX_SITUATIONS) {
+        return [...prev.slice(1), s];
+      }
+      return [...prev, s];
+    });
+  };
+
   const viableCount = useMemo(() => {
-    if (!canContinue || !situation || moods.length === 0) return 0;
+    if (!canContinue || situations.length === 0 || moods.length === 0) return 0;
     return countViableTips(
-      { mood: moods[0], moods, situation, dietaryPreference },
+      {
+        mood: moods[0],
+        moods,
+        situation: situations[0],
+        situations,
+        dietaryPreference,
+      },
       demoPlaces
     );
-  }, [canContinue, moods, situation, dietaryPreference]);
+  }, [canContinue, moods, situations, dietaryPreference]);
 
   const handleContinue = () => {
-    if (!canContinue || !situation || moods.length === 0) return;
+    if (!canContinue || situations.length === 0 || moods.length === 0) return;
     router.push({
       pathname: '/results',
       params: {
         mood: moods[0],
         moods: moods.join(','),
-        situation,
+        situation: situations[0],
+        situations: situations.join(','),
         diet: dietaryPreference,
       },
     });
@@ -108,8 +128,8 @@ export default function HungerScreen() {
             <MoodChip
               key={s}
               label={situationLabels[s]}
-              selected={situation === s}
-              onPress={() => setSituation(s)}
+              selected={situations.includes(s)}
+              onPress={() => toggleSituation(s)}
             />
           ))}
         </View>

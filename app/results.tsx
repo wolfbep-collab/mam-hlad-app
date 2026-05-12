@@ -52,12 +52,26 @@ function parseMoodList(
   return parts.slice(0, 2);
 }
 
+function parseSituationList(
+  raw: string | undefined,
+  fallback: Situation
+): Situation[] {
+  if (!raw) return [fallback];
+  const parts = raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s): s is Situation => isSituation(s));
+  if (parts.length === 0) return [fallback];
+  return parts.slice(0, 2);
+}
+
 export default function ResultsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     mood?: string;
     moods?: string;
     situation?: string;
+    situations?: string;
     diet?: string;
   }>();
 
@@ -66,6 +80,10 @@ export default function ResultsScreen() {
   const situation: Situation = isSituation(params.situation)
     ? params.situation
     : 'now';
+  const situations: Situation[] = parseSituationList(
+    params.situations,
+    situation
+  );
   const dietaryPreference: DietaryPreference = isDiet(params.diet)
     ? params.diet
     : 'any';
@@ -111,10 +129,11 @@ export default function ResultsScreen() {
   );
 
   const moodsKey = moods.join(',');
+  const situationsKey = situations.join(',');
   const result = useMemo(
     () =>
       recommend(
-        { mood, moods, situation, dietaryPreference },
+        { mood, moods, situation, situations, dietaryPreference },
         effectivePlaces,
         {
           excludePlaceIds: dismissedIds,
@@ -123,13 +142,14 @@ export default function ResultsScreen() {
           recentMenuItemNames: recentSignals.recentMenuItemNames,
         }
       ),
-    // moodsKey is the stable serialised view of `moods`; including it instead
-    // of the array keeps the deps shallow-comparable.
+    // moodsKey/situationsKey are the stable serialised views; including them
+    // instead of the arrays keeps the deps shallow-comparable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       mood,
       moodsKey,
       situation,
+      situationsKey,
       dietaryPreference,
       dismissedIds,
       userLocation,
@@ -232,6 +252,7 @@ export default function ResultsScreen() {
         mood,
         moods: moods.join(','),
         situation,
+        situations: situations.join(','),
         diet: dietaryPreference,
       },
     });
@@ -260,7 +281,9 @@ export default function ResultsScreen() {
         </Text>
         <Text style={[typography.h2, styles.summaryTitle]}>
           {moods.map((m) => moodLabels[m]).join(' + ')} •{' '}
-          {situationLabels[situation].toLowerCase()}
+          {situations
+            .map((s) => situationLabels[s].toLowerCase())
+            .join(' + ')}
         </Text>
       </View>
 
