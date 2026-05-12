@@ -38,6 +38,32 @@ function effectiveMoods(pref: UserPreference): Mood[] {
   return out;
 }
 
+/** Returns the user's selected situations, deduplicated. Falls back to
+ * `[pref.situation]` when the optional `situations` array isn't set. */
+function effectiveSituations(pref: UserPreference): Situation[] {
+  const list =
+    pref.situations && pref.situations.length > 0
+      ? pref.situations
+      : [pref.situation];
+  const seen = new Set<Situation>();
+  const out: Situation[] = [];
+  for (const s of list) {
+    if (seen.has(s)) continue;
+    seen.add(s);
+    out.push(s);
+  }
+  return out;
+}
+
+/** Strictest (minimum) max-prep across the chosen situations. */
+function combinedMaxPrep(situations: Situation[]): number {
+  if (situations.length === 0) return situationMaxPrepMinutes.now;
+  return situations.reduce(
+    (acc, s) => Math.min(acc, situationMaxPrepMinutes[s]),
+    Number.POSITIVE_INFINITY
+  );
+}
+
 function placeHasDietaryItem(place: Place, diet: DietaryPreference): boolean {
   if (diet === 'any') return true;
   return place.menuItems.some((it) => matchesDiet(it, diet));
@@ -132,12 +158,21 @@ function scorePlace(
     score += scoreDistance(d);
   }
 
-  const requiredServices = situationToServices[pref.situation];
-  const matchesService = requiredServices.some((s) =>
-    place.services.includes(s)
-  );
-  if (matchesService) {
-    score += 18;
+  const situations = effectiveSituations(pref);
+  // Per-situation service match. A place that satisfies every chosen situation
+  // gets the full bonus; one matching only some gets a partial credit; a place
+  // satisfying none is penalised.
+  let serviceMatches = 0;
+  for (const sit of situations) {
+    const required = situationToServices[sit];
+    if (required.some((s) => place.services.includes(s))) {
+      serviceMatches += 1;
+    }
+  }
+  if (situations.length > 0 && serviceMatches === situations.length) {
+    score += 18 + (situations.length - 1) * 8;
+  } else if (serviceMatches > 0) {
+    score += 6;
   } else {
     score -= 25;
   }
@@ -154,7 +189,7 @@ function scorePlace(
     else score -= 6;
   }
 
-  const maxPrep = situationMaxPrepMinutes[pref.situation];
+  const maxPrep = combinedMaxPrep(situations);
   if (place.prepMinutes <= maxPrep) {
     const margin = Math.max(0, maxPrep - place.prepMinutes);
     score += 10 + Math.min(margin, 20) * 0.5;
@@ -162,7 +197,7 @@ function scorePlace(
     score -= (place.prepMinutes - maxPrep) * 1.5;
   }
 
-  if (moods.includes('cheap') || pref.situation === 'now') {
+  if (moods.includes('cheap') || situations.includes('now')) {
     score += (4 - place.priceLevel) * 4;
   }
 
@@ -210,7 +245,7 @@ function scoreMenuItem(
     }
   }
 
-  const maxPrep = situationMaxPrepMinutes[pref.situation];
+  const maxPrep = combinedMaxPrep(effectiveSituations(pref));
   if (item.preparationMinutes <= maxPrep) {
     score += 8;
   } else {
@@ -271,26 +306,32 @@ export function pickMenuItems(
 
 export function buildHumanReason(pref: UserPreference): string {
   const moods = effectiveMoods(pref);
+  const situations = effectiveSituations(pref);
+  const primarySituation = situations[0] ?? pref.situation;
+  const situationSentence =
+    situations.length >= 2
+      ? situations.map((s) => situationStandalone[s]).join(' ')
+      : situationStandalone[primarySituation];
   const adjs = moods
     .map((m) => moodAdjective[m])
     .filter((a): a is string => !!a);
   if (adjs.length === 0) {
-    return situationStandalone[pref.situation];
+    return situationSentence;
   }
   const moodPart =
     adjs.length === 1
       ? `chceš něco ${adjs[0]}`
       : `chceš něco ${adjs[0]} a ${adjs[1]}`;
-  if (adjs.length >= 2) {
-    return `Doporučeno, protože ${moodPart}. ${situationStandalone[pref.situation]}`;
+  if (adjs.length >= 2 || situations.length >= 2) {
+    return `Doporučeno, protože ${moodPart}. ${situationSentence}`;
   }
   const fastMoodOnFastSit =
     moods.includes('fast') &&
-    (pref.situation === 'now' || pref.situation === '15min');
+    (primarySituation === 'now' || primarySituation === '15min');
   if (fastMoodOnFastSit) {
     return `Doporučeno, protože ${moodPart}.`;
   }
-  return `Doporučeno, protože ${moodPart} ${situationConnector[pref.situation]}.`;
+  return `Doporučeno, protože ${moodPart} ${situationConnector[primarySituation]}.`;
 }
 
 type ReasonRule = {
@@ -590,8 +631,13 @@ export function countViableTips(
   places: Place[]
 ): number {
   const now = new Date();
-  const requiredServices = situationToServices[pref.situation];
-  const maxPrep = situationMaxPrepMinutes[pref.situation];
+  const situations = effectiveSituations(pref);
+  // Union of allowed service modes — a place needs to satisfy at least one of
+  // the chosen situations on services to remain in the pool.
+  const requiredServices = Array.from(
+    new Set(situations.flatMap((s) => situationToServices[s]))
+  );
+  const maxPrep = combinedMaxPrep(situations);
   const moods = effectiveMoods(pref);
   const moodTagsUnion = Array.from(
     new Set(moods.flatMap((m) => moodTagBoost[m]))
