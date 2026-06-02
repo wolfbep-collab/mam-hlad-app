@@ -96,6 +96,10 @@ export interface Place {
   website?: string;
   instagram?: string;
   phone?: string;
+  chefName?: string;
+  chefRole?: string;
+  chefMessage?: string;
+  chefSpecialty?: string;
 }
 
 export type DietaryPreference = 'any' | 'vegetarian' | 'vegan';

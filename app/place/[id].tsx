@@ -67,6 +67,16 @@ function openExternal(url: string) {
   void Linking.openURL(url).catch(() => {});
 }
 
+function pickAskTarget(
+  place: Place
+): { label: string; url: string } | null {
+  if (place.phone) return { label: 'Zavolat', url: telUrl(place.phone) };
+  if (place.instagram)
+    return { label: 'Napsat na Instagramu', url: instagramUrl(place.instagram) };
+  if (place.website) return { label: 'Otevřít web', url: place.website };
+  return null;
+}
+
 const isMood = (v: string | undefined): v is Mood =>
   !!v &&
   ['warm', 'fast', 'light', 'cheap', 'healthy', 'sweet', 'any'].includes(v);
@@ -171,6 +181,11 @@ export default function PlaceDetailScreen() {
 
   const [showFullMenu, setShowFullMenu] = useState(false);
 
+  const askTarget = useMemo(
+    () => (place ? pickAskTarget(place) : null),
+    [place]
+  );
+
   if (!place) {
     return (
       <Screen>
@@ -225,6 +240,29 @@ export default function PlaceDetailScreen() {
         </View>
       ) : null}
 
+      {place.chefName || place.chefRole || place.chefSpecialty || place.chefMessage ? (
+        <View style={styles.chefCard}>
+          <Text style={[typography.label, styles.chefHeading]}>Od kuchaře</Text>
+          {place.chefName || place.chefRole ? (
+            <Text style={[typography.h3, styles.chefName]}>
+              {[place.chefName, place.chefRole]
+                .filter((s): s is string => !!s && s.trim().length > 0)
+                .join(', ')}
+            </Text>
+          ) : null}
+          {place.chefSpecialty ? (
+            <Text style={[typography.caption, styles.chefSpecialty]}>
+              {place.chefSpecialty}
+            </Text>
+          ) : null}
+          {place.chefMessage ? (
+            <Text style={[typography.body, styles.chefMessage]}>
+              „{place.chefMessage}"
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
+
       {recommendedItems.length > 0 ? (
         <View style={styles.menuSection}>
           <Text style={[typography.h2, styles.menuHeading]}>
@@ -261,6 +299,23 @@ export default function PlaceDetailScreen() {
               ))}
             </View>
           ) : null}
+        </View>
+      ) : null}
+
+      {askTarget ? (
+        <View style={styles.askCard}>
+          <Text style={[typography.label, styles.cardLabel]}>
+            Zeptat se podniku
+          </Text>
+          <Button
+            label={askTarget.label}
+            variant="secondary"
+            size="md"
+            onPress={() => openExternal(askTarget.url)}
+          />
+          <Text style={[typography.caption, styles.askHint]}>
+            U alergií nebo speciální diety se raději zeptej přímo obsluhy.
+          </Text>
         </View>
       ) : null}
 
@@ -680,5 +735,37 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 22,
     lineHeight: 22,
+  },
+  chefCard: {
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.xs,
+  },
+  chefHeading: {
+    color: colors.primaryDark,
+    textTransform: 'uppercase',
+  },
+  chefName: {
+    color: colors.textPrimary,
+  },
+  chefSpecialty: {
+    color: colors.textSecondary,
+  },
+  chefMessage: {
+    color: colors.textPrimary,
+    marginTop: spacing.xs,
+    fontStyle: 'italic',
+  },
+  askCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: spacing.sm,
+  },
+  askHint: {
+    color: colors.textMuted,
   },
 });
