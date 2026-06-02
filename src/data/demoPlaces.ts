@@ -33,6 +33,11 @@ const item = (
       | 'isLight'
       | 'isQuick'
       | 'isHealthy'
+      | 'ingredients'
+      | 'chefNote'
+      | 'containsAllergens'
+      | 'mayContainAllergens'
+      | 'glutenInfo'
     >
   >
 ): MenuItem => ({
@@ -49,6 +54,11 @@ const item = (
   isLight: flags.isLight ?? false,
   isQuick: flags.isQuick ?? preparationMinutes <= 10,
   isHealthy: flags.isHealthy ?? false,
+  ingredients: flags.ingredients,
+  chefNote: flags.chefNote,
+  containsAllergens: flags.containsAllergens,
+  mayContainAllergens: flags.mayContainAllergens,
+  glutenInfo: flags.glutenInfo,
 });
 
 export const demoPlaces: Place[] = [
@@ -66,11 +76,34 @@ export const demoPlaces: Place[] = [
     openingHours: week([r('11:00', '22:00')]),
     description: 'Tradiční česká restaurace, vyhlášené svíčkové a guláše.',
     rating: 4.6,
+    website: 'https://umodrekachny.example.cz',
+    instagram: 'umodrekachny',
+    phone: '+420212345678',
     menuItems: [
-      item('p01-i1', 'Svíčková na smetaně', 'S domácím karlovarským knedlíkem a brusinkami.', 2, 25, ['warm', 'czech', 'meat'], { isWarm: true }),
-      item('p01-i2', 'Hovězí guláš', 'Pomalu dušený s cibulí, houskovým knedlíkem.', 2, 18, ['warm', 'czech', 'meat'], { isWarm: true }),
+      item('p01-i1', 'Svíčková na smetaně', 'S domácím karlovarským knedlíkem a brusinkami.', 2, 25, ['warm', 'czech', 'meat'], {
+        isWarm: true,
+        ingredients: ['hovězí maso', 'kořenová zelenina', 'smetana', 'karlovarský knedlík', 'brusinky', 'citron'],
+        chefNote: 'Děláme ji jako babička — omáčka se redukuje pomalu, knedlík pečeme každé ráno z čerstvého těsta.',
+        containsAllergens: ['mléko', 'lepek', 'vejce', 'celer'],
+        glutenInfo: 'by_ingredients',
+      }),
+      item('p01-i2', 'Hovězí guláš', 'Pomalu dušený s cibulí, houskovým knedlíkem.', 2, 18, ['warm', 'czech', 'meat'], {
+        isWarm: true,
+        ingredients: ['hovězí kližka', 'cibule', 'paprika sladká', 'majoránka', 'houskový knedlík'],
+        chefNote: 'Dusíme tři hodiny v poctivém železném hrnci — žádné zkracování.',
+        containsAllergens: ['lepek', 'vejce'],
+      }),
       item('p01-i3', 'Smažený sýr s hranolky', 'Klasika s tatarkou. Bezmasá volba.', 2, 16, ['warm', 'czech', 'vegetarian'], { isWarm: true, isVegetarian: true }),
-      item('p01-i4', 'Bramboračka s houbami', 'Hustá, vydatná, na zahřátí.', 1, 10, ['warm', 'czech', 'soup', 'vegetarian'], { isWarm: true, isVegetarian: true, isLight: true, isQuick: true }),
+      item('p01-i4', 'Bramboračka s houbami', 'Hustá, vydatná, na zahřátí.', 1, 10, ['warm', 'czech', 'soup', 'vegetarian'], {
+        isWarm: true,
+        isVegetarian: true,
+        isLight: true,
+        isQuick: true,
+        ingredients: ['brambory', 'lesní houby', 'kořenová zelenina', 'majoránka', 'česnek'],
+        mayContainAllergens: ['celer'],
+        glutenInfo: 'celiac_confirmed',
+        chefNote: 'Houby sušíme v sezoně sami. Polévku připravujeme v oddělené části kuchyně, mimo prostor s moukou.',
+      }),
       item('p01-i5', 'Štrúdl se zmrzlinou', 'Domácí jablečný štrúdl, šlehačka, vanilková zmrzlina.', 2, 6, ['sweet', 'bakery', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
     ],
   },
@@ -92,8 +125,16 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Burgery, hot dogy a wrapy do 10 minut.',
     rating: 4.2,
+    instagram: 'bistro.rychlovka',
+    phone: '+420222111000',
     menuItems: [
-      item('p02-i1', 'Cheeseburger', 'Hovězí placka, čedar, salát, domácí pečivo.', 1, 8, ['warm', 'fast', 'burger', 'meat'], { isWarm: true, isQuick: true }),
+      item('p02-i1', 'Cheeseburger', 'Hovězí placka, čedar, salát, domácí pečivo.', 1, 8, ['warm', 'fast', 'burger', 'meat'], {
+        isWarm: true,
+        isQuick: true,
+        ingredients: ['hovězí karbanátek', 'čedar', 'salát', 'rajče', 'briošková bulka', 'domácí omáčka'],
+        chefNote: 'Mleté maso si připravujeme každé ráno z farmářského hovězího.',
+        containsAllergens: ['lepek', 'mléko', 'hořčice'],
+      }),
       item('p02-i2', 'Kuřecí wrap', 'Grilované kuře, zelenina, jogurtová omáčka.', 1, 7, ['warm', 'fast', 'meat'], { isWarm: true, isQuick: true }),
       item('p02-i3', 'Hot dog klasik', 'Párek, hořčice, pražená cibulka.', 1, 5, ['warm', 'fast', 'meat'], { isWarm: true, isQuick: true }),
       item('p02-i4', 'Hranolky velké', 'Křupavé, posypané solí.', 1, 5, ['fast', 'vegetarian', 'vegan'], { isWarm: true, isVegetarian: true, isVegan: true, isQuick: true }),
