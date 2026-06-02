@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Button, Screen } from '../../src/components';
 import { demoPlaces } from '../../src/data/demoPlaces';
 import { maybeLocalizeDemoPlaces } from '../../src/lib/demoPlaceLocalizer';
@@ -19,13 +19,53 @@ import {
   pickMenuItems,
 } from '../../src/lib/recommendationEngine';
 import { colors, radius, spacing, typography } from '../../src/theme';
-import type { DietaryPreference, MenuItem, Mood, Situation } from '../../src/types';
+import type {
+  DietaryPreference,
+  MenuItem,
+  Mood,
+  Place,
+  Situation,
+} from '../../src/types';
 
 const serviceLabel: Record<string, string> = {
   sitdown: 'Posezení',
   pickup: 'Vyzvednutí',
   delivery: 'Rozvoz',
 };
+
+const ALLERGEN_SAFETY_NOTE =
+  'Informace zadává podnik. Při alergii nebo celiakii se raději zeptej obsluhy.';
+
+const glutenInfoLabel: Record<'by_ingredients' | 'celiac_confirmed', string> = {
+  by_ingredients: 'Bez lepku podle surovin',
+  celiac_confirmed: 'Podnik uvádí oddělenou přípravu',
+};
+
+function buildNavigationUrl(place: Place): string {
+  if (place.latitude != null && place.longitude != null) {
+    const label = encodeURIComponent(place.name);
+    return `https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}(${label})`;
+  }
+  const queryParts = [place.name, place.address].filter(
+    (part): part is string => !!part && part.trim().length > 0
+  );
+  const query = encodeURIComponent(queryParts.join(', ') || place.name);
+  return `https://www.google.com/maps/search/?api=1&query=${query}`;
+}
+
+function instagramUrl(handle: string): string {
+  const clean = handle.replace(/^@/, '').trim();
+  if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
+  return `https://instagram.com/${clean}`;
+}
+
+function telUrl(phone: string): string {
+  return `tel:${phone.replace(/\s+/g, '')}`;
+}
+
+function openExternal(url: string) {
+  void Linking.openURL(url).catch(() => {});
+}
 
 const isMood = (v: string | undefined): v is Mood =>
   !!v &&
@@ -123,6 +163,8 @@ export default function PlaceDetailScreen() {
     return meters != null ? formatDistance(meters) : null;
   }, [place, cachedLocation]);
 
+  const [showFullMenu, setShowFullMenu] = useState(false);
+
   if (!place) {
     return (
       <Screen>
@@ -151,6 +193,11 @@ export default function PlaceDetailScreen() {
           {openStatus?.label ?? 'Otevírací doba neznámá'}
         </Text>
       </View>
+
+      <Button
+        label="Navigovat"
+        onPress={() => openExternal(buildNavigationUrl(place))}
+      />
 
       <View style={styles.card}>
         <Text style={[typography.label, styles.cardLabel]}>Otevírací doba dnes</Text>
@@ -187,6 +234,66 @@ export default function PlaceDetailScreen() {
               reason={buildMenuItemReason(it, 'detail')}
             />
           ))}
+        </View>
+      ) : null}
+
+      {place.menuItems.length > 0 ? (
+        <View style={styles.menuSection}>
+          <Button
+            label={showFullMenu ? 'Skrýt celou nabídku' : 'Zobrazit celou nabídku'}
+            variant="secondary"
+            size="md"
+            onPress={() => setShowFullMenu((v) => !v)}
+          />
+          {showFullMenu ? (
+            <View style={styles.fullMenuList}>
+              <Text style={[typography.caption, styles.menuSub]}>
+                Celé menu, jak ho podnik uvádí.
+              </Text>
+              {place.menuItems.map((it) => {
+                const inTips = recommendedItems.some((r) => r.id === it.id);
+                return (
+                  <MenuItemRow
+                    key={it.id}
+                    item={it}
+                    reason={inTips ? buildMenuItemReason(it, 'detail') : null}
+                  />
+                );
+              })}
+            </View>
+          ) : null}
+        </View>
+      ) : null}
+
+      {place.website || place.instagram || place.phone ? (
+        <View style={styles.card}>
+          <Text style={[typography.label, styles.cardLabel]}>Odkazy</Text>
+          <View style={styles.linksColumn}>
+            {place.website ? (
+              <LinkRow
+                label="Web"
+                onPress={() => openExternal(place.website as string)}
+              />
+            ) : null}
+            {place.instagram ? (
+              <LinkRow
+                label="Instagram"
+                onPress={() =>
+                  openExternal(instagramUrl(place.instagram as string))
+                }
+              />
+            ) : null}
+            {place.phone ? (
+              <LinkRow
+                label="Zavolat"
+                onPress={() => openExternal(telUrl(place.phone as string))}
+              />
+            ) : null}
+            <LinkRow
+              label="Mapa / Navigace"
+              onPress={() => openExternal(buildNavigationUrl(place))}
+            />
+          </View>
         </View>
       ) : null}
 
@@ -238,7 +345,40 @@ function Meta({ label, value }: { label: string; value: string }) {
   );
 }
 
-function MenuItemRow({ item, reason }: { item: MenuItem; reason: string }) {
+function LinkRow({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.linkRow, pressed && styles.linkRowPressed]}
+    >
+      <Text style={[typography.body, styles.linkText]}>{label}</Text>
+      <Text style={styles.linkChevron}>›</Text>
+    </Pressable>
+  );
+}
+
+function MenuItemRow({
+  item,
+  reason,
+}: {
+  item: MenuItem;
+  reason: string | null;
+}) {
+  const gluten =
+    item.glutenInfo && item.glutenInfo !== 'not_set'
+      ? glutenInfoLabel[item.glutenInfo]
+      : null;
+  const hasAllergenInfo =
+    (item.ingredients && item.ingredients.length > 0) ||
+    (item.containsAllergens && item.containsAllergens.length > 0) ||
+    (item.mayContainAllergens && item.mayContainAllergens.length > 0) ||
+    !!gluten;
   return (
     <View style={styles.itemCard}>
       <Text style={[typography.h3, styles.itemName]}>{item.name}</Text>
@@ -265,10 +405,62 @@ function MenuItemRow({ item, reason }: { item: MenuItem; reason: string }) {
             <Text style={styles.dietText}>Vege</Text>
           </View>
         ) : null}
+        {gluten ? (
+          <View style={styles.glutenPill}>
+            <Text style={styles.glutenText}>{gluten}</Text>
+          </View>
+        ) : null}
       </View>
-      <View style={styles.itemReasonBox}>
-        <Text style={[typography.caption, styles.itemReason]}>{reason}</Text>
-      </View>
+      {item.ingredients && item.ingredients.length > 0 ? (
+        <View style={styles.itemDetailBlock}>
+          <Text style={[typography.label, styles.itemDetailLabel]}>
+            Ingredience
+          </Text>
+          <Text style={[typography.body, styles.itemDetailValue]}>
+            {item.ingredients.join(', ')}
+          </Text>
+        </View>
+      ) : null}
+      {item.containsAllergens && item.containsAllergens.length > 0 ? (
+        <View style={styles.itemDetailBlock}>
+          <Text style={[typography.label, styles.itemDetailLabel]}>
+            Obsahuje alergeny
+          </Text>
+          <Text style={[typography.body, styles.itemDetailValue]}>
+            {item.containsAllergens.join(', ')}
+          </Text>
+        </View>
+      ) : null}
+      {item.mayContainAllergens && item.mayContainAllergens.length > 0 ? (
+        <View style={styles.itemDetailBlock}>
+          <Text style={[typography.label, styles.itemDetailLabel]}>
+            Může obsahovat stopy
+          </Text>
+          <Text style={[typography.body, styles.itemDetailValue]}>
+            {item.mayContainAllergens.join(', ')}
+          </Text>
+        </View>
+      ) : null}
+      {item.chefNote ? (
+        <View style={styles.chefNoteBox}>
+          <Text style={[typography.label, styles.chefNoteLabel]}>
+            Poznámka kuchaře
+          </Text>
+          <Text style={[typography.body, styles.chefNoteText]}>
+            {item.chefNote}
+          </Text>
+        </View>
+      ) : null}
+      {hasAllergenInfo ? (
+        <Text style={[typography.caption, styles.allergenNote]}>
+          {ALLERGEN_SAFETY_NOTE}
+        </Text>
+      ) : null}
+      {reason ? (
+        <View style={styles.itemReasonBox}>
+          <Text style={[typography.caption, styles.itemReason]}>{reason}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -418,5 +610,76 @@ const styles = StyleSheet.create({
     color: colors.primaryDark,
     fontWeight: '600',
     fontSize: 13,
+  },
+  glutenPill: {
+    backgroundColor: colors.primarySoft,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: radius.pill,
+  },
+  glutenText: {
+    color: colors.primaryDark,
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+  },
+  itemDetailBlock: {
+    marginTop: spacing.xs,
+    gap: 2,
+  },
+  itemDetailLabel: {
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+  },
+  itemDetailValue: {
+    color: colors.textPrimary,
+  },
+  chefNoteBox: {
+    marginTop: spacing.xs,
+    backgroundColor: colors.primarySoft,
+    padding: spacing.sm,
+    borderRadius: radius.sm,
+    gap: 2,
+  },
+  chefNoteLabel: {
+    color: colors.primaryDark,
+    textTransform: 'uppercase',
+  },
+  chefNoteText: {
+    color: colors.textPrimary,
+  },
+  allergenNote: {
+    color: colors.textMuted,
+    fontStyle: 'italic',
+  },
+  fullMenuList: {
+    gap: spacing.md,
+    marginTop: spacing.sm,
+  },
+  linksColumn: {
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: radius.md,
+  },
+  linkRowPressed: {
+    opacity: 0.7,
+  },
+  linkText: {
+    color: colors.textPrimary,
+    fontWeight: '600',
+  },
+  linkChevron: {
+    color: colors.textMuted,
+    fontSize: 22,
+    lineHeight: 22,
   },
 });

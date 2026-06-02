@@ -39,6 +39,8 @@ export type FoodTag =
   | 'bakery'
   | 'cafe';
 
+export type GlutenInfo = 'not_set' | 'by_ingredients' | 'celiac_confirmed';
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -53,6 +55,11 @@ export interface MenuItem {
   isLight: boolean;
   isQuick: boolean;
   isHealthy: boolean;
+  ingredients?: string[];
+  chefNote?: string;
+  containsAllergens?: string[];
+  mayContainAllergens?: string[];
+  glutenInfo?: GlutenInfo;
 }
 
 export type Weekday =
@@ -86,6 +93,9 @@ export interface Place {
   menuItems: MenuItem[];
   latitude?: number;
   longitude?: number;
+  website?: string;
+  instagram?: string;
+  phone?: string;
 }
 
 export type DietaryPreference = 'any' | 'vegetarian' | 'vegan';
