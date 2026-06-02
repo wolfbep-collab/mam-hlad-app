@@ -43,14 +43,14 @@ const glutenInfoLabel: Record<'by_ingredients' | 'celiac_confirmed', string> = {
 
 function buildNavigationUrl(place: Place): string {
   if (place.latitude != null && place.longitude != null) {
-    const label = encodeURIComponent(place.name);
-    return `https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}(${label})`;
+    return `https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}`;
   }
-  const queryParts = [place.name, place.address].filter(
-    (part): part is string => !!part && part.trim().length > 0
-  );
-  const query = encodeURIComponent(queryParts.join(', ') || place.name);
-  return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  const trimmedAddress = place.address?.trim();
+  if (trimmedAddress) {
+    const destination = encodeURIComponent(`${place.name}, ${trimmedAddress}`);
+    return `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name)}`;
 }
 
 function instagramUrl(handle: string): string {
@@ -163,6 +163,12 @@ export default function PlaceDetailScreen() {
     return meters != null ? formatDistance(meters) : null;
   }, [place, cachedLocation]);
 
+  const remainingMenuItems = useMemo(() => {
+    if (!place) return [] as MenuItem[];
+    const tipIds = new Set(recommendedItems.map((it) => it.id));
+    return place.menuItems.filter((it) => !tipIds.has(it.id));
+  }, [place, recommendedItems]);
+
   const [showFullMenu, setShowFullMenu] = useState(false);
 
   if (!place) {
@@ -237,7 +243,7 @@ export default function PlaceDetailScreen() {
         </View>
       ) : null}
 
-      {place.menuItems.length > 0 ? (
+      {remainingMenuItems.length > 0 ? (
         <View style={styles.menuSection}>
           <Button
             label={showFullMenu ? 'Skrýt celou nabídku' : 'Zobrazit celou nabídku'}
@@ -248,18 +254,11 @@ export default function PlaceDetailScreen() {
           {showFullMenu ? (
             <View style={styles.fullMenuList}>
               <Text style={[typography.caption, styles.menuSub]}>
-                Celé menu, jak ho podnik uvádí.
+                Další položky z menu.
               </Text>
-              {place.menuItems.map((it) => {
-                const inTips = recommendedItems.some((r) => r.id === it.id);
-                return (
-                  <MenuItemRow
-                    key={it.id}
-                    item={it}
-                    reason={inTips ? buildMenuItemReason(it, 'detail') : null}
-                  />
-                );
-              })}
+              {remainingMenuItems.map((it) => (
+                <MenuItemRow key={it.id} item={it} reason={null} />
+              ))}
             </View>
           ) : null}
         </View>
