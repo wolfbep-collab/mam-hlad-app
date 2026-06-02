@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, View } from 'react-native';
 import { Button, Screen } from '../../src/components';
 import { demoPlaces } from '../../src/data/demoPlaces';
 import { maybeLocalizeDemoPlaces } from '../../src/lib/demoPlaceLocalizer';
@@ -360,38 +360,6 @@ export default function PlaceDetailScreen() {
         </View>
       ) : null}
 
-      {place.website || place.instagram || place.phone ? (
-        <View style={styles.card}>
-          <Text style={[typography.label, styles.cardLabel]}>Odkazy</Text>
-          <View style={styles.linksColumn}>
-            {place.website ? (
-              <LinkRow
-                label="Web"
-                onPress={() => openExternal(place.website as string)}
-              />
-            ) : null}
-            {place.instagram ? (
-              <LinkRow
-                label="Instagram"
-                onPress={() =>
-                  openExternal(instagramUrl(place.instagram as string))
-                }
-              />
-            ) : null}
-            {place.phone ? (
-              <LinkRow
-                label="Zavolat"
-                onPress={() => openExternal(telUrl(place.phone as string))}
-              />
-            ) : null}
-            <LinkRow
-              label="Mapa / Navigace"
-              onPress={() => openExternal(buildNavigationUrl(place))}
-            />
-          </View>
-        </View>
-      ) : null}
-
       <View style={styles.card}>
         <Text style={[typography.label, styles.cardLabel]}>Adresa</Text>
         <Text style={[typography.body, styles.cardValue]}>{place.address}</Text>
@@ -437,24 +405,6 @@ function Meta({ label, value }: { label: string; value: string }) {
       <Text style={[typography.caption, styles.metaLabel]}>{label}</Text>
       <Text style={[typography.bodyStrong, styles.metaValue]}>{value}</Text>
     </View>
-  );
-}
-
-function LinkRow({
-  label,
-  onPress,
-}: {
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [styles.linkRow, pressed && styles.linkRowPressed]}
-    >
-      <Text style={[typography.body, styles.linkText]}>{label}</Text>
-      <Text style={styles.linkChevron}>›</Text>
-    </Pressable>
   );
 }
 
@@ -751,31 +701,6 @@ const styles = StyleSheet.create({
   fullMenuList: {
     gap: spacing.md,
     marginTop: spacing.sm,
-  },
-  linksColumn: {
-    gap: spacing.xs,
-    marginTop: spacing.xs,
-  },
-  linkRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.surfaceMuted,
-    borderRadius: radius.md,
-  },
-  linkRowPressed: {
-    opacity: 0.7,
-  },
-  linkText: {
-    color: colors.textPrimary,
-    fontWeight: '600',
-  },
-  linkChevron: {
-    color: colors.textMuted,
-    fontSize: 22,
-    lineHeight: 22,
   },
   chefCard: {
     backgroundColor: colors.primarySoft,
