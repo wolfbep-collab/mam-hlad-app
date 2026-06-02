@@ -70,10 +70,15 @@ function openExternal(url: string) {
 function pickAskTarget(
   place: Place
 ): { label: string; url: string } | null {
-  if (place.phone) return { label: 'Zavolat', url: telUrl(place.phone) };
+  if (place.phone)
+    return { label: 'Zavolat a zeptat se', url: telUrl(place.phone) };
   if (place.instagram)
-    return { label: 'Napsat na Instagramu', url: instagramUrl(place.instagram) };
-  if (place.website) return { label: 'Otevřít web', url: place.website };
+    return {
+      label: 'Zeptat se na Instagramu',
+      url: instagramUrl(place.instagram),
+    };
+  if (place.website)
+    return { label: 'Otevřít kontakt', url: place.website };
   return null;
 }
 
@@ -221,6 +226,44 @@ export default function PlaceDetailScreen() {
       />
 
       <View style={styles.card}>
+        <Text style={[typography.label, styles.cardLabel]}>Kontakt</Text>
+        {place.phone || place.instagram || place.website ? (
+          <View style={styles.contactButtons}>
+            {place.phone ? (
+              <Button
+                label="Zavolat"
+                variant="secondary"
+                size="md"
+                onPress={() => openExternal(telUrl(place.phone as string))}
+              />
+            ) : null}
+            {place.instagram ? (
+              <Button
+                label="Instagram"
+                variant="secondary"
+                size="md"
+                onPress={() =>
+                  openExternal(instagramUrl(place.instagram as string))
+                }
+              />
+            ) : null}
+            {place.website ? (
+              <Button
+                label="Web"
+                variant="secondary"
+                size="md"
+                onPress={() => openExternal(place.website as string)}
+              />
+            ) : null}
+          </View>
+        ) : (
+          <Text style={[typography.caption, styles.contactEmpty]}>
+            Kontakt podnik zatím neuvedl.
+          </Text>
+        )}
+      </View>
+
+      <View style={styles.card}>
         <Text style={[typography.label, styles.cardLabel]}>Otevírací doba dnes</Text>
         <Text style={[typography.body, styles.cardValue]}>{todayHours}</Text>
       </View>
@@ -260,6 +303,21 @@ export default function PlaceDetailScreen() {
               „{place.chefMessage}"
             </Text>
           ) : null}
+          {askTarget ? (
+            <View style={styles.chefCta}>
+              <Button
+                label={askTarget.label}
+                onPress={() => openExternal(askTarget.url)}
+              />
+              <Text style={[typography.caption, styles.chefCtaHint]}>
+                U alergií nebo speciální diety se raději zeptej přímo obsluhy.
+              </Text>
+            </View>
+          ) : (
+            <Text style={[typography.caption, styles.chefCtaEmpty]}>
+              Kontakt podnik zatím neuvedl.
+            </Text>
+          )}
         </View>
       ) : null}
 
@@ -299,23 +357,6 @@ export default function PlaceDetailScreen() {
               ))}
             </View>
           ) : null}
-        </View>
-      ) : null}
-
-      {askTarget ? (
-        <View style={styles.askCard}>
-          <Text style={[typography.label, styles.cardLabel]}>
-            Zeptat se podniku
-          </Text>
-          <Button
-            label={askTarget.label}
-            variant="secondary"
-            size="md"
-            onPress={() => openExternal(askTarget.url)}
-          />
-          <Text style={[typography.caption, styles.askHint]}>
-            U alergií nebo speciální diety se raději zeptej přímo obsluhy.
-          </Text>
         </View>
       ) : null}
 
@@ -757,15 +798,23 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     fontStyle: 'italic',
   },
-  askCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+  contactButtons: {
     gap: spacing.sm,
+    marginTop: spacing.xs,
   },
-  askHint: {
+  contactEmpty: {
     color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  chefCta: {
+    marginTop: spacing.sm,
+    gap: spacing.xs,
+  },
+  chefCtaHint: {
+    color: colors.textMuted,
+  },
+  chefCtaEmpty: {
+    color: colors.textMuted,
+    marginTop: spacing.xs,
   },
 });
