@@ -79,6 +79,11 @@ export const demoPlaces: Place[] = [
     website: 'https://umodrekachny.example.cz',
     instagram: 'umodrekachny',
     phone: '+420212345678',
+    chefName: 'Petr',
+    chefRole: 'šéfkuchař',
+    chefSpecialty: 'Česká klasika a poctivé omáčky',
+    chefMessage:
+      'Svíčková je u nás víkendová klasika — omáčku redukujeme tři hodiny. Jestli máš čas si sednout, doporučuju ji.',
     menuItems: [
       item('p01-i1', 'Svíčková na smetaně', 'S domácím karlovarským knedlíkem a brusinkami.', 2, 25, ['warm', 'czech', 'meat'], {
         isWarm: true,
@@ -159,6 +164,11 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Čerstvé saláty, bowls a vegan polévky.',
     rating: 4.7,
+    chefName: 'Tereza',
+    chefRole: 'kuchařka',
+    chefSpecialty: 'Polévky a teplé bowls',
+    chefMessage:
+      'Dnes bych doporučila dýňovou polévku. Je lehká, teplá a hotová rychle.',
     menuItems: [
       item('p03-i1', 'Buddha bowl', 'Quinoa, pečené batáty, avokádo, hummus, dýňová semínka.', 2, 12, ['light', 'healthy', 'vegan', 'salad'], { isVegetarian: true, isVegan: true, isLight: true, isHealthy: true }),
       item('p03-i2', 'Quinoa salát s tahini', 'Studený salát, čerstvá zelenina, tahini dresink.', 2, 8, ['light', 'healthy', 'vegan', 'salad'], { isVegetarian: true, isVegan: true, isLight: true, isHealthy: true, isQuick: true }),
@@ -203,6 +213,11 @@ export const demoPlaces: Place[] = [
     openingHours: week([r('11:00', '22:00')]),
     description: 'Autentické pho, bun bo a jarní závitky.',
     rating: 4.8,
+    chefName: 'Linh',
+    chefRole: 'kuchařka',
+    chefSpecialty: 'Pho a vietnamské polévky',
+    chefMessage:
+      'Vývar na pho vaříme dvanáct hodin. Když je venku zima, je to první věc, kterou si dám sama.',
     menuItems: [
       item('p05-i1', 'Pho Bo', 'Hovězí vývar 12 hodin vařený, rýžové nudle, bylinky.', 1, 10, ['warm', 'asian', 'soup', 'cheap'], { isWarm: true, isQuick: true }),
       item('p05-i2', 'Bun Bo Nam Bo', 'Studené nudle s grilovaným hovězím a salátem.', 2, 12, ['light', 'asian'], { isLight: true }),
