@@ -130,6 +130,7 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Burgery, hot dogy a wrapy do 10 minut.',
     rating: 4.2,
+    website: 'https://example.com',
     instagram: 'bistro.rychlovka',
     phone: '+420222111000',
     menuItems: [
@@ -194,6 +195,9 @@ export const demoPlaces: Place[] = [
     openingHours: week([r('11:00', '23:30')]),
     description: 'Pravá neapolská pizza z dřevěné pece.',
     rating: 4.5,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p04-i1', 'Pizza Margherita', 'Rajčata San Marzano, mozzarella, bazalka.', 2, 16, ['warm', 'italian', 'pizza', 'vegetarian'], { isWarm: true, isVegetarian: true }),
       item('p04-i2', 'Pizza Diavola', 'Salám, chilli, mozzarella.', 2, 18, ['warm', 'italian', 'pizza', 'meat'], { isWarm: true }),
@@ -250,6 +254,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Domácí dorty, croissanty a specialitová káva.',
     rating: 4.4,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p06-i1', 'Máslový croissant', 'Křupavý, ručně tvarovaný, francouzské máslo.', 1, 3, ['sweet', 'bakery', 'cafe', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
       item('p06-i2', 'New York cheesecake', 'Klasický s lesním ovocem.', 2, 4, ['sweet', 'bakery', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
@@ -276,6 +283,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Denně 6 čerstvých polévek a celozrnné pečivo.',
     rating: 4.5,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p07-i1', 'Hovězí vývar s nudlemi', 'Domácí, čistý, s petrželkou.', 1, 5, ['warm', 'light', 'soup', 'cheap'], { isWarm: true, isLight: true, isQuick: true, isHealthy: true }),
       item('p07-i2', 'Krémová žampionová', 'S celozrnným chlebem.', 1, 6, ['warm', 'soup', 'vegetarian', 'cheap'], { isWarm: true, isVegetarian: true, isQuick: true }),
@@ -302,6 +312,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Čerstvé sushi sety a teplá japonská jídla.',
     rating: 4.6,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p08-i1', 'Lososové sashimi 8 ks', 'Čerstvý losos, wasabi, gari.', 3, 14, ['light', 'asian', 'healthy'], { isLight: true, isHealthy: true }),
       item('p08-i2', 'Veggie maki set', 'Avokádo, okurka, marinované tofu.', 2, 16, ['light', 'asian', 'vegetarian', 'vegan'], { isVegetarian: true, isVegan: true, isLight: true, isHealthy: true }),
@@ -328,6 +341,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Kebab v chlebu i na talíři, falafel. Často otevřeno přes noc.',
     rating: 4.1,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p09-i1', 'Kuřecí kebab v chlebu', 'Marinované kuře, salát, jogurtová omáčka.', 1, 5, ['warm', 'fast', 'meat', 'cheap'], { isWarm: true, isQuick: true }),
       item('p09-i2', 'Falafel wrap', 'Cizrnové kuličky, hummus, tahini, zelenina.', 1, 6, ['warm', 'fast', 'vegetarian', 'vegan', 'cheap'], { isWarm: true, isVegetarian: true, isVegan: true, isQuick: true }),
@@ -354,6 +370,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'All-day snídaně, granola, avokádový toast.',
     rating: 4.6,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p10-i1', 'Avokádový toast', 'Kváskový chléb, avokádo, sezamová semínka, chilli.', 2, 8, ['light', 'cafe', 'vegetarian', 'healthy'], { isVegetarian: true, isLight: true, isQuick: true, isHealthy: true }),
       item('p10-i2', 'Granola s jogurtem', 'Domácí granola, řecký jogurt, lesní ovoce.', 2, 4, ['light', 'sweet', 'cafe', 'vegetarian', 'healthy'], { isVegetarian: true, isSweet: true, isLight: true, isQuick: true, isHealthy: true }),
@@ -380,6 +399,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Argentinské hovězí, suché zrání, výběr vín.',
     rating: 4.7,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p11-i1', 'Hovězí svíčková 200 g', 'Suché zrání, máslo bylinky, batátové pyré.', 3, 28, ['warm', 'meat'], { isWarm: true }),
       item('p11-i2', 'Ribeye 300 g', 'Argentinské hovězí, gril, rozmarýn.', 3, 30, ['warm', 'meat'], { isWarm: true }),
@@ -406,6 +428,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Kváskový chléb, koláče, sendviče s sebou.',
     rating: 4.5,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p12-i1', 'Kváskový chléb se sýrem', 'Vlastní kvásek, eidam, máslo, pažitka.', 1, 3, ['fast', 'bakery', 'vegetarian', 'cheap'], { isVegetarian: true, isQuick: true }),
       item('p12-i2', 'Sladký tvarohový koláč', 'Domácí, ráno upečený.', 1, 2, ['sweet', 'bakery', 'vegetarian', 'cheap'], { isSweet: true, isVegetarian: true, isQuick: true }),
@@ -432,6 +457,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Severoindická klasika — curry, tandoor, čerstvé naan.',
     rating: 4.6,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p13-i1', 'Paneer butter masala', 'Sýr paneer v rajčatovo-smetanové omáčce, basmati rýže.', 2, 16, ['warm', 'asian', 'vegetarian'], { isWarm: true, isVegetarian: true }),
       item('p13-i2', 'Chicken tikka masala', 'Marinované kuře v krémové masala omáčce.', 2, 18, ['warm', 'asian', 'meat'], { isWarm: true }),
@@ -455,6 +483,9 @@ export const demoPlaces: Place[] = [
     openingHours: week([r('11:00', '23:00')]),
     description: 'Tacos, burrita a nachos; čerstvé salsy denně.',
     rating: 4.4,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p14-i1', 'Carnitas burrito', 'Pomalu pečené vepřové, fazole, rýže, salsa.', 2, 10, ['warm', 'fast', 'meat'], { isWarm: true, isQuick: true }),
       item('p14-i2', 'Frijoles burrito', 'Černé fazole, kukuřice, rýže, guacamole, salsa.', 1, 8, ['warm', 'fast', 'vegetarian', 'vegan', 'cheap'], { isWarm: true, isVegetarian: true, isVegan: true, isQuick: true }),
@@ -482,6 +513,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Gyros, mezze a saláty s dobrým olivovým olejem.',
     rating: 4.5,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p15-i1', 'Kuřecí gyros pita', 'Marinované kuře, tzatziki, rajče, červená cibule.', 2, 10, ['warm', 'fast', 'meat'], { isWarm: true, isQuick: true }),
       item('p15-i2', 'Vepřové souvlaki', 'Špíz s grilovanou zeleninou, citron.', 2, 16, ['warm', 'meat'], { isWarm: true }),
@@ -509,6 +543,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Vietnamské sendviče banh mi a jarní rolky s sebou.',
     rating: 4.5,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p16-i1', 'Banh mi vepřové', 'Bageta, marinované vepřové, mrkev, koriandr.', 1, 6, ['warm', 'fast', 'meat', 'cheap'], { isWarm: true, isQuick: true }),
       item('p16-i2', 'Banh mi tofu', 'Bageta, marinované tofu, nakládaná zelenina.', 1, 6, ['warm', 'fast', 'vegetarian', 'vegan', 'cheap'], { isWarm: true, isVegetarian: true, isVegan: true, isQuick: true }),
@@ -536,6 +573,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Snídaně, brunch, dobrá káva. Žádný spěch.',
     rating: 4.7,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p17-i1', 'Míchaná vajíčka s toastem', 'Tři vejce, máslový toast, pažitka.', 2, 8, ['warm', 'cafe', 'vegetarian'], { isWarm: true, isVegetarian: true, isQuick: true }),
       item('p17-i2', 'Pancakes s javorovým sirupem', 'Naditelná porce, čerstvé borůvky.', 2, 12, ['sweet', 'cafe', 'vegetarian'], { isSweet: true, isVegetarian: true }),
@@ -563,6 +603,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Smash burgery, rostlinné varianty a křupavé hranolky.',
     rating: 4.5,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p18-i1', 'Smash burger classic', 'Dvojitá hovězí placka, čedar, omáčka.', 2, 9, ['warm', 'burger', 'fast', 'meat'], { isWarm: true, isQuick: true }),
       item('p18-i2', 'Bacon cheeseburger', 'Hovězí, slanina, čedar, karamelizovaná cibule.', 2, 11, ['warm', 'burger', 'meat'], { isWarm: true }),
@@ -586,6 +629,9 @@ export const demoPlaces: Place[] = [
     openingHours: week([r('10:00', '21:00')], [r('11:00', '20:00')], []),
     description: 'Stavíš si misku — listy, proteiny, dressing podle chuti.',
     rating: 4.6,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p19-i1', 'Caesar s grilovaným kuřetem', 'Římský salát, parmezán, krutony, dresink.', 2, 9, ['light', 'salad', 'meat'], { isLight: true, isQuick: true }),
       item('p19-i2', 'Quinoa bowl s avokádem', 'Quinoa, avokádo, edamame, tahini dresink.', 2, 8, ['light', 'salad', 'vegetarian', 'vegan', 'healthy'], { isVegetarian: true, isVegan: true, isLight: true, isQuick: true, isHealthy: true }),
@@ -635,6 +681,9 @@ export const demoPlaces: Place[] = [
     openingHours: week([r('11:00', '23:00')]),
     description: 'Poctivá česká kuchyně, polední menu, čepované pivo.',
     rating: 4.4,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p21-i1', 'Vepřo-knedlo-zelo', 'Pečené vepřové, houskový knedlík, červené zelí.', 2, 22, ['warm', 'czech', 'meat'], { isWarm: true }),
       item('p21-i2', 'Smažený sýr s bramborem', 'Eidam v trojobalu, vařený brambor, tatarka.', 2, 16, ['warm', 'czech', 'vegetarian'], { isWarm: true, isVegetarian: true }),
@@ -662,6 +711,9 @@ export const demoPlaces: Place[] = [
     ),
     description: 'Domácí dezerty, výběrová káva a vegan varianty.',
     rating: 4.6,
+    website: 'https://example.com',
+    instagram: 'https://example.com/mam-hlad-demo-instagram',
+    phone: '+420000000000',
     menuItems: [
       item('p22-i1', 'Vanilkové crème brûlée', 'Klasické francouzské, karamelizovaný cukr.', 2, 5, ['sweet', 'cafe', 'vegetarian'], { isSweet: true, isVegetarian: true, isQuick: true }),
       item('p22-i2', 'Čokoládový fondant', 'Tekuté čokoládové srdce, vanilková zmrzlina.', 2, 8, ['sweet', 'cafe', 'vegetarian'], { isSweet: true, isVegetarian: true, isWarm: true, isQuick: true }),
