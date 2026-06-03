@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Button, Screen } from '../../src/components';
 import { demoPlaces } from '../../src/data/demoPlaces';
 import { maybeLocalizeDemoPlaces } from '../../src/lib/demoPlaceLocalizer';
@@ -185,11 +185,20 @@ export default function PlaceDetailScreen() {
   }, [place, recommendedItems]);
 
   const [showFullMenu, setShowFullMenu] = useState(false);
+  const [selectedMenuItemId, setSelectedMenuItemId] = useState<string | null>(
+    null
+  );
+  const [chosenMenuItemId, setChosenMenuItemId] = useState<string | null>(null);
 
   const askTarget = useMemo(
     () => (place ? pickAskTarget(place) : null),
     [place]
   );
+
+  const toggleSelected = (itemId: string) => {
+    setSelectedMenuItemId((prev) => (prev === itemId ? null : itemId));
+    setChosenMenuItemId((prev) => (prev === itemId ? prev : null));
+  };
 
   if (!place) {
     return (
@@ -346,7 +355,12 @@ export default function PlaceDetailScreen() {
             <MenuItemRow
               key={it.id}
               item={it}
+              place={place}
               reason={buildMenuItemReason(it, 'detail')}
+              selected={selectedMenuItemId === it.id}
+              chosen={chosenMenuItemId === it.id}
+              onToggleSelect={() => toggleSelected(it.id)}
+              onChoose={() => setChosenMenuItemId(it.id)}
             />
           ))}
         </View>
@@ -366,7 +380,16 @@ export default function PlaceDetailScreen() {
                 Další položky z menu.
               </Text>
               {remainingMenuItems.map((it) => (
-                <MenuItemRow key={it.id} item={it} reason={null} />
+                <MenuItemRow
+                  key={it.id}
+                  item={it}
+                  place={place}
+                  reason={null}
+                  selected={selectedMenuItemId === it.id}
+                  chosen={chosenMenuItemId === it.id}
+                  onToggleSelect={() => toggleSelected(it.id)}
+                  onChoose={() => setChosenMenuItemId(it.id)}
+                />
               ))}
             </View>
           ) : null}
@@ -423,23 +446,50 @@ function Meta({ label, value }: { label: string; value: string }) {
 
 function MenuItemRow({
   item,
+  place,
   reason,
+  selected,
+  chosen,
+  onToggleSelect,
+  onChoose,
 }: {
   item: MenuItem;
+  place: Place;
   reason: string | null;
+  selected: boolean;
+  chosen: boolean;
+  onToggleSelect: () => void;
+  onChoose: () => void;
 }) {
   const gluten =
     item.glutenInfo && item.glutenInfo !== 'not_set'
       ? glutenInfoLabel[item.glutenInfo]
       : null;
-  const hasAllergenInfo =
-    (item.ingredients && item.ingredients.length > 0) ||
-    (item.containsAllergens && item.containsAllergens.length > 0) ||
-    (item.mayContainAllergens && item.mayContainAllergens.length > 0) ||
+  const hasIngredients = !!(item.ingredients && item.ingredients.length > 0);
+  const hasContains = !!(
+    item.containsAllergens && item.containsAllergens.length > 0
+  );
+  const hasMayContain = !!(
+    item.mayContainAllergens && item.mayContainAllergens.length > 0
+  );
+  const hasExtraInfo =
+    hasIngredients ||
+    hasContains ||
+    hasMayContain ||
     !!gluten ||
-    !!item.recipeNote;
+    !!item.recipeNote ||
+    !!item.chefNote;
   return (
-    <View style={styles.itemCard}>
+    <Pressable
+      onPress={onToggleSelect}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.name}, otevřít detail jídla`}
+      style={({ pressed }) => [
+        styles.itemCard,
+        selected && styles.itemCardSelected,
+        pressed && styles.itemCardPressed,
+      ]}
+    >
       <Text style={[typography.h3, styles.itemName]}>{item.name}</Text>
       <Text style={[typography.body, styles.itemDesc]}>{item.description}</Text>
       <View style={styles.itemMetaRow}>
@@ -464,73 +514,121 @@ function MenuItemRow({
             <Text style={styles.dietText}>Vege</Text>
           </View>
         ) : null}
-        {gluten ? (
-          <View style={styles.glutenPill}>
-            <Text style={styles.glutenText}>{gluten}</Text>
-          </View>
-        ) : null}
       </View>
-      {item.ingredients && item.ingredients.length > 0 ? (
-        <View style={styles.itemDetailBlock}>
-          <Text style={[typography.label, styles.itemDetailLabel]}>
-            Ingredience
-          </Text>
-          <Text style={[typography.body, styles.itemDetailValue]}>
-            {item.ingredients.join(', ')}
-          </Text>
-        </View>
-      ) : null}
-      {item.containsAllergens && item.containsAllergens.length > 0 ? (
-        <View style={styles.itemDetailBlock}>
-          <Text style={[typography.label, styles.itemDetailLabel]}>
-            Obsahuje alergeny
-          </Text>
-          <Text style={[typography.body, styles.itemDetailValue]}>
-            {item.containsAllergens.join(', ')}
-          </Text>
-        </View>
-      ) : null}
-      {item.mayContainAllergens && item.mayContainAllergens.length > 0 ? (
-        <View style={styles.itemDetailBlock}>
-          <Text style={[typography.label, styles.itemDetailLabel]}>
-            Může obsahovat stopy
-          </Text>
-          <Text style={[typography.body, styles.itemDetailValue]}>
-            {item.mayContainAllergens.join(', ')}
-          </Text>
-        </View>
-      ) : null}
-      {item.recipeNote ? (
-        <View style={styles.recipeNoteBox}>
-          <Text style={[typography.label, styles.recipeNoteLabel]}>
-            Recept / příběh jídla
-          </Text>
-          <Text style={[typography.body, styles.recipeNoteText]}>
-            {item.recipeNote}
-          </Text>
-        </View>
-      ) : null}
-      {item.chefNote ? (
-        <View style={styles.chefNoteBox}>
-          <Text style={[typography.label, styles.chefNoteLabel]}>
-            Poznámka kuchaře
-          </Text>
-          <Text style={[typography.body, styles.chefNoteText]}>
-            {item.chefNote}
-          </Text>
-        </View>
-      ) : null}
-      {hasAllergenInfo ? (
-        <Text style={[typography.caption, styles.allergenNote]}>
-          {ALLERGEN_SAFETY_NOTE}
-        </Text>
-      ) : null}
       {reason ? (
         <View style={styles.itemReasonBox}>
           <Text style={[typography.caption, styles.itemReason]}>{reason}</Text>
         </View>
       ) : null}
-    </View>
+      {selected ? (
+        <View style={styles.itemExpanded}>
+          <Text style={[typography.label, styles.itemExpandedHeading]}>
+            Detail jídla
+          </Text>
+          {hasExtraInfo ? (
+            <View style={styles.itemExpandedList}>
+              {hasIngredients ? (
+                <View style={styles.itemDetailBlock}>
+                  <Text style={[typography.label, styles.itemDetailLabel]}>
+                    Ingredience
+                  </Text>
+                  <Text style={[typography.body, styles.itemDetailValue]}>
+                    {item.ingredients!.join(', ')}
+                  </Text>
+                </View>
+              ) : null}
+              {item.recipeNote ? (
+                <View style={styles.recipeNoteBox}>
+                  <Text style={[typography.label, styles.recipeNoteLabel]}>
+                    Recept / příběh jídla
+                  </Text>
+                  <Text style={[typography.body, styles.recipeNoteText]}>
+                    {item.recipeNote}
+                  </Text>
+                </View>
+              ) : null}
+              {item.chefNote ? (
+                <View style={styles.chefNoteBox}>
+                  <Text style={[typography.label, styles.chefNoteLabel]}>
+                    Poznámka kuchaře
+                  </Text>
+                  <Text style={[typography.body, styles.chefNoteText]}>
+                    {item.chefNote}
+                  </Text>
+                </View>
+              ) : null}
+              {hasContains ? (
+                <View style={styles.itemDetailBlock}>
+                  <Text style={[typography.label, styles.itemDetailLabel]}>
+                    Obsahuje alergeny
+                  </Text>
+                  <Text style={[typography.body, styles.itemDetailValue]}>
+                    {item.containsAllergens!.join(', ')}
+                  </Text>
+                </View>
+              ) : null}
+              {hasMayContain ? (
+                <View style={styles.itemDetailBlock}>
+                  <Text style={[typography.label, styles.itemDetailLabel]}>
+                    Může obsahovat stopy
+                  </Text>
+                  <Text style={[typography.body, styles.itemDetailValue]}>
+                    {item.mayContainAllergens!.join(', ')}
+                  </Text>
+                </View>
+              ) : null}
+              {gluten ? (
+                <View style={styles.itemDetailBlock}>
+                  <Text style={[typography.label, styles.itemDetailLabel]}>
+                    Lepek
+                  </Text>
+                  <Text style={[typography.body, styles.itemDetailValue]}>
+                    {gluten}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          ) : (
+            <Text style={[typography.body, styles.itemExpandedEmpty]}>
+              Podnik zatím neuvedl víc detailů k tomuto jídlu.
+            </Text>
+          )}
+          {hasExtraInfo ? (
+            <Text style={[typography.caption, styles.allergenNote]}>
+              {ALLERGEN_SAFETY_NOTE}
+            </Text>
+          ) : null}
+          {chosen ? (
+            <View style={styles.chosenBlock}>
+              <Text style={[typography.body, styles.chosenText]}>
+                Dobrá volba. Teď můžeš podnik kontaktovat nebo se tam nechat
+                navigovat.
+              </Text>
+              <View style={styles.chosenActions}>
+                <Button
+                  label="Navigovat"
+                  variant="secondary"
+                  size="md"
+                  onPress={() => openExternal(buildNavigationUrl(place))}
+                />
+                {place.phone ? (
+                  <Button
+                    label="Zavolat"
+                    variant="secondary"
+                    size="md"
+                    onPress={() =>
+                      openExternal(telUrl(place.phone as string))
+                    }
+                  />
+                ) : null}
+              </View>
+            </View>
+          ) : (
+            <Button label="Chci tohle" onPress={onChoose} />
+          )}
+        </View>
+      ) : null}
+    </Pressable>
   );
 }
 
@@ -680,18 +778,42 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 13,
   },
-  glutenPill: {
-    backgroundColor: colors.primarySoft,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radius.pill,
+  itemCardSelected: {
+    borderColor: colors.primary,
+    borderWidth: 2,
   },
-  glutenText: {
-    color: colors.primaryDark,
-    fontSize: 11,
-    fontWeight: '700',
+  itemCardPressed: {
+    opacity: 0.85,
+  },
+  itemExpanded: {
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    gap: spacing.sm,
+  },
+  itemExpandedHeading: {
+    color: colors.textMuted,
     textTransform: 'uppercase',
-    letterSpacing: 0.4,
+  },
+  itemExpandedList: {
+    gap: spacing.sm,
+  },
+  itemExpandedEmpty: {
+    color: colors.textSecondary,
+  },
+  chosenBlock: {
+    marginTop: spacing.xs,
+    backgroundColor: colors.successSoft,
+    padding: spacing.sm,
+    borderRadius: radius.sm,
+    gap: spacing.sm,
+  },
+  chosenText: {
+    color: colors.textPrimary,
+  },
+  chosenActions: {
+    gap: spacing.sm,
   },
   itemDetailBlock: {
     marginTop: spacing.xs,
