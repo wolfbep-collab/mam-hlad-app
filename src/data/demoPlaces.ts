@@ -38,6 +38,7 @@ const item = (
       | 'containsAllergens'
       | 'mayContainAllergens'
       | 'glutenInfo'
+      | 'recipeNote'
     >
   >
 ): MenuItem => ({
@@ -59,6 +60,7 @@ const item = (
   containsAllergens: flags.containsAllergens,
   mayContainAllergens: flags.mayContainAllergens,
   glutenInfo: flags.glutenInfo,
+  recipeNote: flags.recipeNote,
 });
 
 export const demoPlaces: Place[] = [
@@ -173,11 +175,30 @@ export const demoPlaces: Place[] = [
     chefSpecialty: 'Polévky a teplé bowls',
     chefMessage:
       'Dnes bych doporučila dýňovou polévku. Je lehká, teplá a hotová rychle.',
+    chefDailyMenuTitle: 'Dnešní doporučení',
+    chefDailyMenuNote:
+      'Pečená batátová polévka s kokosem — vařím ji jen v chladných dnech.',
     menuItems: [
-      item('p03-i1', 'Buddha bowl', 'Quinoa, pečené batáty, avokádo, hummus, dýňová semínka.', 2, 12, ['light', 'healthy', 'vegan', 'salad'], { isVegetarian: true, isVegan: true, isLight: true, isHealthy: true }),
+      item('p03-i1', 'Buddha bowl', 'Quinoa, pečené batáty, avokádo, hummus, dýňová semínka.', 2, 12, ['light', 'healthy', 'vegan', 'salad'], {
+        isVegetarian: true,
+        isVegan: true,
+        isLight: true,
+        isHealthy: true,
+        recipeNote:
+          'Batáty pečeme s olivovým olejem a kmínem do měkka, quinou vaříme den dopředu, aby pěkně držela.',
+      }),
       item('p03-i2', 'Quinoa salát s tahini', 'Studený salát, čerstvá zelenina, tahini dresink.', 2, 8, ['light', 'healthy', 'vegan', 'salad'], { isVegetarian: true, isVegan: true, isLight: true, isHealthy: true, isQuick: true }),
       item('p03-i3', 'Hummus talíř', 'Domácí hummus, pita, olivy, čerstvá zelenina.', 1, 6, ['light', 'vegan', 'cheap'], { isVegetarian: true, isVegan: true, isLight: true, isQuick: true }),
-      item('p03-i4', 'Krémová batátová polévka', 'S kokosem a zázvorem.', 2, 10, ['warm', 'light', 'vegan', 'soup', 'healthy'], { isWarm: true, isVegetarian: true, isVegan: true, isLight: true, isHealthy: true, isQuick: true }),
+      item('p03-i4', 'Krémová batátová polévka', 'S kokosem a zázvorem.', 2, 10, ['warm', 'light', 'vegan', 'soup', 'healthy'], {
+        isWarm: true,
+        isVegetarian: true,
+        isVegan: true,
+        isLight: true,
+        isHealthy: true,
+        isQuick: true,
+        recipeNote:
+          'Batáty pečeme se zázvorem a potom je rozmixujeme s kokosovým mlékem. Trochu chilli na konec.',
+      }),
       item('p03-i5', 'Vegan smoothie bowl', 'Lesní ovoce, banán, granola, kokos.', 2, 5, ['light', 'sweet', 'vegan', 'healthy'], { isVegetarian: true, isVegan: true, isLight: true, isSweet: true, isHealthy: true, isQuick: true }),
     ],
   },
@@ -632,9 +653,23 @@ export const demoPlaces: Place[] = [
     website: 'https://example.com',
     instagram: 'https://example.com/mam-hlad-demo-instagram',
     phone: '+420000000000',
+    chefName: 'Marek',
+    chefRole: 'kuchař',
+    chefSpecialty: 'Bowls a saláty na míru',
+    chefDailyMenuTitle: 'Dnešní doporučení',
+    chefDailyMenuNote:
+      'Quinoa bowl s avokádem a tahini. Lehká, sytá a hotová do osmi minut.',
     menuItems: [
       item('p19-i1', 'Caesar s grilovaným kuřetem', 'Římský salát, parmezán, krutony, dresink.', 2, 9, ['light', 'salad', 'meat'], { isLight: true, isQuick: true }),
-      item('p19-i2', 'Quinoa bowl s avokádem', 'Quinoa, avokádo, edamame, tahini dresink.', 2, 8, ['light', 'salad', 'vegetarian', 'vegan', 'healthy'], { isVegetarian: true, isVegan: true, isLight: true, isQuick: true, isHealthy: true }),
+      item('p19-i2', 'Quinoa bowl s avokádem', 'Quinoa, avokádo, edamame, tahini dresink.', 2, 8, ['light', 'salad', 'vegetarian', 'vegan', 'healthy'], {
+        isVegetarian: true,
+        isVegan: true,
+        isLight: true,
+        isQuick: true,
+        isHealthy: true,
+        recipeNote:
+          'Tahini si mícháme den dopředu s citronem a česnekem, aby chutě sedly. Quinou vaříme nadvakrát.',
+      }),
       item('p19-i3', 'Caprese salát', 'Buvolí mozzarella, rajčata, bazalka, balsamico.', 2, 6, ['light', 'salad', 'vegetarian', 'italian'], { isVegetarian: true, isLight: true, isQuick: true }),
       item('p19-i4', 'Tuna nicoise', 'Tuňák, brambor, fazolky, vejce, olivy.', 3, 10, ['light', 'salad', 'healthy'], { isLight: true, isHealthy: true, isQuick: true }),
       item('p19-i5', 'Falafel bowl', 'Falafel, kuskus, hummus, červené zelí.', 2, 9, ['light', 'salad', 'vegetarian', 'vegan', 'healthy'], { isVegetarian: true, isVegan: true, isLight: true, isQuick: true, isHealthy: true }),
@@ -658,8 +693,25 @@ export const demoPlaces: Place[] = [
     website: 'https://example.com',
     instagram: 'mamhlad.demo',
     phone: '+420777000004',
+    chefName: 'Jana',
+    chefRole: 'kuchařka',
+    chefSpecialty: 'Polévky každý den',
+    chefMessage:
+      'Polévky vařím tak, abych je sama chtěla snídat. Nic neredukuju z prášku.',
+    chefDailyMenuTitle: 'Dnešní doporučení',
+    chefDailyMenuNote:
+      'Krémová dýňová polévka. Lehká, teplá, hotová za pár minut.',
     menuItems: [
-      item('p20-i1', 'Krémová dýňová polévka', 'Dýně, kokosové mléko, zázvor, dýňová semínka.', 2, 6, ['warm', 'light', 'soup', 'vegetarian', 'vegan', 'healthy'], { isWarm: true, isVegetarian: true, isVegan: true, isLight: true, isHealthy: true, isQuick: true }),
+      item('p20-i1', 'Krémová dýňová polévka', 'Dýně, kokosové mléko, zázvor, dýňová semínka.', 2, 6, ['warm', 'light', 'soup', 'vegetarian', 'vegan', 'healthy'], {
+        isWarm: true,
+        isVegetarian: true,
+        isVegan: true,
+        isLight: true,
+        isHealthy: true,
+        isQuick: true,
+        recipeNote:
+          'Dýni pečeme se zázvorem a potom ji rozmixujeme s kokosovým mlékem. Posypeme praženými semínky.',
+      }),
       item('p20-i2', 'Hovězí ramen', 'Vývar 12 hodin, hovězí, vejce, nudle, jarní cibulka.', 3, 14, ['warm', 'asian', 'soup', 'meat'], { isWarm: true }),
       item('p20-i3', 'Tom kha gai', 'Kokosová polévka s kuřetem, citronovou trávou, chilli.', 2, 12, ['warm', 'asian', 'soup', 'meat'], { isWarm: true }),
       item('p20-i4', 'Tom kha s tofu', 'Veganská verze s opečeným tofu a houbami.', 2, 12, ['warm', 'asian', 'soup', 'vegetarian', 'vegan', 'healthy'], { isWarm: true, isVegetarian: true, isVegan: true, isHealthy: true }),

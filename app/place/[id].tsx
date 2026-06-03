@@ -283,7 +283,12 @@ export default function PlaceDetailScreen() {
         </View>
       ) : null}
 
-      {place.chefName || place.chefRole || place.chefSpecialty || place.chefMessage ? (
+      {place.chefName ||
+      place.chefRole ||
+      place.chefSpecialty ||
+      place.chefMessage ||
+      place.chefDailyMenuTitle ||
+      place.chefDailyMenuNote ? (
         <View style={styles.chefCard}>
           <Text style={[typography.label, styles.chefHeading]}>Od kuchaře</Text>
           {place.chefName || place.chefRole ? (
@@ -303,6 +308,18 @@ export default function PlaceDetailScreen() {
               „{place.chefMessage}"
             </Text>
           ) : null}
+          {place.chefDailyMenuTitle || place.chefDailyMenuNote ? (
+            <View style={styles.dailyBlock}>
+              <Text style={[typography.label, styles.dailyHeading]}>
+                {place.chefDailyMenuTitle ?? 'Dnešní doporučení'}
+              </Text>
+              {place.chefDailyMenuNote ? (
+                <Text style={[typography.body, styles.dailyNote]}>
+                  {place.chefDailyMenuNote}
+                </Text>
+              ) : null}
+            </View>
+          ) : null}
           {askTarget ? (
             <View style={styles.chefCta}>
               <Button
@@ -313,11 +330,7 @@ export default function PlaceDetailScreen() {
                 U alergií nebo speciální diety se raději zeptej přímo obsluhy.
               </Text>
             </View>
-          ) : (
-            <Text style={[typography.caption, styles.chefCtaEmpty]}>
-              Kontakt podnik zatím neuvedl.
-            </Text>
-          )}
+          ) : null}
         </View>
       ) : null}
 
@@ -423,7 +436,8 @@ function MenuItemRow({
     (item.ingredients && item.ingredients.length > 0) ||
     (item.containsAllergens && item.containsAllergens.length > 0) ||
     (item.mayContainAllergens && item.mayContainAllergens.length > 0) ||
-    !!gluten;
+    !!gluten ||
+    !!item.recipeNote;
   return (
     <View style={styles.itemCard}>
       <Text style={[typography.h3, styles.itemName]}>{item.name}</Text>
@@ -483,6 +497,16 @@ function MenuItemRow({
           </Text>
           <Text style={[typography.body, styles.itemDetailValue]}>
             {item.mayContainAllergens.join(', ')}
+          </Text>
+        </View>
+      ) : null}
+      {item.recipeNote ? (
+        <View style={styles.recipeNoteBox}>
+          <Text style={[typography.label, styles.recipeNoteLabel]}>
+            Recept / příběh jídla
+          </Text>
+          <Text style={[typography.body, styles.recipeNoteText]}>
+            {item.recipeNote}
           </Text>
         </View>
       ) : null}
@@ -723,6 +747,34 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     fontStyle: 'italic',
   },
+  dailyBlock: {
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    gap: 2,
+  },
+  dailyHeading: {
+    color: colors.primaryDark,
+    textTransform: 'uppercase',
+  },
+  dailyNote: {
+    color: colors.textPrimary,
+  },
+  recipeNoteBox: {
+    marginTop: spacing.xs,
+    backgroundColor: colors.surfaceMuted,
+    padding: spacing.sm,
+    borderRadius: radius.sm,
+    gap: 2,
+  },
+  recipeNoteLabel: {
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+  },
+  recipeNoteText: {
+    color: colors.textPrimary,
+  },
   contactButtons: {
     gap: spacing.sm,
     marginTop: spacing.xs,
@@ -737,9 +789,5 @@ const styles = StyleSheet.create({
   },
   chefCtaHint: {
     color: colors.textMuted,
-  },
-  chefCtaEmpty: {
-    color: colors.textMuted,
-    marginTop: spacing.xs,
   },
 });
