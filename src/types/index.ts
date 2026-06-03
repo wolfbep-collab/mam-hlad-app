@@ -60,6 +60,7 @@ export interface MenuItem {
   containsAllergens?: string[];
   mayContainAllergens?: string[];
   glutenInfo?: GlutenInfo;
+  recipeNote?: string;
 }
 
 export type Weekday =
@@ -100,6 +101,8 @@ export interface Place {
   chefRole?: string;
   chefMessage?: string;
   chefSpecialty?: string;
+  chefDailyMenuTitle?: string;
+  chefDailyMenuNote?: string;
 }
 
 export type DietaryPreference = 'any' | 'vegetarian' | 'vegan';
