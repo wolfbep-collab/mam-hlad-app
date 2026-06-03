@@ -215,8 +215,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: spacing.sm,
     marginTop: spacing.sm,
   },
