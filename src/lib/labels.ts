@@ -57,8 +57,8 @@ export const situationOrder: Situation[] = [
 
 export const dietaryLabels: Record<DietaryPreference, string> = {
   any: 'Jím všechno',
-  vegetarian: 'Jím bez masa',
-  vegan: 'Jím vegansky',
+  vegetarian: 'Bez masa',
+  vegan: 'Vegansky',
 };
 
 export const dietaryOrder: DietaryPreference[] = [
