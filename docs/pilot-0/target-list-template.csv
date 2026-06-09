@@ -1,0 +1,4 @@
+name,category,address,area,phone,instagram,website,contact_method,priority,status,notes,next_action,last_contacted_at
+"Příklad Bistro","bistro","Pražská 12, Liberec","centrum","+420 000 000 000","prikladbistro","https://example.com","walkin","high","new","sousedské bistro, otevřeno v 11","walk-in v úterý",""
+"Příklad Kavárna","cafe","Sokolovské nám. 4, Liberec","centrum","","prikladkavarna","","instagram_dm","medium","new","brunch menu, IG aktivní","poslat WA variantu A",""
+"Příklad Stánek","street_food","Lidové sady, Liberec","lidove_sady","","prikladstanek","","instagram_dm","medium","new","mobilní vendor, jen víkendy","walk-in v sobotu",""
