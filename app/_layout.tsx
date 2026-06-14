@@ -36,6 +36,10 @@ export default function RootLayout() {
             name="vendor-checkin"
             options={{ title: 'Mám stánek' }}
           />
+          <Stack.Screen name="partners" options={{ title: 'Pro podniky' }} />
+          <Stack.Screen name="hungry" options={{ title: 'Pro hladové' }} />
+          <Stack.Screen name="privacy" options={{ title: 'Soukromí' }} />
+          <Stack.Screen name="support" options={{ title: 'Podpora' }} />
         </Stack>
       </SafeAreaProvider>
     </GestureHandlerRootView>
