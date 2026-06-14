@@ -18,7 +18,7 @@ Tohle je **samostatný statický microsite**, ne Expo web deploy. Nasazuje se p�
 |---|---|
 | `index.html` | Hlavní rozcestník — co je Mám hlad, pro koho, dvě cesty (uživatel / podnik) |
 | `hungry.html` | Pro hladové lidi — „Nevíš, co si dát?“ + CTA |
-| `partners.html` | Pro podniky — první partnerská vlna v Liberci + CTA |
+| `partners.html` | Pro podniky — výběrový průvodce pro Česko, první partnerská vlna + CTA |
 | `privacy.html` | Jednoduché zásady soukromí |
 | `support.html` | Kontakt na podporu |
 | `styles.css` | Sdílený mobil-first responzivní styl |
@@ -79,4 +79,6 @@ Tohle je **marketingová** vrstva, oddělená od samotné Expo aplikace v `app/`
 
 ## Pravidlo pravdivosti
 
-Texty říkají pravdu: Mám hlad **připravuje první partnerskou vlnu v Liberci** a zatím **není veřejně v Google Play / App Store**. Nic se nesmí přidávat, co by tvrdilo opak.
+Positioning je celorepublikový: Mám hlad **buduje výběrového osobního průvodce jídlem pro Česko**. Liberec ani regiony nejsou cíl, jen místo první ověřovací vlny — texty proto Liberec nezmiňují jako hlavní sdělení, nanejvýš sekundárně („první ověřovací vlna začíná v regionech, kde najdeme silné partnery“).
+
+Texty zároveň říkají pravdu: Mám hlad **začíná první partnerskou vlnou** a zatím **není veřejně v Google Play / App Store**. Nic se nesmí přidávat, co by tvrdilo opak.
