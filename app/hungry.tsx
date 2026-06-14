@@ -29,8 +29,9 @@ export default function HungryScreen() {
         </View>
         <Text style={[typography.h1, styles.title]}>Nevíš, co si dát?</Text>
         <Text style={[typography.body, styles.lead]}>
-          Mám hlad ti pomůže najít konkrétní jídlo v okolí — ne nekonečný
-          seznam restaurací, ale pár chytrých tipů, na co se vyplatí vyrazit.
+          Budujeme výběrového osobního průvodce jídlem pro Česko. Mám hlad ti
+          pomůže najít konkrétní jídlo v okolí — ne nekonečný seznam restaurací,
+          ale pár chytrých tipů, na co se vyplatí vyrazit.
         </Text>
       </View>
 
@@ -44,7 +45,7 @@ export default function HungryScreen() {
       </View>
 
       <Text style={[typography.caption, styles.note]}>
-        Mám hlad teď připravuje první partnerskou vlnu podniků v Liberci. Ještě
+        Začínáme první partnerskou vlnou — kvůli kvalitě, ne objemu. Ještě
         nejsme veřejně v obchodech s aplikacemi — když nám napíšeš, dáme ti
         vědět, až bude co zkoušet.
       </Text>

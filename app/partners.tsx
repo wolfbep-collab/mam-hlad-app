@@ -26,12 +26,13 @@ export default function PartnersScreen() {
       <View style={styles.hero}>
         <Text style={styles.eyebrow}>Pro podniky</Text>
         <Text style={[typography.h1, styles.title]}>
-          Mám hlad hledá první partnerské podniky v Liberci
+          Hledáme podniky, kuchaře a jídla, která stojí za doporučení
         </Text>
         <Text style={[typography.body, styles.lead]}>
-          Mám hlad pomáhá lidem najít konkrétní jídlo podle chuti, času a
-          situace — ne další seznam restaurací k prohlížení. Teď připravujeme
-          první partnerskou vlnu a hledáme podniky, které do ní chtějí patřit.
+          Budujeme výběrového osobního průvodce jídlem pro Česko. Lidé hledají
+          konkrétní jídlo podle chuti, času a situace — ne další seznam
+          restaurací k prohlížení. Chceme mít v každém městě ta jídla, kuchaře a
+          podniky, které stojí za doporučení.
         </Text>
       </View>
 
@@ -45,8 +46,9 @@ export default function PartnersScreen() {
       </View>
 
       <Text style={[typography.caption, styles.note]}>
-        Jsme na začátku. Tohle není hotová síť — připravujeme první partnerskou
-        vlnu a chceme ji udělat pořádně, s pár podniky, ne se stovkou.
+        Začínáme první partnerskou vlnou — ne kvůli objemu, ale kvůli kvalitě.
+        Nechceme stovky náhodných podniků; první ověřovací vlna začíná v
+        regionech, kde najdeme silné partnery.
       </Text>
 
       <View style={styles.ctaBlock}>
