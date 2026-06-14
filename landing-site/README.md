@@ -4,6 +4,14 @@ Statický microsite pro online kampaň **Mám hlad**. Čisté HTML + jedno CSS, 
 
 Tahle stránka existuje proto, aby šla veřejná landing page nasadit **hned**, bez čekání na to, až bude připravený Expo web export (ten vyžaduje další web dependencies, viz `docs/launch-system/30-day-launch-plan.md`).
 
+## Produkční URL
+
+Web je nasazený na **Vercelu**:
+
+> **https://mam-hlad-landing-wolf.vercel.app**
+
+Tohle je **samostatný statický microsite**, ne Expo web deploy. Nasazuje se přímo složka `landing-site/` jako statické soubory — nemá nic společného s Expo aplikací v `app/` a `src/`. Root directory pro deploy na Vercelu je `landing-site`.
+
 ## Co je uvnitř
 
 | Soubor | Stránka |
