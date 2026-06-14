@@ -1,0 +1,279 @@
+:root {
+  --primary: #f97316;
+  --primary-dark: #ea580c;
+  --primary-soft: #ffedd5;
+  --background: #fff7ed;
+  --surface: #ffffff;
+  --text-primary: #1f1208;
+  --text-secondary: #6b5544;
+  --text-muted: #9c8674;
+  --border: #f3e4d2;
+  --radius: 18px;
+  --maxw: 640px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+  font-size: 17px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 28px 20px 64px;
+}
+
+/* Header / nav */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--text-primary);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+
+.brand .bowl {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: var(--primary-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.nav {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.nav a:hover {
+  color: var(--primary-dark);
+}
+
+/* Typography */
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin: 0 0 12px;
+}
+
+h1 {
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -0.4px;
+  margin: 0 0 16px;
+}
+
+h2 {
+  font-size: 22px;
+  line-height: 1.25;
+  margin: 36px 0 12px;
+}
+
+h3 {
+  font-size: 18px;
+  margin: 0 0 6px;
+}
+
+p {
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+}
+
+.lead {
+  font-size: 19px;
+  color: var(--text-secondary);
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+/* Cards & lists */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin: 24px 0;
+}
+
+.points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.points li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.points li::before {
+  content: "•";
+  position: absolute;
+  left: 4px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.points li:last-child {
+  margin-bottom: 0;
+}
+
+/* Paths (two big choices on home) */
+.paths {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+  margin: 28px 0;
+}
+
+@media (min-width: 560px) {
+  .paths {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.path {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.path:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.path .emoji {
+  font-size: 30px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.path .go {
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 14px 26px;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 17px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--primary-dark);
+}
+
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+
+.cta {
+  margin: 28px 0 8px;
+}
+
+.cta-hint {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Footer */
+.site-footer {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.site-footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.site-footer a:hover {
+  color: var(--primary-dark);
+}
+
+.site-footer .dot {
+  color: var(--text-muted);
+}
+
+.site-footer .copyright {
+  color: var(--text-muted);
+  font-size: 13px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+a {
+  color: var(--primary-dark);
+}
