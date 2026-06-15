@@ -139,6 +139,20 @@ a {
   display: none;
 }
 
+/* Stronger contrast for the always-visible nav CTA — orange on cream
+   keeps the editorial palette while staying readable on a sticky bar. */
+.mainnav .mainnav__cta {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.mainnav .mainnav__cta:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
 @media (max-width: 720px) {
   .mainnav {
     gap: 16px;
@@ -219,8 +233,12 @@ a {
    Editorial section primitives
    -------------------------------------------------------------------------- */
 .section {
-  padding: 72px 0;
+  padding: 64px 0;
   border-top: 1px solid var(--line);
+}
+
+.section--tight {
+  padding: 48px 0;
 }
 
 .section--flush {
@@ -265,7 +283,7 @@ a {
 
 .section-head {
   max-width: 760px;
-  margin-bottom: 44px;
+  margin-bottom: 36px;
 }
 
 /* --------------------------------------------------------------------------
@@ -278,7 +296,7 @@ a {
 }
 
 .hero__inner {
-  padding: 84px 0 72px;
+  padding: 72px 0 56px;
   max-width: 940px;
 }
 
@@ -341,8 +359,8 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 28px;
-  margin-top: 54px;
-  padding-top: 26px;
+  margin-top: 42px;
+  padding-top: 24px;
   border-top: 1px solid var(--line);
 }
 
@@ -365,6 +383,228 @@ a {
   font-family: var(--serif);
   font-size: 18px;
   color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Hero showcase — editorial food-guide mockup of profile cards
+   Sits above the fold on index, gives "this is what a profile looks like"
+   without using any photos.
+   -------------------------------------------------------------------------- */
+.showcase {
+  padding: 56px 0 80px;
+  background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+  border-top: 1px solid var(--line);
+}
+
+.showcase__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: 28px;
+}
+
+.showcase__title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(22px, 3.2vw, 30px);
+  line-height: 1.15;
+  letter-spacing: -0.2px;
+  margin: 8px 0 0;
+  max-width: 22ch;
+}
+
+.showcase__note {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 32ch;
+  text-align: right;
+  margin: 0;
+}
+
+.showcase__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .showcase__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 980px) {
+  .showcase__grid {
+    grid-template-columns: 1.4fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 18px;
+  }
+}
+
+/* Editorial dish card variant — slightly different from the in-page .dish */
+.scard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+  padding: 22px 22px 20px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.scard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -18px rgba(21, 17, 12, 0.25);
+}
+
+.scard__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.scard__tag::before {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.scard__dish {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.18;
+  margin: 14px 0 6px;
+  color: var(--ink);
+  max-width: 22ch;
+}
+
+.scard__desc {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  max-width: 38ch;
+}
+
+.scard__chefnote {
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  font-family: var(--serif);
+}
+
+.scard__row {
+  margin-top: auto;
+  padding-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+}
+
+.scard__price {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.scard__index {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+/* The hero card (largest, dark, sets the tone) */
+.scard--hero {
+  background: linear-gradient(160deg, var(--espresso) 0%, var(--espresso-2) 100%);
+  color: var(--paper);
+  border-color: transparent;
+  min-height: 280px;
+}
+
+.scard--hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    110% 70% at 85% 0%,
+    rgba(224, 112, 31, 0.28) 0%,
+    rgba(224, 112, 31, 0) 55%
+  );
+}
+
+.scard--hero .scard__tag {
+  color: var(--accent-bright);
+}
+
+.scard--hero .scard__tag::before {
+  background: var(--accent-bright);
+}
+
+.scard--hero .scard__dish {
+  color: var(--paper);
+  font-size: 28px;
+  max-width: 24ch;
+}
+
+.scard--hero .scard__desc {
+  color: var(--muted-on-dark);
+}
+
+.scard--hero .scard__chefnote {
+  color: var(--muted-on-dark);
+  border-top-color: rgba(246, 239, 227, 0.18);
+}
+
+.scard--hero .scard__row {
+  color: var(--muted-on-dark);
+}
+
+.scard--hero .scard__price {
+  color: var(--paper);
+}
+
+.scard--hero .scard__index {
+  color: rgba(246, 239, 227, 0.45);
+}
+
+@media (min-width: 980px) {
+  .scard--hero {
+    grid-row: span 2;
+  }
+}
+
+/* A subtle accent-tinted card variant */
+.scard--accent {
+  background: var(--accent-soft);
+  border-color: rgba(224, 112, 31, 0.22);
+}
+
+.scard--accent .scard__tag {
+  color: var(--accent);
 }
 
 /* --------------------------------------------------------------------------
@@ -601,9 +841,9 @@ a {
 
 .principles {
   display: grid;
-  gap: 18px;
+  gap: 16px;
   grid-template-columns: 1fr;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 @media (min-width: 760px) {
@@ -654,7 +894,7 @@ a {
 .step {
   display: flex;
   gap: 22px;
-  padding: 26px 0;
+  padding: 22px 0;
   border-bottom: 1px solid var(--line);
   align-items: baseline;
 }
