@@ -6,7 +6,7 @@
     <title>Mám hlad — pro hladové</title>
     <meta
       name="description"
-      content="Nevíš, co si dát? Mám hlad ti pomůže najít konkrétní jídlo v okolí podle chuti, času, situace a toho, jak jíš. Připravujeme první verzi."
+      content="Nevíš, co si dát? Mám hlad ti pomůže najít konkrétní jídlo podle chuti, času a situace. Výběrový osobní průvodce jídlem pro Česko."
     />
     <link
       rel="canonical"
@@ -16,7 +16,7 @@
     <meta property="og:title" content="Mám hlad — pro hladové" />
     <meta
       property="og:description"
-      content="Nevíš, co si dát? Mám hlad ti pomůže najít konkrétní jídlo v okolí podle chuti, času, situace a toho, jak jíš. Připravujeme první verzi."
+      content="Nevíš, co si dát? Mám hlad ti pomůže najít konkrétní jídlo podle chuti, času a situace. Výběrový osobní průvodce jídlem pro Česko."
     />
     <meta
       property="og:url"
@@ -25,62 +25,138 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="wrap">
-      <header class="site-header">
-        <a class="brand" href="index.html">
-          <span class="bowl">🍜</span> Mám hlad
+    <header class="topbar">
+      <div class="shell topbar__inner">
+        <a class="wordmark" href="index.html">
+          <span class="wordmark__dot"></span>
+          <span class="wordmark__name">Mám hlad</span>
+          <span class="wordmark__tag">průvodce jídlem</span>
         </a>
-        <nav class="nav">
-          <a href="hungry.html">Pro tebe</a>
+        <nav class="mainnav">
+          <a href="index.html#jak">Jak to funguje</a>
           <a href="partners.html">Pro podniky</a>
-          <a href="support.html">Podpora</a>
-        </nav>
-      </header>
-
-      <main>
-        <p class="eyebrow">Pro tebe</p>
-        <h1>Nevíš, co si dát?</h1>
-        <p class="lead">
-          Mám hlad ti pomůže najít konkrétní jídlo v okolí — ne nekonečný
-          seznam restaurací, ale pár chytrých tipů, na co se vyplatí vyrazit.
-        </p>
-
-        <div class="card">
-          <ul class="points">
-            <li>Podle chuti — na co máš zrovna náladu.</li>
-            <li>Podle času — kolik minut na to máš.</li>
-            <li>Podle situace — sednout si, vzít s sebou, nebo cestou.</li>
-            <li>A podle toho, jak jíš.</li>
-          </ul>
-        </div>
-
-        <p class="muted">
-          Budujeme výběrového osobního průvodce jídlem pro Česko a začínáme
-          první partnerskou vlnou — kvůli kvalitě, ne objemu. Ještě nejsme
-          veřejně v obchodech s aplikacemi — když nám napíšeš, dáme ti vědět, až
-          bude co zkoušet.
-        </p>
-
-        <div class="cta">
+          <a href="support.html">Kontakt</a>
+          <a href="privacy.html">Soukromí</a>
           <a
-            class="btn btn-block"
+            class="mainnav__cta btn btn--primary btn--sm"
             href="mailto:wolf.bep@gmail.com?subject=Chci%20vyzkou%C5%A1et%20M%C3%A1m%20hlad"
-            >Chci vyzkoušet Mám hlad</a
+            >Vyzkoušet</a
           >
-          <p class="cta-hint">Otevře se e-mail na wolf.bep@gmail.com.</p>
-        </div>
-      </main>
+        </nav>
+      </div>
+    </header>
 
-      <footer class="site-footer">
-        <a href="index.html">Domů</a>
-        <span class="dot">·</span>
-        <a href="privacy.html">Soukromí</a>
-        <span class="dot">·</span>
-        <a href="support.html">Podpora</a>
-        <span class="copyright"
-          >Mám hlad — výběrový průvodce jídlem pro Česko.</span
-        >
-      </footer>
-    </div>
+    <main>
+      <section class="hero">
+        <div class="shell hero__inner">
+          <p class="hero__eyebrow">Pro tebe</p>
+          <h1 class="hero__title">Nevíš, co si <span class="em">dát</span>?</h1>
+          <p class="hero__sub">
+            Mám hlad ti pomůže najít konkrétní jídlo v okolí — ne nekonečný
+            seznam restaurací, ale pár tipů, které stojí za to. Výběrový osobní
+            průvodce jídlem pro Česko.
+          </p>
+          <div class="hero__actions">
+            <a
+              class="btn btn--primary"
+              href="mailto:wolf.bep@gmail.com?subject=Chci%20vyzkou%C5%A1et%20M%C3%A1m%20hlad"
+              >Chci vyzkoušet Mám hlad</a
+            >
+          </div>
+          <p class="hero__note">
+            Otevře se e-mail na wolf.bep@gmail.com.
+          </p>
+        </div>
+      </section>
+
+      <section class="section section--flush">
+        <div class="shell">
+          <div class="section-head">
+            <p class="kicker">Jak vybíráme</p>
+            <h2 class="section-title">Podle toho, jak to máš teď</h2>
+          </div>
+          <ol class="taste-list">
+            <li>
+              <span class="t-num">01</span>
+              <span>Podle chuti — na co máš zrovna náladu.</span>
+            </li>
+            <li>
+              <span class="t-num">02</span>
+              <span>Podle času — kolik minut na to máš.</span>
+            </li>
+            <li>
+              <span class="t-num">03</span>
+              <span>Podle situace — sednout si, vzít s sebou, nebo cestou.</span>
+            </li>
+            <li>
+              <span class="t-num">04</span>
+              <span>A podle toho, jak jíš.</span>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section cta-band section--flush">
+        <div class="shell cta-band__inner">
+          <div>
+            <h2 class="cta-band__title">
+              Chceš to <span class="em">zkusit</span> mezi prvními?
+            </h2>
+            <p>
+              Začínáme první partnerskou vlnou — kvůli kvalitě, ne objemu. Ještě
+              nejsme veřejně v obchodech s aplikacemi. Napiš nám a dáme ti vědět,
+              až bude co zkoušet.
+            </p>
+          </div>
+          <div class="cta-band__actions">
+            <a
+              class="btn btn--light btn--block"
+              href="mailto:wolf.bep@gmail.com?subject=Chci%20vyzkou%C5%A1et%20M%C3%A1m%20hlad"
+              >Chci vyzkoušet Mám hlad</a
+            >
+            <p class="cta-band__hint">
+              Otevře se e-mail na
+              <a
+                href="mailto:wolf.bep@gmail.com?subject=Chci%20vyzkou%C5%A1et%20M%C3%A1m%20hlad"
+                >wolf.bep@gmail.com</a
+              >.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <span class="wordmark">
+              <span class="wordmark__dot"></span>
+              <span class="wordmark__name">Mám hlad</span>
+            </span>
+            <p class="footer__tagline">
+              Výběrový osobní průvodce jídlem pro Česko. Hledáme jídla, kuchaře
+              a podniky, která stojí za doporučení.
+            </p>
+          </div>
+          <div class="footer__col">
+            <h4>Pro podniky</h4>
+            <a href="index.html#jak">Jak to funguje</a>
+            <a href="partners.html">Pro podniky</a>
+          </div>
+          <div class="footer__col">
+            <h4>Další</h4>
+            <a href="support.html">Kontakt</a>
+            <a href="privacy.html">Soukromí</a>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <span class="copyright"
+            >Mám hlad — výběrový průvodce jídlem pro Česko.</span
+          >
+          <span>Připravujeme první partnerskou vlnu.</span>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

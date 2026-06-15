@@ -25,6 +25,12 @@ Tohle je **samostatný statický microsite**, ne Expo web deploy. Nasazuje se p�
 
 Všechny stránky sdílejí `styles.css`, používají systémové fonty (žádné externí) a neobsahují žádné tracking skripty ani externí volání.
 
+## Vizuální styl
+
+Microsite má prémiový editorial (food-guide) vzhled — inspirace prémiovými restaurant guides a kvalitními food magazíny. Paleta: černá, krémová, tmavě hnědá, jemná oranžová jen jako akcent. Žádné dětské emoji, žádné stock ani fake fotky podniků. Vizuální bloky (`.dish` karty) jsou **CSS-only** kompozice připravené tak, aby do nich šly později doplnit reálné nebo vlastní vytvořené vizuály.
+
+Hlavní landing page `index.html` je primárně pro **podniky** — Mám hlad je výběrový průvodce, ne katalog restaurací. `hungry.html` je sekundární čistý waitlist pro lidi.
+
 ## Jak ho otevřít lokálně
 
 Stačí otevřít `index.html` v prohlížeči — dvojklik na soubor funguje, protože odkazy i styl jsou relativní.
