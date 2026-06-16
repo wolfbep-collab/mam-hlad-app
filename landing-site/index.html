@@ -3,20 +3,20 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mám hlad — najdi konkrétní jídlo, ne další seznam restaurací</title>
+    <title>Mám hlad — výběrový osobní průvodce jídlem pro Česko</title>
     <meta
       name="description"
-      content="Mám hlad je výběrový osobní průvodce jídlem pro Česko. Hledáme podniky, kuchaře a jídla, která stojí za doporučení. Začínáme první partnerskou vlnou — kvůli kvalitě, ne objemu."
+      content="Mám hlad je výběrový osobní průvodce jídlem pro Česko. Hledáme podniky, kuchaře a jídla, která stojí za doporučení. Začínáme první partnerskou vlnou — kvalita, ne objem."
     />
     <link rel="canonical" href="https://mam-hlad-landing-wolf.vercel.app/" />
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
-      content="Mám hlad — najdi konkrétní jídlo, ne další seznam restaurací"
+      content="Mám hlad — výběrový osobní průvodce jídlem pro Česko"
     />
     <meta
       property="og:description"
-      content="Mám hlad je výběrový osobní průvodce jídlem pro Česko. Hledáme podniky, kuchaře a jídla, která stojí za doporučení. Začínáme první partnerskou vlnou — kvůli kvalitě, ne objemu."
+      content="Hledáme podniky, kuchaře a jídla, která stojí za doporučení. Začínáme první partnerskou vlnou — kvalita, ne objem."
     />
     <meta
       property="og:url"
@@ -25,76 +25,419 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="wrap">
-      <header class="site-header">
-        <a class="brand" href="index.html">
-          <span class="bowl">🍜</span> Mám hlad
+    <header class="topbar">
+      <div class="shell topbar__inner">
+        <a class="wordmark" href="index.html">
+          <span class="wordmark__dot"></span>
+          <span class="wordmark__name">Mám hlad</span>
+          <span class="wordmark__tag">průvodce jídlem</span>
         </a>
-        <nav class="nav">
-          <a href="hungry.html">Pro tebe</a>
+        <nav class="mainnav">
+          <a href="#jak">Jak to funguje</a>
           <a href="partners.html">Pro podniky</a>
-          <a href="support.html">Podpora</a>
+          <a href="support.html">Kontakt</a>
+          <a href="privacy.html">Soukromí</a>
+          <a
+            class="mainnav__cta btn btn--primary btn--sm"
+            href="mailto:wolf.bep@gmail.com?subject=Chci%20p%C5%99idat%20podnik%20do%20M%C3%A1m%20hlad"
+            >Přidat podnik</a
+          >
         </nav>
-      </header>
+      </div>
+    </header>
 
-      <main>
-        <p class="eyebrow">Rozhodovací pomocník, ne katalog</p>
-        <h1>Najdi konkrétní jídlo, ne další seznam restaurací</h1>
-        <p class="lead">
-          Budujeme výběrového osobního průvodce jídlem pro Česko. Mám hlad ti
-          pomůže rozhodnout, co si dát právě teď — podle chuti, času a situace.
-          Žádné nekonečné skrolování, jen pár chytrých tipů.
-        </p>
-
-        <h2>Pro koho to je</h2>
-        <p>
-          Pro lidi, co mají hlad teď a nechtějí ztrácet deset minut
-          rozhodováním — na obědové pauze, na cestě, nebo když se doma nemůžete
-          shodnout, kam zajít.
-        </p>
-
-        <h2>Kudy dál</h2>
-        <div class="paths">
-          <a class="path" href="hungry.html">
-            <span class="emoji">🍽️</span>
-            <h3>Mám hlad</h3>
-            <p class="muted">Hledám, co si dát v okolí.</p>
-            <span class="go">Pro tebe →</span>
-          </a>
-          <a class="path" href="partners.html">
-            <span class="emoji">👩‍🍳</span>
-            <h3>Vařím / mám podnik</h3>
-            <p class="muted">Chci být u první vlny.</p>
-            <span class="go">Pro podniky →</span>
-          </a>
-        </div>
-
-        <div class="card">
-          <p class="muted" style="margin: 0">
-            Jsme na začátku. Začínáme <strong>první partnerskou vlnou</strong> —
-            ne kvůli objemu, ale kvůli kvalitě. První ověřovací vlna začíná v
-            regionech, kde najdeme silné partnery. Ještě nejsme veřejně v
-            obchodech s aplikacemi — ale můžeš nám dát vědět, že o to stojíš.
+    <main>
+      <!-- 1 — Hero pro podniky -->
+      <section class="hero">
+        <div class="shell hero__inner">
+          <p class="hero__eyebrow">Výběrový průvodce jídlem · Česko</p>
+          <h1 class="hero__title">
+            Výběrový osobní<br />průvodce jídlem<br />pro <span class="em"
+              >Česko</span
+            >.
+          </h1>
+          <p class="hero__sub">
+            Pomáháme lidem najít konkrétní jídlo podle chuti, času a situace.
+            Teď hledáme podniky, kuchaře a jídla, která stojí za doporučení.
           </p>
-        </div>
+          <div class="hero__actions">
+            <a
+              class="btn btn--primary"
+              href="mailto:wolf.bep@gmail.com?subject=Chci%20p%C5%99idat%20podnik%20do%20M%C3%A1m%20hlad"
+              >Chci být mezi prvními podniky</a
+            >
+            <a class="btn btn--ghost" href="#jak">Jak to funguje</a>
+          </div>
+          <p class="hero__note">
+            Bez závazku a bez smlouvy. Profil připravíme my, vy ho jen
+            schválíte.
+          </p>
 
-        <div class="cta">
-          <a class="btn" href="hungry.html">Chci to zkusit</a>
+          <dl class="hero__meta">
+            <div>
+              <dt>Záběr</dt>
+              <dd>Napříč Českem</dd>
+            </div>
+            <div>
+              <dt>Výběr</dt>
+              <dd>Kvalita, ne objem</dd>
+            </div>
+            <div>
+              <dt>Pro koho</dt>
+              <dd>Podniky a kuchaři</dd>
+            </div>
+          </dl>
         </div>
-      </main>
+      </section>
 
-      <footer class="site-footer">
-        <a href="hungry.html">Pro tebe</a>
-        <span class="dot">·</span>
-        <a href="partners.html">Pro podniky</a>
-        <span class="dot">·</span>
-        <a href="privacy.html">Soukromí</a>
-        <span class="dot">·</span>
-        <a href="support.html">Podpora</a>
-        <span class="copyright"
-          >Mám hlad — výběrový průvodce jídlem pro Česko.</span
-        >
-      </footer>
-    </div>
+      <!-- 1.5 — Hero showcase: editorial mockup profilu (žádné fotky) -->
+      <section class="showcase" aria-label="Ukázka, jak vypadá profil podniku">
+        <div class="shell">
+          <div class="showcase__head">
+            <div>
+              <p class="kicker">Jak vypadá profil podniku</p>
+              <h2 class="showcase__title">
+                Konkrétní jídla, slovo kuchaře, důvod přijít.
+              </h2>
+            </div>
+            <p class="showcase__note">
+              Ukázkový layout, nikoli reálný podnik. Tady později vznikne
+              vizuální vizitka vašeho jídla.
+            </p>
+          </div>
+
+          <div class="showcase__grid">
+            <article class="scard scard--hero" aria-label="Ukázka karty Jídlo dne">
+              <span class="scard__index">i.</span>
+              <span class="scard__tag">Jídlo dne</span>
+              <h3 class="scard__dish">
+                Pomalu pečené kachní stehno, čočka, šťáva z pečení
+              </h3>
+              <p class="scard__desc">
+                Konkrétní jídlo, ne celé menu. Vybírá ho podnik podle toho, co
+                dnes opravdu stojí za to.
+              </p>
+              <p class="scard__chefnote">
+                „Kachna se peče od rána. Nejlepší okolo dvanácté.“ — kuchař
+              </p>
+              <div class="scard__row">
+                <span>Doporučí podnik · 30 min sednout</span>
+                <span class="scard__price">cca 280 Kč</span>
+              </div>
+            </article>
+
+            <article class="scard" aria-label="Ukázka karty Doporučení kuchaře">
+              <span class="scard__index">ii.</span>
+              <span class="scard__tag">Doporučení kuchaře</span>
+              <h3 class="scard__dish">
+                Polévka, na kterou se vyplatí přijít
+              </h3>
+              <p class="scard__desc">
+                Pár vět od člověka, který to vaří. Osobní tip, který v běžné
+                aplikaci nikde nenajdete.
+              </p>
+              <div class="scard__row">
+                <span>Slovo od kuchaře</span>
+                <span class="scard__price">cca 120 Kč</span>
+              </div>
+            </article>
+
+            <article class="scard" aria-label="Ukázka karty Vegetariánská volba">
+              <span class="scard__index">iii.</span>
+              <span class="scard__tag">Vegetariánská volba</span>
+              <h3 class="scard__dish">Bez masa, ale ne kompromis</h3>
+              <p class="scard__desc">
+                Jasný tip pro toho, kdo nejí maso — a chce si stejně dobře dát.
+              </p>
+              <div class="scard__row">
+                <span>Bez masa</span>
+                <span class="scard__price">cca 220 Kč</span>
+              </div>
+            </article>
+
+            <article class="scard scard--accent" aria-label="Ukázka karty Rychlý oběd">
+              <span class="scard__index">iv.</span>
+              <span class="scard__tag">Rychlý oběd</span>
+              <h3 class="scard__dish">Když mám jen 20 minut</h3>
+              <p class="scard__desc">
+                Jeden tip pro lidi, co mají málo času a chtějí to mít jisté.
+              </p>
+              <div class="scard__row">
+                <span>S sebou nebo u pultu</span>
+                <span class="scard__price">cca 180 Kč</span>
+              </div>
+            </article>
+
+            <article class="scard" aria-label="Ukázka karty Pro cestovatele">
+              <span class="scard__index">v.</span>
+              <span class="scard__tag">Pro cestovatele</span>
+              <h3 class="scard__dish">Proč zajet právě sem</h3>
+              <p class="scard__desc">
+                Důvod, proč se k vám vyplatí zajít i mimo svůj rajon.
+              </p>
+              <div class="scard__row">
+                <span>Příběh místa</span>
+                <span class="scard__price">—</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 — Nejsme katalog restaurací -->
+      <section class="section statement section--flush">
+        <div class="shell">
+          <p class="kicker">Náš přístup</p>
+          <h2 class="statement__title">
+            Nejsme katalog restaurací. Jsme <span class="em">kurátor</span>.
+          </h2>
+          <div class="statement__grid">
+            <p>
+              Většina aplikací nabídne nekonečný seznam a nechá rozhodování na
+              vás. Mám hlad jde opačně: vybíráme méně, ale líp. Cílem je
+              databáze nejlepších jídel, kuchařů a podniků napříč městy.
+            </p>
+            <p>
+              Člověk u nás nehledá „nějakou restauraci“. Hledá konkrétní jídlo,
+              na které má právě teď chuť — a my mu poradíme, kam za ním zajít a
+              proč. To dává smysl jen s podniky, které stojí za doporučení.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 — Co všechno na profilu může být -->
+      <section class="section section--tight">
+        <div class="shell">
+          <div class="section-head">
+            <p class="kicker"><span class="kicker__num">01</span> Profil</p>
+            <h2 class="section-title">Co všechno na profilu může být</h2>
+            <p class="section-lead">
+              Profil v Mám hlad není výpis otevírací doby. Je to malá editorial
+              vizitka vašeho jídla — připravená tak, aby člověk věděl, proč
+              přijít.
+            </p>
+          </div>
+
+          <div class="features">
+            <div class="feature">
+              <span class="feature__num">01</span>
+              <div>
+                <h3 class="feature__title">Jídlo dne</h3>
+                <p class="feature__text">
+                  Jeden konkrétní tip, ne celé menu. Vybíráte ho vy.
+                </p>
+              </div>
+            </div>
+            <div class="feature">
+              <span class="feature__num">02</span>
+              <div>
+                <h3 class="feature__title">Doporučení kuchaře</h3>
+                <p class="feature__text">
+                  Pár vět od člověka, který to vaří — tip, který jinde není.
+                </p>
+              </div>
+            </div>
+            <div class="feature">
+              <span class="feature__num">03</span>
+              <div>
+                <h3 class="feature__title">Denní nabídka</h3>
+                <p class="feature__text">
+                  Krátký přehled, co je dnes čerstvé. Mění se s vaším menu.
+                </p>
+              </div>
+            </div>
+            <div class="feature">
+              <span class="feature__num">04</span>
+              <div>
+                <h3 class="feature__title">Vegetariánská a rychlá volba</h3>
+                <p class="feature__text">
+                  Jasné tipy pro lidi, co nejedí maso, nebo mají málo času.
+                </p>
+              </div>
+            </div>
+            <div class="feature">
+              <span class="feature__num">05</span>
+              <div>
+                <h3 class="feature__title">Pro cestovatele</h3>
+                <p class="feature__text">
+                  Důvod, proč se k vám vyplatí zajít i mimo svůj rajon.
+                </p>
+              </div>
+            </div>
+            <div class="feature">
+              <span class="feature__num">06</span>
+              <div>
+                <h3 class="feature__title">Vy schvalujete každé slovo</h3>
+                <p class="feature__text">
+                  Profil se zveřejní teprve potom, co ho schválíte.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 — První partnerská vlna -->
+      <section class="section wave">
+        <div class="shell">
+          <div class="section-head">
+            <p class="kicker"><span class="kicker__num">02</span> Výběr</p>
+            <h2 class="section-title">První partnerská vlna</h2>
+            <p class="section-lead">
+              Nezačínáme stovkami náhodných podniků. Začínáme menším, pečlivě
+              vybraným okruhem — kvalita je celý smysl projektu.
+            </p>
+          </div>
+
+          <div class="principles">
+            <div class="principle">
+              <p class="principle__big">Méně</p>
+              <h3 class="principle__title">Menší výběr</h3>
+              <p class="principle__text">
+                Radši pár míst, která doporučíme s klidným svědomím, než dlouhý
+                seznam, kterému nikdo nevěří.
+              </p>
+            </div>
+            <div class="principle">
+              <p class="principle__big">Líp</p>
+              <h3 class="principle__title">Kvalita, ne objem</h3>
+              <p class="principle__text">
+                Každý profil připravíme ručně a poctivě. Nejde o počet řádků v
+                databázi, ale o důvěru člověka, který si vybírá jídlo.
+              </p>
+            </div>
+            <div class="principle">
+              <p class="principle__big">Všude</p>
+              <h3 class="principle__title">Napříč Českem</h3>
+              <p class="principle__text">
+                Cílem je nejlepší výběr v každém městě. První ověřovací vlna
+                začíná v regionech, kde najdeme silné partnery.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5 — Jak zapojení probíhá -->
+      <section class="section" id="jak">
+        <div class="shell">
+          <div class="section-head">
+            <p class="kicker"><span class="kicker__num">03</span> Postup</p>
+            <h2 class="section-title">Jak zapojení probíhá</h2>
+            <p class="section-lead">
+              Žádné formuláře a žádná práce navíc na vaší straně. Vy schvalujete,
+              my připravujeme.
+            </p>
+          </div>
+
+          <div class="steps">
+            <div class="step">
+              <span class="step__num">1</span>
+              <div class="step__body">
+                <h3>Pošlete zájem</h3>
+                <p>
+                  Napíšete nám jednu zprávu. Nic nepodepisujete a k ničemu se
+                  nezavazujete.
+                </p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step__num">2</span>
+              <div class="step__body">
+                <h3>Připravíme návrh profilu</h3>
+                <p>
+                  Sami sestavíme návrh — jídlo dne, doporučení kuchaře, důvod
+                  přijít. Vy nemusíte nic vyplňovat.
+                </p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step__num">3</span>
+              <div class="step__body">
+                <h3>Podnik schválí</h3>
+                <p>
+                  Návrh vám ukážeme. Doladíme, co budete chtít. Bez vašeho
+                  souhlasu se nikam nehne.
+                </p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step__num">4</span>
+              <div class="step__body">
+                <h3>Teprve potom jde ven</h3>
+                <p>
+                  Profil zveřejníme až po vašem schválení. Vy máte poslední
+                  slovo, vždycky.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 — Kontakt / CTA -->
+      <section class="section cta-band section--flush" id="kontakt">
+        <div class="shell cta-band__inner">
+          <div>
+            <h2 class="cta-band__title">
+              Chcete být u <span class="em">první vlny</span>?
+            </h2>
+            <p>
+              Hledáme podniky, kuchaře a jídla, která stojí za doporučení.
+              Pokud mezi ně patříte, ozvěte se — odpovídá člověk, ne robot.
+            </p>
+          </div>
+          <div class="cta-band__actions">
+            <a
+              class="btn btn--light btn--block"
+              href="mailto:wolf.bep@gmail.com?subject=Chci%20p%C5%99idat%20podnik%20do%20M%C3%A1m%20hlad"
+              >Chci být mezi prvními podniky</a
+            >
+            <p class="cta-band__hint">
+              Otevře se e-mail na
+              <a
+                href="mailto:wolf.bep@gmail.com?subject=Chci%20p%C5%99idat%20podnik%20do%20M%C3%A1m%20hlad"
+                >wolf.bep@gmail.com</a
+              >. Odpovídáme osobně.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <span class="wordmark">
+              <span class="wordmark__dot"></span>
+              <span class="wordmark__name">Mám hlad</span>
+            </span>
+            <p class="footer__tagline">
+              Výběrový osobní průvodce jídlem pro Česko. Hledáme jídla, kuchaře
+              a podniky, která stojí za doporučení.
+            </p>
+          </div>
+          <div class="footer__col">
+            <h4>Pro podniky</h4>
+            <a href="partners.html">Jak to funguje</a>
+            <a href="#kontakt">Zapojit podnik</a>
+          </div>
+          <div class="footer__col">
+            <h4>Další</h4>
+            <a href="hungry.html">Pro hladové</a>
+            <a href="support.html">Kontakt</a>
+            <a href="privacy.html">Soukromí</a>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <span class="copyright"
+            >Mám hlad — výběrový průvodce jídlem pro Česko.</span
+          >
+          <span>Připravujeme první partnerskou vlnu.</span>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
