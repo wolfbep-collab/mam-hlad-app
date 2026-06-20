@@ -19,6 +19,7 @@ Tohle je **samostatný statický microsite**, ne Expo web deploy. Nasazuje se p�
 | `index.html` | Hlavní rozcestník — co je Mám hlad, pro koho, dvě cesty (uživatel / podnik) |
 | `hungry.html` | Pro hladové lidi — „Nevíš, co si dát?“ + CTA |
 | `partners.html` | Pro podniky — výběrový průvodce pro Česko, první partnerská vlna + CTA |
+| `join.html` | „Chci přidat podnik“ — proces, podklady, mailto CTA. Hlavní CTA tlačítka z `index.html` a `partners.html` vedou sem. |
 | `privacy.html` | Jednoduché zásady soukromí |
 | `support.html` | Kontakt na podporu |
 | `styles.css` | Sdílený mobil-first responzivní styl |
