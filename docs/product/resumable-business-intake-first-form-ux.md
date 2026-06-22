@@ -171,7 +171,7 @@ Trust note:
 
 > Pište jen to, co opravdu víte a můžete potvrdit. Tyto informace bereme opatrně a před zveřejněním je ověřujeme.
 
-### Dalsi kontext
+### Další kontext
 
 > Můžete doplnit příběh, sezónní věci nebo praktické info pro místní a cestovatele.
 
@@ -319,10 +319,10 @@ Autosave messages should be short and unobtrusive.
 
 Autosave must not say:
 
-- `Schvaleno`
-- `Publikovano`
-- `Profil je hotovy`
-- `Jste ve vysledcich`
+- `Schváleno`
+- `Publikováno`
+- `Profil je hotový`
+- `Jste ve výsledcích`
 - `Budete doporučováni`
 
 ## 10. Resume-Later Flow
