@@ -192,12 +192,159 @@
         </div>
       </section>
 
+      <!-- Jak bude vstup vypadat — placeholder mockup -->
+      <section
+        class="section section--tight"
+        aria-labelledby="preview-title"
+      >
+        <div class="shell">
+          <div class="section-head">
+            <p class="kicker">
+              <span class="kicker__num">03</span> Preview
+            </p>
+            <h2 class="section-title" id="preview-title">
+              Jak bude vstup vypadat
+            </h2>
+            <p class="section-lead">
+              Nefunkční ukázka budoucího intake rozhraní. Tlačítka zatím
+              neodesílají — chceme předem ukázat, kam směřujeme, aby pro Vás
+              nakonec přechod od e-mailu byl bez překvapení.
+            </p>
+          </div>
+
+          <div class="preview-grid">
+            <article
+              class="preview"
+              aria-label="Ukázka budoucího krátkého formuláře"
+            >
+              <div class="preview__head">
+                <span class="preview__kicker">Možnost A · Náhled</span>
+              </div>
+              <h3 class="preview__title">Krátký formulář</h3>
+              <p class="preview__lead">
+                Pár základních polí. Nemusíte vyplnit všechno — co necháte
+                prázdné, AI označí jako otázku k ověření.
+              </p>
+
+              <form class="mock-form" aria-hidden="true">
+                <div class="mock-field">
+                  <span class="mock-field__label">Název podniku</span>
+                  <div class="mock-field__input">
+                    <span class="mock-field__placeholder"
+                      >např. Bistro U Toníka</span
+                    >
+                  </div>
+                </div>
+                <div class="mock-row">
+                  <div class="mock-field">
+                    <span class="mock-field__label">Město</span>
+                    <div class="mock-field__input">
+                      <span class="mock-field__placeholder">např. Liberec</span>
+                    </div>
+                  </div>
+                  <div class="mock-field">
+                    <span class="mock-field__label">Typ kuchyně</span>
+                    <div class="mock-field__input">
+                      <span class="mock-field__placeholder">bistro, kavárna…</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mock-field">
+                  <span class="mock-field__label">Co vaříte nejraději?</span>
+                  <div class="mock-field__textarea">
+                    <span class="mock-field__placeholder"
+                      >Pár vět vlastními slovy.</span
+                    >
+                  </div>
+                </div>
+                <div class="mock-field">
+                  <span class="mock-field__label"
+                    >3 jídla, která stojí za doporučení</span
+                  >
+                  <div class="mock-field__textarea">
+                    <span class="mock-field__placeholder"
+                      >Jedno na řádek. Stačí název a krátce proč.</span
+                    >
+                  </div>
+                </div>
+                <div class="mock-field">
+                  <span class="mock-field__label"
+                    >Co by hostovi řekl kuchař?</span
+                  >
+                  <div class="mock-field__textarea">
+                    <span class="mock-field__placeholder"
+                      >Pár vět od člověka, který to vaří.</span
+                    >
+                  </div>
+                </div>
+                <span class="mock-form__cta" aria-disabled="true">
+                  Poslat zájem · připravujeme
+                </span>
+              </form>
+
+              <p class="preview__note">
+                Formulář připravujeme. Teď můžete začít e-mailem.
+              </p>
+            </article>
+
+            <article
+              class="preview preview--dark"
+              aria-label="Ukázka budoucího hlasového vstupu"
+            >
+              <div class="preview__head">
+                <span class="preview__kicker">Možnost B · Náhled</span>
+              </div>
+              <h3 class="preview__title">Hlasový vstup</h3>
+              <p class="preview__lead">
+                Krátká nahrávka místo psaní. AI z hlasu vytáhne strukturovaný
+                návrh profilu a otázky, na které se Vás doptá.
+              </p>
+
+              <div class="mock-voice" aria-hidden="true">
+                <span
+                  class="mock-mic"
+                  role="button"
+                  aria-disabled="true"
+                  aria-label="Nefunkční ukázka mikrofonu"
+                ></span>
+                <p class="mock-voice__cta">Namluvit 1–3 minuty</p>
+                <p class="mock-voice__hint">
+                  Stop kdykoli · připravujeme
+                </p>
+
+                <ul class="mock-questions">
+                  <li>
+                    <span class="mock-questions__num">01</span>
+                    <span>Kvůli čemu se k Vám lidé vrací?</span>
+                  </li>
+                  <li>
+                    <span class="mock-questions__num">02</span>
+                    <span
+                      >Jaké jídlo byste doporučili hostovi poprvé?</span
+                    >
+                  </li>
+                  <li>
+                    <span class="mock-questions__num">03</span>
+                    <span>Co je na Vašem podniku osobité?</span>
+                  </li>
+                </ul>
+              </div>
+
+              <p class="preview__note">
+                Hlasový vstup je budoucí směr. Zvuk nebude použit veřejně bez
+                Vašeho souhlasu.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <!-- Komunitní princip -->
       <section class="section section--tight" aria-labelledby="community-title">
         <div class="shell">
           <div class="section-head">
             <p class="kicker">
-              <span class="kicker__num">03</span> Komunita
+              <span class="kicker__num">04</span> Komunita
             </p>
             <h2 class="section-title" id="community-title">
               Doporučení může přijít i od hostů
@@ -230,7 +377,7 @@
       <section class="section" id="dal">
         <div class="shell">
           <div class="section-head">
-            <p class="kicker"><span class="kicker__num">04</span> Postup</p>
+            <p class="kicker"><span class="kicker__num">05</span> Postup</p>
             <h2 class="section-title">Co se stane potom</h2>
             <p class="section-lead">
               Žádné smlouvy, žádný self-service výpis. Většinu práce dělají
@@ -310,7 +457,7 @@
       <section class="section wave section--flush">
         <div class="shell">
           <div class="section-head">
-            <p class="kicker"><span class="kicker__num">05</span> Podklady</p>
+            <p class="kicker"><span class="kicker__num">06</span> Podklady</p>
             <h2 class="section-title">Co nám můžete poslat</h2>
             <p class="section-lead">
               Nemusíte mít všechno připravené. Stačí začít tím, co víte.
@@ -452,7 +599,7 @@
         <div class="shell">
           <div class="section-head">
             <p class="kicker">
-              <span class="kicker__num">06</span> Princip
+              <span class="kicker__num">07</span> Princip
             </p>
             <h2 class="section-title">Jak to děláme</h2>
             <p class="section-lead">
