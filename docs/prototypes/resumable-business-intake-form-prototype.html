@@ -1,278 +1,99 @@
 <!doctype html>
-<!--
-  Non-production prototype for the Mám hlad business intake form.
-  Static docs artifact only: it does not submit data anywhere, has no backend,
-  no database, no tracking, and must not be treated as a production form.
--->
+<!-- Static docs prototype. No backend, no submission, no tracking, no external assets. -->
 <html lang="cs">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mám hlad – přidejte svoje jídlo</title>
     <style>
-      :root {
-        color-scheme: light;
-        --paper: #fffaf3;
-        --surface: #ffffff;
-        --ink: #211a16;
-        --muted: #6b625b;
-        --line: #ded2c3;
-        --accent: #af3f2b;
-        --accent-dark: #7b2c20;
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
       body {
         margin: 0;
-        background: var(--paper);
-        color: var(--ink);
+        background: #fffaf3;
+        color: #211a16;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
         line-height: 1.5;
       }
-
-      main {
-        max-width: 640px;
-        margin: 0 auto;
-        padding: 32px 20px 56px;
+      main { max-width: 560px; margin: 0 auto; padding: 28px 20px 48px; }
+      h1 { font-size: 1.8rem; margin: 0 0 8px; }
+      .intro { color: #41362f; margin: 0 0 24px; }
+      h2 { font-size: 1.1rem; margin: 24px 0 12px; }
+      label { display: block; font-weight: 600; margin: 0 0 4px; }
+      input, textarea, select {
+        width: 100%; padding: 10px 12px; margin-bottom: 14px;
+        border: 1px solid #cdbfac; border-radius: 7px; background: #fff;
+        font: inherit; color: inherit;
       }
-
-      h1 {
-        margin: 0 0 10px;
-        font-size: clamp(1.8rem, 4vw, 2.6rem);
-        line-height: 1.1;
-      }
-
-      .lead {
-        margin: 0 0 20px;
-        color: #41362f;
-        font-size: 1.05rem;
-      }
-
-      h2 {
-        margin: 0 0 14px;
-        font-size: 1.15rem;
-      }
-
-      p {
-        margin-top: 0;
-      }
-
-      .note {
-        margin: 0 0 24px;
-        padding: 12px 14px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--surface);
-        color: var(--muted);
-        font-size: 0.9rem;
-      }
-
-      section {
-        margin-bottom: 18px;
-        padding: 20px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        background: var(--surface);
-      }
-
-      .field {
-        margin-bottom: 14px;
-      }
-
-      .field:last-child {
-        margin-bottom: 0;
-      }
-
-      label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 600;
-      }
-
-      .hint {
-        margin: 0 0 6px;
-        color: var(--muted);
-        font-size: 0.88rem;
-      }
-
-      input[type="text"],
-      input[type="email"],
-      textarea,
-      select {
-        width: 100%;
-        min-height: 44px;
-        padding: 10px 12px;
-        border: 1px solid #cdbfac;
-        border-radius: 7px;
-        background: #fff;
-        color: var(--ink);
-        font: inherit;
-      }
-
-      textarea {
-        min-height: 96px;
-        resize: vertical;
-      }
-
-      .choices {
-        display: grid;
-        gap: 8px;
-      }
-
-      .choice {
-        display: flex;
-        gap: 9px;
-        align-items: center;
-        padding: 10px 12px;
-        border: 1px solid var(--line);
-        border-radius: 7px;
-        cursor: pointer;
-      }
-
-      .choice input {
-        width: auto;
-        min-height: 0;
-      }
-
-      .consent {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        font-size: 0.95rem;
-      }
-
-      .consent input {
-        margin-top: 4px;
-      }
-
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        align-items: center;
-        margin-top: 6px;
-      }
-
+      textarea { min-height: 84px; resize: vertical; }
+      .consent { display: flex; gap: 10px; align-items: flex-start; margin: 8px 0 18px; }
+      .consent input { width: auto; margin: 4px 0 0; }
+      .buttons { display: flex; flex-wrap: wrap; gap: 10px; }
       button {
-        min-height: 46px;
-        padding: 11px 18px;
-        border: 1px solid var(--accent);
-        border-radius: 7px;
-        background: var(--accent);
-        color: #fff;
-        font: inherit;
-        font-weight: 600;
+        padding: 11px 18px; border: 1px solid #af3f2b; border-radius: 7px;
+        background: #af3f2b; color: #fff; font: inherit; font-weight: 600;
       }
-
-      button.secondary {
-        background: var(--surface);
-        color: var(--accent-dark);
-      }
-
-      .safety {
-        margin: 12px 0 0;
-        color: var(--muted);
-        font-size: 0.9rem;
-      }
-
-      footer {
-        margin-top: 28px;
-        color: var(--muted);
-        font-size: 0.82rem;
-        text-align: center;
-      }
+      button.secondary { background: #fff; color: #7b2c20; }
+      .safety { color: #6b625b; font-size: 0.9rem; margin: 12px 0 0; }
+      .proto { color: #6b625b; font-size: 0.8rem; margin: 28px 0 0; }
     </style>
   </head>
   <body>
     <main>
       <h1>Přidejte svoje jídlo do Mám hlad</h1>
-      <p class="lead">Vyplňte pár základních věcí. Formulář si můžete uložit a vrátit se k němu, až budete mít čas. Nic nezveřejníme bez vašeho schválení.</p>
+      <p class="intro">Napište nám pár základních věcí o sobě a o jídle, které nabízíte. Formulář si můžete uložit a vrátit se k němu, až budete mít čas. Nic nezveřejníme bez vašeho schválení.</p>
 
-      <p class="note">Ukázkový formulář (prototyp). Nic se neodesílá a nikde se neukládá. Vyplňte, co zvládnete teď – informace by se uložily a mohli byste pokračovat později.</p>
+      <h2>Základní údaje</h2>
+      <label for="name">Název podniku / kuchyně</label>
+      <input id="name" type="text">
+      <label for="person">Jméno kuchaře nebo kontaktní osoby</label>
+      <input id="person" type="text">
+      <label for="contact">Kontakt</label>
+      <input id="contact" type="text" placeholder="e-mail, telefon, Instagram nebo WhatsApp">
+      <label for="type">Typ provozu</label>
+      <select id="type">
+        <option value="">Vyberte…</option>
+        <option>Restaurace / bistro / kavárna</option>
+        <option>Stánek / street food / food truck</option>
+        <option>Malá kuchyně / catering</option>
+        <option>Samostatný kuchař / pop-up / hostování</option>
+        <option>Jiné</option>
+      </select>
 
-      <!-- All controls below are static mocks. No form action, endpoint, or submit handler. -->
+      <h2>Kde vás lidé najdou</h2>
+      <label for="area">Město / oblast</label>
+      <input id="area" type="text">
+      <label for="address">Adresa nebo místo prodeje</label>
+      <input id="address" type="text">
+      <label for="hours">Kdy máte otevřeno / kdy vaříte</label>
+      <input id="hours" type="text">
 
-      <section>
-        <h2>Základní údaje</h2>
-        <div class="field">
-          <label for="name">Název podniku / kuchyně</label>
-          <input id="name" type="text" placeholder="Např. Bistro Na rohu">
-        </div>
-        <div class="field">
-          <label for="person">Jméno kuchaře nebo kontaktní osoby</label>
-          <input id="person" type="text" placeholder="Např. Petra Nováková">
-        </div>
-        <div class="field">
-          <label for="contact">Kontakt</label>
-          <p class="hint">E-mail, telefon, Instagram nebo WhatsApp – ať se vám máme jak ozvat.</p>
-          <input id="contact" type="text" placeholder="kontakt@example.cz">
-        </div>
-      </section>
+      <h2>Co nabízíte</h2>
+      <label for="offer">Co vaříte nebo prodáváte?</label>
+      <textarea id="offer"></textarea>
+      <label for="dish">Jídlo, které byste doporučili novému zákazníkovi</label>
+      <input id="dish" type="text">
+      <label for="forwhom">Pro koho se vaše jídlo hodí?</label>
+      <input id="forwhom" type="text">
 
-      <section>
-        <h2>Kde vás lidé najdou</h2>
-        <div class="field">
-          <label for="area">Město / oblast</label>
-          <input id="area" type="text" placeholder="Např. Brno, Liberec, farmářské trhy">
-        </div>
-        <div class="field">
-          <label for="address">Adresa nebo místo prodeje</label>
-          <input id="address" type="text" placeholder="Např. Náměstí 5, nebo stánek na trhu">
-        </div>
-        <div class="field">
-          <label for="hours">Kdy máte otevřeno / kdy vaříte</label>
-          <input id="hours" type="text" placeholder="Např. po–pá 11–15, víkendy na trzích">
-        </div>
-      </section>
+      <h2>Odkazy a podklady</h2>
+      <label for="links">Web / Instagram / menu</label>
+      <input id="links" type="text">
+      <label for="materials">Fotky nebo jiné podklady</label>
+      <input id="materials" type="text">
+      <label for="note">Poznámka</label>
+      <textarea id="note"></textarea>
 
-      <section>
-        <h2>Co nabízíte</h2>
-        <div class="field">
-          <label for="offer">Co vaříte nebo prodáváte?</label>
-          <textarea id="offer" placeholder="Pár vět o tom, co u vás lidé najdou."></textarea>
-        </div>
-        <div class="field">
-          <label for="dish">Jídlo, které byste doporučili novému zákazníkovi</label>
-          <input id="dish" type="text" placeholder="Např. domácí svíčková">
-        </div>
-        <div class="field">
-          <label for="forwhom">Pro koho se vaše jídlo hodí?</label>
-          <p class="hint">Třeba místní, turisté, obědy, večery, trhy.</p>
-          <input id="forwhom" type="text" placeholder="Např. obědy pro lidi z okolí">
-        </div>
-      </section>
+      <label class="consent">
+        <input type="checkbox">
+        <span>Souhlasím, že mě Mám hlad může kontaktovat a připravit soukromý návrh profilu.</span>
+      </label>
 
-      <section>
-        <h2>Odkazy a podklady</h2>
-        <div class="field">
-          <label for="links">Web / Instagram / menu</label>
-          <input id="links" type="text" placeholder="https://…">
-        </div>
-        <div class="field">
-          <label for="materials">Fotky nebo jiné podklady</label>
-          <p class="hint">Stačí napsat, co máte k dispozici. Soubory byste mohli přidat teď nebo až se vrátíte.</p>
-          <textarea id="materials" placeholder="Např. mám fotky jídel a aktuální menu."></textarea>
-        </div>
-      </section>
+      <div class="buttons">
+        <button type="button">Poslat zájem</button>
+        <button class="secondary" type="button">Uložit a pokračovat později</button>
+      </div>
+      <p class="safety">Nic nezveřejníme bez vašeho schválení.</p>
 
-      <section>
-        <label class="consent">
-          <input type="checkbox">
-          <span>Souhlasím, že mě Mám hlad může kontaktovat a připravit soukromý návrh profilu.</span>
-        </label>
-        <div class="actions" style="margin-top:16px;">
-          <button type="button">Poslat zájem</button>
-          <button class="secondary" type="button">Uložit a pokračovat později</button>
-        </div>
-        <p class="safety">Nic nezveřejníme bez vašeho schválení.</p>
-      </section>
-
-      <footer>
-        Neprodukční prototyp v dokumentaci. Bez backendu, bez sledování, bez odesílání dat.
-      </footer>
+      <p class="proto">Toto je statický prototyp. Nic se nikam neodesílá.</p>
     </main>
   </body>
 </html>
