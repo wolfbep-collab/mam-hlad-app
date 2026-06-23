@@ -92,12 +92,6 @@
         font-weight: 600;
       }
 
-      .optional {
-        color: var(--muted);
-        font-weight: 400;
-        font-size: 0.9rem;
-      }
-
       .hint {
         margin: 0 0 6px;
         color: var(--muted);
@@ -195,9 +189,9 @@
   <body>
     <main>
       <h1>Přidejte svoje jídlo do Mám hlad</h1>
-      <p class="lead">Napište nám pár základních věcí. Ozveme se vám a případný profil zveřejníme až po vašem schválení.</p>
+      <p class="lead">Vyplňte pár základních věcí. Formulář si můžete uložit a vrátit se k němu, až budete mít čas. Nic nezveřejníme bez vašeho schválení.</p>
 
-      <p class="note">Ukázkový formulář (prototyp). Nic se neodesílá a nikde se neukládá. Nic nezveřejníme bez vašeho schválení.</p>
+      <p class="note">Ukázkový formulář (prototyp). Nic se neodesílá a nikde se neukládá. Vyplňte, co zvládnete teď – informace by se uložily a mohli byste pokračovat později.</p>
 
       <!-- All controls below are static mocks. No form action, endpoint, or submit handler. -->
 
@@ -208,59 +202,60 @@
           <input id="name" type="text" placeholder="Např. Bistro Na rohu">
         </div>
         <div class="field">
-          <label for="person">Jméno kontaktní osoby nebo kuchaře <span class="optional">— nepovinné</span></label>
+          <label for="person">Jméno kuchaře nebo kontaktní osoby</label>
           <input id="person" type="text" placeholder="Např. Petra Nováková">
         </div>
         <div class="field">
           <label for="contact">Kontakt</label>
-          <p class="hint">E-mail, telefon, Instagram nebo WhatsApp.</p>
+          <p class="hint">E-mail, telefon, Instagram nebo WhatsApp – ať se vám máme jak ozvat.</p>
           <input id="contact" type="text" placeholder="kontakt@example.cz">
         </div>
+      </section>
+
+      <section>
+        <h2>Kde vás lidé najdou</h2>
         <div class="field">
           <label for="area">Město / oblast</label>
           <input id="area" type="text" placeholder="Např. Brno, Liberec, farmářské trhy">
         </div>
-      </section>
-
-      <section>
-        <h2>O jaký provoz jde?</h2>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="type"> Restaurace / bistro / kavárna</label>
-          <label class="choice"><input type="radio" name="type"> Stánek / street food / food truck</label>
-          <label class="choice"><input type="radio" name="type"> Malá kuchyně / catering</label>
-          <label class="choice"><input type="radio" name="type"> Samostatný kuchař / pop-up / hostování</label>
-          <label class="choice"><input type="radio" name="type"> Jiné</label>
+        <div class="field">
+          <label for="address">Adresa nebo místo prodeje</label>
+          <input id="address" type="text" placeholder="Např. Náměstí 5, nebo stánek na trhu">
+        </div>
+        <div class="field">
+          <label for="hours">Kdy máte otevřeno / kdy vaříte</label>
+          <input id="hours" type="text" placeholder="Např. po–pá 11–15, víkendy na trzích">
         </div>
       </section>
 
       <section>
-        <h2>Co vaříte</h2>
+        <h2>Co nabízíte</h2>
         <div class="field">
-          <label for="offer">Co vaříte nebo nabízíte?</label>
+          <label for="offer">Co vaříte nebo prodáváte?</label>
           <textarea id="offer" placeholder="Pár vět o tom, co u vás lidé najdou."></textarea>
         </div>
         <div class="field">
-          <label for="dish">Jedno jídlo, které byste doporučili <span class="optional">— nepovinné</span></label>
+          <label for="dish">Jídlo, které byste doporučili novému zákazníkovi</label>
           <input id="dish" type="text" placeholder="Např. domácí svíčková">
         </div>
         <div class="field">
-          <label for="forwhom">Pro koho je vaše jídlo typické? <span class="optional">— nepovinné</span></label>
+          <label for="forwhom">Pro koho se vaše jídlo hodí?</label>
           <p class="hint">Třeba místní, turisté, obědy, večery, trhy.</p>
           <input id="forwhom" type="text" placeholder="Např. obědy pro lidi z okolí">
         </div>
       </section>
 
       <section>
-        <h2>Doplňující informace <span class="optional">— nepovinné</span></h2>
+        <h2>Odkazy a podklady</h2>
         <div class="field">
-          <label for="links">Odkaz na web, menu nebo sociální sítě</label>
+          <label for="links">Web / Instagram / menu</label>
           <input id="links" type="text" placeholder="https://…">
         </div>
         <div class="field">
-          <label for="notes">Poznámka</label>
-          <textarea id="notes" placeholder="Cokoli dalšího, co byste nám chtěli napsat."></textarea>
+          <label for="materials">Fotky nebo jiné podklady</label>
+          <p class="hint">Stačí napsat, co máte k dispozici. Soubory byste mohli přidat teď nebo až se vrátíte.</p>
+          <textarea id="materials" placeholder="Např. mám fotky jídel a aktuální menu."></textarea>
         </div>
-        <p class="hint">Fotky nebo další podklady můžete doplnit později.</p>
       </section>
 
       <section>
@@ -270,7 +265,7 @@
         </label>
         <div class="actions" style="margin-top:16px;">
           <button type="button">Poslat zájem</button>
-          <button class="secondary" type="button">Uložit rozpracované</button>
+          <button class="secondary" type="button">Uložit a pokračovat později</button>
         </div>
         <p class="safety">Nic nezveřejníme bez vašeho schválení.</p>
       </section>
