@@ -457,7 +457,7 @@
           <section aria-labelledby="intro-title">
             <div class="section-head">
               <div>
-                <h2 id="intro-title">Nic se nezveřejní bez vašeho schválení.</h2>
+                <h2 id="intro-title">Nic se nezveřejní bez vašeho výslovného schválení.</h2>
                 <p>Odesláním posíláte zájem a podklady. Není to publikace profilu, smlouva ani registrace do systému.</p>
               </div>
               <span class="badge">Soukromý lead</span>
@@ -625,11 +625,12 @@
               </div>
               <span class="mock-badge">Není publikace</span>
             </div>
+            <!-- Consent must start unchecked. Mlčení není souhlas: the box is never pre-ticked. -->
             <label class="choice">
-              <input type="checkbox" checked>
+              <input type="checkbox">
               <span>Souhlasím, aby Mám hlad použilo tyto podklady soukromě pro domluvu a případnou přípravu soukromého návrhu profilu.</span>
             </label>
-            <p class="hint">Mlčení není souhlas. Odeslání formuláře, autosave ani resume odkaz nejsou schválení veřejného profilu.</p>
+            <p class="hint">Mlčení není souhlas. V produkci by bez tohoto zaškrtnutí nešlo zájem odeslat ani uložit jako lead. Odeslání formuláře, autosave ani resume odkaz přitom nejsou schválení veřejného profilu.</p>
             <div class="actions">
               <button type="button">Uložit a poslat zájem</button>
               <button class="secondary" type="button">Uložit rozpracované</button>
@@ -649,6 +650,35 @@
               </div>
             </div>
           </section>
+
+          <!-- Static, non-functional mock of resume-link edge states. No tokens, no links, no routing. -->
+          <section aria-labelledby="resume-edge-title">
+            <div class="section-head">
+              <div>
+                <h2 id="resume-edge-title">Resume odkaz: chybové stavy</h2>
+                <p>Statická ukázka, jak by vypadal vypršelý nebo neplatný odkaz. Nic se neodesílá a žádný odkaz tu nefunguje.</p>
+              </div>
+              <span class="mock-badge">Jen mock</span>
+            </div>
+            <div class="boundary-grid">
+              <div class="boundary-box public">
+                <h3>Odkaz vypršel</h3>
+                <p>Kvůli bezpečnosti už tento odkaz nejde použít. Můžete si vyžádat nový odkaz nebo nám napsat. Žádná soukromá data se nezobrazí.</p>
+                <div class="skip-row">
+                  <button class="secondary" type="button" disabled>Poslat nový odkaz</button>
+                  <span class="mock-only">Zakázané mock tlačítko: prototyp odkaz neposílá.</span>
+                </div>
+              </div>
+              <div class="boundary-box public">
+                <h3>Odkaz je neplatný nebo zrušený</h3>
+                <p>Odkaz je neplatný nebo byl zrušen. Neprozrazujeme, zda nějaký lead existuje. Vyžádejte si prosím nový odkaz nebo nám napište.</p>
+                <div class="skip-row">
+                  <button class="secondary" type="button" disabled>Vyžádat nový odkaz</button>
+                  <span class="mock-only">Zakázané mock tlačítko: bez backendu a bez routingu.</span>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
         <aside aria-labelledby="side-title">
@@ -661,6 +691,10 @@
             <li>
               <strong>Uloženo</strong>
               <p class="small">Změny jsou uložené jako soukromý rozpracovaný zájem.</p>
+            </li>
+            <li>
+              <strong>Nepodařilo se uložit</strong>
+              <p class="small">Mock stav chyby: Nepodařilo se uložit. Zkontrolujte připojení a zkuste to znovu. V produkci by změny zůstaly neuložené a sekce by se neoznačila jako hotová.</p>
             </li>
             <li>
               <strong>Pokračovat později</strong>
