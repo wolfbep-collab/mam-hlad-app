@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mám hlad — přidejte svoje jídlo</title>
+    <meta
+      name="description"
+      content="Napište nám pár věcí o sobě a o jídle, které nabízíte. Formulář si můžete uložit a dokončit později. Nic nezveřejníme bez vašeho schválení."
+    />
+    <link
+      rel="canonical"
+      href="https://mam-hlad-landing-wolf.vercel.app/intake.html"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Mám hlad — přidejte svoje jídlo" />
+    <meta
+      property="og:description"
+      content="Napište nám pár věcí o sobě a o jídle, které nabízíte. Formulář si můžete uložit a dokončit později."
+    />
+    <meta
+      property="og:url"
+      content="https://mam-hlad-landing-wolf.vercel.app/intake.html"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Page-specific intake form styling, built on the shared design tokens. */
+      .intake {
+        max-width: 680px;
+        margin: 0 auto;
+      }
+      .intake__intro {
+        margin: 0 0 6px;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink-soft);
+      }
+      .intake-group {
+        margin-top: 22px;
+        padding: 24px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+      .intake-group__title {
+        font-family: var(--serif);
+        font-size: 21px;
+        line-height: 1.2;
+        margin: 0 0 16px;
+      }
+      .intake-field {
+        margin-bottom: 16px;
+      }
+      .intake-field:last-child {
+        margin-bottom: 0;
+      }
+      .intake-field > label {
+        display: block;
+        font-weight: 700;
+        font-size: 14.5px;
+        margin-bottom: 6px;
+      }
+      .intake-field input,
+      .intake-field textarea,
+      .intake-field select {
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 15px;
+        line-height: 1.45;
+      }
+      .intake-field textarea {
+        min-height: 92px;
+        resize: vertical;
+      }
+      .intake-field input:focus,
+      .intake-field textarea:focus,
+      .intake-field select:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+        border-color: var(--accent);
+      }
+      .intake-hint {
+        margin: 6px 0 0;
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      .intake-consent {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-top: 24px;
+        font-size: 15px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+      }
+      .intake-consent input {
+        margin-top: 5px;
+        flex: none;
+      }
+      .intake-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 22px;
+      }
+      .intake-safety {
+        margin: 14px 0 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .intake-note {
+        margin: 26px 0 0;
+        padding-top: 14px;
+        border-top: 1px dashed var(--line);
+        font-size: 13px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell topbar__inner">
+        <a class="wordmark" href="index.html">
+          <span class="wordmark__dot"></span>
+          <span class="wordmark__name">Mám hlad</span>
+          <span class="wordmark__tag">průvodce jídlem</span>
+        </a>
+        <nav class="mainnav">
+          <a href="index.html#jak">Jak to funguje</a>
+          <a href="partners.html">Pro podniky</a>
+          <a href="support.html">Kontakt</a>
+          <a href="privacy.html">Soukromí</a>
+          <a class="mainnav__cta btn btn--primary btn--sm" href="join.html"
+            >Přidat podnik</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="section section--tight">
+        <div class="shell">
+          <div class="intake">
+            <div class="section-head">
+              <p class="kicker">Pro podniky a kuchaře</p>
+              <h1 class="section-title">Přidejte svoje jídlo do Mám hlad</h1>
+            </div>
+            <p class="intake__intro">
+              Napište nám pár věcí o sobě a o jídle, které nabízíte. Formulář
+              si můžete uložit a dokončit později. Nic nezveřejníme bez vašeho
+              schválení.
+            </p>
+
+            <div class="intake-group">
+              <h2 class="intake-group__title">Základní údaje</h2>
+              <div class="intake-field">
+                <label for="name">Název podniku / kuchyně</label>
+                <input id="name" type="text" />
+              </div>
+              <div class="intake-field">
+                <label for="person">Jméno kuchaře nebo kontaktní osoby</label>
+                <input id="person" type="text" />
+              </div>
+              <div class="intake-field">
+                <label for="contact">Kontakt</label>
+                <input
+                  id="contact"
+                  type="text"
+                  placeholder="e-mail, telefon, Instagram nebo WhatsApp"
+                />
+              </div>
+              <div class="intake-field">
+                <label for="type">Typ provozu</label>
+                <select id="type">
+                  <option value="">Vyberte…</option>
+                  <option>Restaurace / bistro / kavárna</option>
+                  <option>Stánek / street food / food truck</option>
+                  <option>Malá kuchyně / catering</option>
+                  <option>Samostatný kuchař / pop-up / hostování</option>
+                  <option>Jiné</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="intake-group">
+              <h2 class="intake-group__title">Kde vás lidé najdou</h2>
+              <div class="intake-field">
+                <label for="area">Město / oblast</label>
+                <input id="area" type="text" />
+              </div>
+              <div class="intake-field">
+                <label for="address">Adresa nebo místo prodeje</label>
+                <input id="address" type="text" />
+              </div>
+              <div class="intake-field">
+                <label for="hours">Kdy máte otevřeno / kdy vaříte</label>
+                <input id="hours" type="text" />
+              </div>
+            </div>
+
+            <div class="intake-group">
+              <h2 class="intake-group__title">Co nabízíte</h2>
+              <div class="intake-field">
+                <label for="offer">Co vaříte nebo prodáváte?</label>
+                <textarea id="offer"></textarea>
+              </div>
+              <div class="intake-field">
+                <label for="dish"
+                  >Jídlo, které byste doporučili novému zákazníkovi</label
+                >
+                <input id="dish" type="text" />
+              </div>
+              <div class="intake-field">
+                <label for="forwhom">Kdo si u vás nejvíc pochutná?</label>
+                <input id="forwhom" type="text" />
+                <p class="intake-hint">
+                  Např. lidé na obědě, turisté, rodiny, studenti, lidé v práci,
+                  návštěvníci trhu nebo ti, kdo hledají domácí jídlo.
+                </p>
+              </div>
+            </div>
+
+            <div class="intake-group">
+              <h2 class="intake-group__title">Odkazy a podklady</h2>
+              <div class="intake-field">
+                <label for="links">Web / Instagram / menu</label>
+                <input id="links" type="text" />
+              </div>
+              <div class="intake-field">
+                <label for="materials">Fotky nebo jiné podklady</label>
+                <input id="materials" type="text" />
+              </div>
+              <div class="intake-field">
+                <label for="note">Poznámka</label>
+                <textarea id="note"></textarea>
+              </div>
+            </div>
+
+            <label class="intake-consent">
+              <input type="checkbox" />
+              <span
+                >Souhlasím, že mě Mám hlad může kontaktovat a připravit
+                soukromý návrh profilu.</span
+              >
+            </label>
+
+            <div class="intake-actions">
+              <button class="btn btn--primary" type="button">
+                Poslat zájem
+              </button>
+              <button class="btn btn--ghost" type="button">
+                Uložit a dokončit později
+              </button>
+            </div>
+            <p class="intake-safety">Nic nezveřejníme bez vašeho schválení.</p>
+
+            <p class="intake-note">
+              Tato první verze formuláře zatím nic neodesílá.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <span class="wordmark">
+              <span class="wordmark__dot"></span>
+              <span class="wordmark__name">Mám hlad</span>
+            </span>
+            <p class="footer__tagline">
+              Výběrový osobní průvodce jídlem pro Česko. Hledáme jídla, kuchaře
+              a podniky, která stojí za doporučení.
+            </p>
+          </div>
+          <div class="footer__col">
+            <h4>Pro podniky</h4>
+            <a href="index.html#jak">Jak to funguje</a>
+            <a href="partners.html">Pro podniky</a>
+          </div>
+          <div class="footer__col">
+            <h4>Další</h4>
+            <a href="hungry.html">Pro hladové</a>
+            <a href="support.html">Kontakt</a>
+            <a href="privacy.html">Soukromí</a>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <span class="copyright"
+            >Mám hlad — výběrový průvodce jídlem pro Česko.</span
+          >
+          <span>Připravujeme první partnerskou vlnu.</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
