@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { type Href, useRouter } from 'expo-router';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Button, Screen } from '../src/components';
 import { colors, radius, spacing, typography } from '../src/theme';
@@ -6,10 +6,12 @@ import { colors, radius, spacing, typography } from '../src/theme';
 const PARTNER_MAILTO = `mailto:wolf.bep@gmail.com?subject=${encodeURIComponent(
   'Chci přidat podnik do Mám hlad'
 )}`;
+const PRIVACY_ROUTE = '/privacy' as Href;
+const SUPPORT_ROUTE = '/support' as Href;
 
 const POINTS = [
-  'Profil podniku připravíme my — zdarma.',
-  'Vy jen schválíte náhled, než ho někdo uvidí.',
+  'Připravíme krátký návrh z toho, co nám pošlete.',
+  'Profil půjde ven až po vašem schválení.',
   'Žádný závazek a žádná smlouva.',
   'Žádné provize za rozvoz. Mám hlad nic neprodává.',
 ];
@@ -26,13 +28,11 @@ export default function PartnersScreen() {
       <View style={styles.hero}>
         <Text style={styles.eyebrow}>Pro podniky</Text>
         <Text style={[typography.h1, styles.title]}>
-          Hledáme podniky, kuchaře a jídla, která stojí za doporučení
+          Hledáme jídla, která bychom sami doporučili
         </Text>
         <Text style={[typography.body, styles.lead]}>
-          Budujeme výběrového osobního průvodce jídlem pro Česko. Lidé hledají
-          konkrétní jídlo podle chuti, času a situace — ne další seznam
-          restaurací k prohlížení. Chceme mít v každém městě ta jídla, kuchaře a
-          podniky, které stojí za doporučení.
+          Nebereme každého. Chceme menší, poctivý výběr podniků, kuchařů a
+          jídel, kterým se dá věřit.
         </Text>
       </View>
 
@@ -46,32 +46,30 @@ export default function PartnersScreen() {
       </View>
 
       <Text style={[typography.caption, styles.note]}>
-        Začínáme první partnerskou vlnou — ne kvůli objemu, ale kvůli kvalitě.
-        Nechceme stovky náhodných podniků; první ověřovací vlna začíná v
-        regionech, kde najdeme silné partnery.
+        Napište nám pár vět. Ozveme se a řekneme si, jestli to dává smysl.
       </Text>
 
       <View style={styles.ctaBlock}>
         <Button
-          label="Chci přidat podnik"
+          label="Přidat podnik"
           onPress={openMail}
           accessibilityLabel="Napsat e-mail o přidání podniku"
         />
         <Text style={[typography.caption, styles.ctaHint]}>
-          Otevře se e-mail na wolf.bep@gmail.com. Odpovídáme osobně.
+          Otevře se e-mail na wolf.bep@gmail.com.
         </Text>
       </View>
 
       <View style={styles.footer}>
         <Pressable
-          onPress={() => router.push('/privacy')}
+          onPress={() => router.push(PRIVACY_ROUTE)}
           accessibilityRole="link"
         >
           <Text style={[typography.caption, styles.footerLink]}>Soukromí</Text>
         </Pressable>
         <Text style={styles.footerDot}>·</Text>
         <Pressable
-          onPress={() => router.push('/support')}
+          onPress={() => router.push(SUPPORT_ROUTE)}
           accessibilityRole="link"
         >
           <Text style={[typography.caption, styles.footerLink]}>Podpora</Text>
