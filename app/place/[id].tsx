@@ -63,6 +63,27 @@ function telUrl(phone: string): string {
   return `tel:${phone.replace(/\s+/g, '')}`;
 }
 
+function normalizePhone(phone: string): string {
+  return phone.replace(/[^\d+]/g, '');
+}
+
+const DEMO_PHONE_NUMBERS = new Set([
+  '+420000000000',
+  '+420212345678',
+  '+420222111000',
+  '+420777000002',
+  '+420777000003',
+  '+420777000004',
+]);
+
+function hasUsablePhone(phone: string | null | undefined): phone is string {
+  if (!phone) return false;
+  const normalizedPhone = normalizePhone(phone);
+  if (!normalizedPhone) return false;
+  if (DEMO_PHONE_NUMBERS.has(normalizedPhone)) return false;
+  return !/^\+420777000\d{3}$/.test(normalizedPhone);
+}
+
 function openExternal(url: string) {
   void Linking.openURL(url).catch(() => {});
 }
@@ -70,7 +91,7 @@ function openExternal(url: string) {
 function pickAskTarget(
   place: Place
 ): { label: string; url: string } | null {
-  if (place.phone)
+  if (hasUsablePhone(place.phone))
     return { label: 'Zavolat a zeptat se', url: telUrl(place.phone) };
   if (place.instagram)
     return {
@@ -211,6 +232,8 @@ export default function PlaceDetailScreen() {
     );
   }
 
+  const callablePhone = hasUsablePhone(place.phone) ? place.phone : null;
+
   return (
     <Screen contentStyle={styles.content}>
       <View>
@@ -236,16 +259,20 @@ export default function PlaceDetailScreen() {
 
       <View style={styles.card}>
         <Text style={[typography.label, styles.cardLabel]}>Kontakt</Text>
-        {place.phone || place.instagram || place.website ? (
+        {callablePhone || place.instagram || place.website ? (
           <View style={styles.contactButtons}>
-            {place.phone ? (
+            {callablePhone ? (
               <Button
                 label="Zavolat"
                 variant="secondary"
                 size="md"
-                onPress={() => openExternal(telUrl(place.phone as string))}
+                onPress={() => openExternal(telUrl(callablePhone))}
               />
-            ) : null}
+            ) : (
+              <Text style={[typography.caption, styles.contactEmpty]}>
+                Telefon zatím není doplněný.
+              </Text>
+            )}
             {place.instagram ? (
               <Button
                 label="Instagram"
@@ -479,6 +506,7 @@ function MenuItemRow({
     !!gluten ||
     !!item.recipeNote ||
     !!item.chefNote;
+  const callablePhone = hasUsablePhone(place.phone) ? place.phone : null;
   return (
     <Pressable
       onPress={onToggleSelect}
@@ -611,16 +639,18 @@ function MenuItemRow({
                   size="md"
                   onPress={() => openExternal(buildNavigationUrl(place))}
                 />
-                {place.phone ? (
+                {callablePhone ? (
                   <Button
                     label="Zavolat"
                     variant="secondary"
                     size="md"
-                    onPress={() =>
-                      openExternal(telUrl(place.phone as string))
-                    }
+                    onPress={() => openExternal(telUrl(callablePhone))}
                   />
-                ) : null}
+                ) : (
+                  <Text style={[typography.caption, styles.contactEmpty]}>
+                    Telefon zatím není doplněný.
+                  </Text>
+                )}
               </View>
             </View>
           ) : (

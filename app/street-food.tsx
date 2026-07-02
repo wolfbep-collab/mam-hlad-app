@@ -127,7 +127,7 @@ export default function StreetFoodScreen() {
           </Text>
           <Text style={[typography.body, styles.emptyText]}>
             {diet === 'any'
-              ? 'Zkus to později — stánky se v průběhu dne mění. Můžeš si zatím dát tip přes „Mám hlad" nebo „Vím, co si dát".'
+              ? 'Zkus to později — stánky se v průběhu dne mění. Můžeš si zatím dát tip přes „Mám hlad" nebo „Vím, na co mám chuť".'
               : 'Zkus změnit dietní volbu — třeba „Vegetariánsky" nebo „Jím všechno".'}
           </Text>
         </View>

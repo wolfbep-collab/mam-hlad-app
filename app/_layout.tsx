@@ -20,7 +20,10 @@ export default function RootLayout() {
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="hunger" options={{ title: '' }} />
-          <Stack.Screen name="known" options={{ title: 'Vím, co si dát' }} />
+          <Stack.Screen
+            name="known"
+            options={{ title: 'Vím, na co mám chuť' }}
+          />
           <Stack.Screen name="results" options={{ title: 'Doporučení' }} />
           <Stack.Screen name="place/[id]" options={{ title: 'Detail' }} />
           <Stack.Screen name="history" options={{ title: 'Tvoje tipy' }} />
