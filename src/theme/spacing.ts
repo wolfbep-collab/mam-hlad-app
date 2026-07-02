@@ -25,7 +25,7 @@ export const shadow = {
     elevation: 3,
   },
   button: {
-    shadowColor: '#F97316',
+    shadowColor: '#E0701F',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
