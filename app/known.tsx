@@ -236,7 +236,7 @@ export default function KnownScreen() {
   return (
     <Screen contentStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={[typography.h1, styles.title]}>Co by sis dal?</Text>
+        <Text style={[typography.h1, styles.title]}>Na co máš chuť?</Text>
         <Text style={[typography.body, styles.lead]}>
           Vyber rychlou volbu, nebo napiš jídlo, které si chceš dát.
         </Text>

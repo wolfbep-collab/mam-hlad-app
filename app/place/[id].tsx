@@ -63,6 +63,15 @@ function telUrl(phone: string): string {
   return `tel:${phone.replace(/\s+/g, '')}`;
 }
 
+function normalizePhone(phone: string): string {
+  return phone.replace(/[^\d+]/g, '');
+}
+
+function hasCallablePhone(phone: string | undefined): phone is string {
+  if (!phone) return false;
+  return normalizePhone(phone) !== '+420000000000';
+}
+
 function openExternal(url: string) {
   void Linking.openURL(url).catch(() => {});
 }
@@ -70,7 +79,7 @@ function openExternal(url: string) {
 function pickAskTarget(
   place: Place
 ): { label: string; url: string } | null {
-  if (place.phone)
+  if (hasCallablePhone(place.phone))
     return { label: 'Zavolat a zeptat se', url: telUrl(place.phone) };
   if (place.instagram)
     return {
@@ -211,6 +220,8 @@ export default function PlaceDetailScreen() {
     );
   }
 
+  const callablePhone = hasCallablePhone(place.phone) ? place.phone : null;
+
   return (
     <Screen contentStyle={styles.content}>
       <View>
@@ -236,16 +247,20 @@ export default function PlaceDetailScreen() {
 
       <View style={styles.card}>
         <Text style={[typography.label, styles.cardLabel]}>Kontakt</Text>
-        {place.phone || place.instagram || place.website ? (
+        {callablePhone || place.instagram || place.website ? (
           <View style={styles.contactButtons}>
-            {place.phone ? (
+            {callablePhone ? (
               <Button
                 label="Zavolat"
                 variant="secondary"
                 size="md"
-                onPress={() => openExternal(telUrl(place.phone as string))}
+                onPress={() => openExternal(telUrl(callablePhone))}
               />
-            ) : null}
+            ) : (
+              <Text style={[typography.caption, styles.contactEmpty]}>
+                Telefon zatím není doplněný.
+              </Text>
+            )}
             {place.instagram ? (
               <Button
                 label="Instagram"
@@ -479,6 +494,7 @@ function MenuItemRow({
     !!gluten ||
     !!item.recipeNote ||
     !!item.chefNote;
+  const callablePhone = hasCallablePhone(place.phone) ? place.phone : null;
   return (
     <Pressable
       onPress={onToggleSelect}
@@ -611,16 +627,18 @@ function MenuItemRow({
                   size="md"
                   onPress={() => openExternal(buildNavigationUrl(place))}
                 />
-                {place.phone ? (
+                {callablePhone ? (
                   <Button
                     label="Zavolat"
                     variant="secondary"
                     size="md"
-                    onPress={() =>
-                      openExternal(telUrl(place.phone as string))
-                    }
+                    onPress={() => openExternal(telUrl(callablePhone))}
                   />
-                ) : null}
+                ) : (
+                  <Text style={[typography.caption, styles.contactEmpty]}>
+                    Telefon zatím není doplněný.
+                  </Text>
+                )}
               </View>
             </View>
           ) : (

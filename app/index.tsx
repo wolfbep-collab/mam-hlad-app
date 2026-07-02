@@ -39,7 +39,7 @@ export default function HomeScreen() {
           accessibilityLabel="Začít vybírat jídlo"
         />
         <Button
-          label="Vím, co si dát"
+          label="Vím, na co mám chuť"
           variant="secondary"
           onPress={() => router.push('/known')}
           accessibilityLabel="Vyhledat konkrétní jídlo"
@@ -55,7 +55,7 @@ export default function HomeScreen() {
             accessibilityLabel="Zobrazit aktivní street food stánky"
           >
             <Text style={[typography.bodyStrong, styles.linkLabel]}>
-              🛺 Street food dnes
+              Street food dnes
             </Text>
           </Pressable>
           <Pressable

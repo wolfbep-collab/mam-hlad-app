@@ -289,18 +289,18 @@ export default function VendorCheckInScreen() {
             />
           </View>
 
-          <Button label="Zveřejnit dnešní stánek" onPress={onPublish} />
+          <Button label="Uložit dnešní stánek" onPress={onPublish} />
 
           {savedAt ? (
             <Text style={[typography.caption, styles.savedHint]}>
-              Hotovo. Lidé tě teď uvidí ve „Street food dnes".
+              Uloženo. Dnešní místo máš připravené ve „Street food dnes".
             </Text>
           ) : null}
 
           {activeLocal.length > 0 ? (
             <View style={styles.section}>
               <Text style={[typography.h2, styles.sectionTitle]}>
-                Aktivní dnešní oznámení
+                Tvoje dnešní místo
               </Text>
               <View style={styles.activeList}>
                 {activeLocal.map((c) => (
