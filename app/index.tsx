@@ -103,6 +103,8 @@ const styles = StyleSheet.create({
     height: 76,
     borderRadius: 38,
     backgroundColor: colors.primarySoft,
+    borderWidth: 1,
+    borderColor: colors.gold,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,

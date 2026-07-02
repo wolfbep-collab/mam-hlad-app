@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { type Href, useRouter } from 'expo-router';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Button, Screen } from '../src/components';
 import { colors, radius, spacing, typography } from '../src/theme';
@@ -6,6 +6,8 @@ import { colors, radius, spacing, typography } from '../src/theme';
 const TRY_MAILTO = `mailto:wolf.bep@gmail.com?subject=${encodeURIComponent(
   'Chci vyzkoušet Mám hlad'
 )}`;
+const PRIVACY_ROUTE = '/privacy' as Href;
+const SUPPORT_ROUTE = '/support' as Href;
 
 const POINTS = [
   'Podle chuti — na co máš zrovna náladu.',
@@ -29,9 +31,8 @@ export default function HungryScreen() {
         </View>
         <Text style={[typography.h1, styles.title]}>Nevíš, co si dát?</Text>
         <Text style={[typography.body, styles.lead]}>
-          Budujeme výběrového osobního průvodce jídlem pro Česko. Mám hlad ti
-          pomůže najít konkrétní jídlo v okolí — ne nekonečný seznam restaurací,
-          ale pár chytrých tipů, na co se vyplatí vyrazit.
+          Mám hlad ti pomůže najít konkrétní jídlo v okolí. Méně listování,
+          víc jasných tipů podle chuti, času a situace.
         </Text>
       </View>
 
@@ -45,9 +46,9 @@ export default function HungryScreen() {
       </View>
 
       <Text style={[typography.caption, styles.note]}>
-        Začínáme první partnerskou vlnou — kvůli kvalitě, ne objemu. Ještě
-        nejsme veřejně v obchodech s aplikacemi — když nám napíšeš, dáme ti
-        vědět, až bude co zkoušet.
+        Začínáme menším výběrem, aby doporučení dávala smysl. Ještě nejsme
+        veřejně v obchodech s aplikacemi — když nám napíšeš, dáme ti vědět, až
+        bude co zkoušet.
       </Text>
 
       <View style={styles.ctaBlock}>
@@ -63,14 +64,14 @@ export default function HungryScreen() {
 
       <View style={styles.footer}>
         <Pressable
-          onPress={() => router.push('/privacy')}
+          onPress={() => router.push(PRIVACY_ROUTE)}
           accessibilityRole="link"
         >
           <Text style={[typography.caption, styles.footerLink]}>Soukromí</Text>
         </Pressable>
         <Text style={styles.footerDot}>·</Text>
         <Pressable
-          onPress={() => router.push('/support')}
+          onPress={() => router.push(SUPPORT_ROUTE)}
           accessibilityRole="link"
         >
           <Text style={[typography.caption, styles.footerLink]}>Podpora</Text>
