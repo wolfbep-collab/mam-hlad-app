@@ -67,9 +67,21 @@ function normalizePhone(phone: string): string {
   return phone.replace(/[^\d+]/g, '');
 }
 
-function hasCallablePhone(phone: string | undefined): phone is string {
+const DEMO_PHONE_NUMBERS = new Set([
+  '+420000000000',
+  '+420212345678',
+  '+420222111000',
+  '+420777000002',
+  '+420777000003',
+  '+420777000004',
+]);
+
+function hasUsablePhone(phone: string | null | undefined): phone is string {
   if (!phone) return false;
-  return normalizePhone(phone) !== '+420000000000';
+  const normalizedPhone = normalizePhone(phone);
+  if (!normalizedPhone) return false;
+  if (DEMO_PHONE_NUMBERS.has(normalizedPhone)) return false;
+  return !/^\+420777000\d{3}$/.test(normalizedPhone);
 }
 
 function openExternal(url: string) {
@@ -79,7 +91,7 @@ function openExternal(url: string) {
 function pickAskTarget(
   place: Place
 ): { label: string; url: string } | null {
-  if (hasCallablePhone(place.phone))
+  if (hasUsablePhone(place.phone))
     return { label: 'Zavolat a zeptat se', url: telUrl(place.phone) };
   if (place.instagram)
     return {
@@ -220,7 +232,7 @@ export default function PlaceDetailScreen() {
     );
   }
 
-  const callablePhone = hasCallablePhone(place.phone) ? place.phone : null;
+  const callablePhone = hasUsablePhone(place.phone) ? place.phone : null;
 
   return (
     <Screen contentStyle={styles.content}>
@@ -494,7 +506,7 @@ function MenuItemRow({
     !!gluten ||
     !!item.recipeNote ||
     !!item.chefNote;
-  const callablePhone = hasCallablePhone(place.phone) ? place.phone : null;
+  const callablePhone = hasUsablePhone(place.phone) ? place.phone : null;
   return (
     <Pressable
       onPress={onToggleSelect}
